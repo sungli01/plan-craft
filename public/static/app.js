@@ -1,10 +1,15 @@
-// Plan-Craft Frontend v2.3 - Enhanced Project Management & Time Estimation
+// Plan-Craft Frontend v2.6 - Robust Execution with AI Model Tracking
 const API_BASE = '/api';
 
 let currentProject = null;
 let statsRefreshInterval = null;
 let projectsRefreshInterval = null;
 let tempReferences = []; // Temporary storage for references before project creation
+
+// Enhanced trackers
+let aiModelTracker = null;
+let progressTimer = null;
+let robustExecutor = null;
 
 // Phase time estimation (in minutes)
 const PHASE_DURATION = {
@@ -22,6 +27,13 @@ const PHASE_DURATION = {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize enhanced trackers
+  if (typeof AIModelTracker !== 'undefined') {
+    aiModelTracker = new AIModelTracker();
+    progressTimer = new ProgressTimer();
+    robustExecutor = new RobustExecutionManager();
+  }
+
   initializeEventListeners();
   initializeDragAndDrop();
   initializeURLDetection();
@@ -395,12 +407,26 @@ async function handleProjectCreation(e) {
       addLog('SUCCESS', `${project.references.length}개의 참조 문서가 연결되었습니다`);
     }
 
+    // Start progress timer (29 minutes total)
+    const totalMinutes = Object.values(PHASE_DURATION).reduce((a, b) => a + b, 0);
+    if (progressTimer) {
+      progressTimer.start(totalMinutes);
+      addLog('INFO', `⏱️ 예상 완료 시간: ${totalMinutes}분 (10초마다 자동 업데이트)`);
+    }
+
     // Clear temp references
     tempReferences = [];
     renderReferencesList();
 
-    // Start G1 phase automatically
-    await startPhase(project.projectId, 'G1_CORE_LOGIC');
+    // Start G1 phase automatically with robust execution
+    if (robustExecutor) {
+      await robustExecutor.executeWithRetry(
+        () => startPhase(project.projectId, 'G1_CORE_LOGIC'),
+        'G1 단계 시작'
+      );
+    } else {
+      await startPhase(project.projectId, 'G1_CORE_LOGIC');
+    }
 
     // Update UI
     renderPipelineViewer(project.projectId);
@@ -413,6 +439,15 @@ async function handleProjectCreation(e) {
 
   } catch (error) {
     addLog('ERROR', `프로젝트 생성 실패: ${error.message}`);
+    
+    // Show error modal if ErrorHandler is available
+    if (typeof ErrorHandler !== 'undefined') {
+      ErrorHandler.showError(
+        '프로젝트 생성 실패',
+        '프로젝트를 생성하는 중 오류가 발생했습니다.',
+        `오류 메시지: ${error.message}\n\n다시 시도해주세요.`
+      );
+    }
   }
 }
 

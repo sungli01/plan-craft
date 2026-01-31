@@ -63,71 +63,95 @@ app.get('/', (c) => {
               </h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Master Orchestrator */}
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 border border-purple-200">
+                <div class="ai-model-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 border border-purple-200 transition-all duration-300" data-model="claude-3.5-sonnet">
                   <div class="flex items-center gap-2 mb-2">
-                    <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                    <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center relative">
                       <i class="fas fa-crown text-white text-xs"></i>
+                      {/* Spinner */}
+                      <div class="model-spinner absolute inset-0 hidden">
+                        <div class="w-full h-full rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin"></div>
+                      </div>
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-purple-900">Master Orchestrator</h3>
                       <p class="text-xs text-purple-600">Claude 3.5 Sonnet</p>
                     </div>
-                    <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                    <span class="model-status-badge px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">전체 프로세스 조율 및 의사결정 • 복잡한 추론</p>
+                  <p class="text-xs text-gray-700 mb-1">전체 프로세스 조율 및 의사결정 • 복잡한 추론</p>
+                  <p class="model-task-info text-xs text-blue-600 font-semibold hidden"></p>
+                  <p class="model-time text-xs text-orange-600 font-mono"></p>
                 </div>
 
                 {/* Code Agent */}
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+                <div class="ai-model-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200 transition-all duration-300" data-model="gpt-4-turbo">
                   <div class="flex items-center gap-2 mb-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center relative">
                       <i class="fas fa-code text-white text-xs"></i>
+                      {/* Spinner */}
+                      <div class="model-spinner absolute inset-0 hidden">
+                        <div class="w-full h-full rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin"></div>
+                      </div>
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-blue-900">Code Agent</h3>
                       <p class="text-xs text-blue-600">GPT-4 Turbo</p>
                     </div>
-                    <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                    <span class="model-status-badge px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">코드 생성 및 구현 • 128K 컨텍스트</p>
+                  <p class="text-xs text-gray-700 mb-1">코드 생성 및 구현 • 128K 컨텍스트</p>
+                  <p class="model-task-info text-xs text-blue-600 font-semibold hidden"></p>
+                  <p class="model-time text-xs text-orange-600 font-mono"></p>
                 </div>
 
                 {/* Quality Agent */}
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 border border-green-200">
+                <div class="ai-model-card bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 border border-green-200 transition-all duration-300" data-model="gpt-4o-mini">
                   <div class="flex items-center gap-2 mb-2">
-                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center relative">
                       <i class="fas fa-check-double text-white text-xs"></i>
+                      {/* Spinner */}
+                      <div class="model-spinner absolute inset-0 hidden">
+                        <div class="w-full h-full rounded-full border-4 border-green-200 border-t-green-600 animate-spin"></div>
+                      </div>
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-green-900">Quality Agent</h3>
                       <p class="text-xs text-green-600">GPT-4o-mini</p>
                     </div>
-                    <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                    <span class="model-status-badge px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">품질 검증 및 테스트 • 빠르고 경제적</p>
+                  <p class="text-xs text-gray-700 mb-1">품질 검증 및 테스트 • 빠르고 경제적</p>
+                  <p class="model-task-info text-xs text-blue-600 font-semibold hidden"></p>
+                  <p class="model-time text-xs text-orange-600 font-mono"></p>
                 </div>
 
                 {/* DevOps Agent */}
-                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200">
+                <div class="ai-model-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200 transition-all duration-300" data-model="gemini-2.0-flash">
                   <div class="flex items-center gap-2 mb-2">
-                    <div class="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                    <div class="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center relative">
                       <i class="fas fa-rocket text-white text-xs"></i>
+                      {/* Spinner */}
+                      <div class="model-spinner absolute inset-0 hidden">
+                        <div class="w-full h-full rounded-full border-4 border-orange-200 border-t-orange-600 animate-spin"></div>
+                      </div>
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-orange-900">DevOps Agent</h3>
                       <p class="text-xs text-orange-600">Gemini 2.0 Flash</p>
                     </div>
-                    <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                    <span class="model-status-badge px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">빌드 및 배포 자동화 • 초고속 처리</p>
+                  <p class="text-xs text-gray-700 mb-1">빌드 및 배포 자동화 • 초고속 처리</p>
+                  <p class="model-task-info text-xs text-blue-600 font-semibold hidden"></p>
+                  <p class="model-time text-xs text-orange-600 font-mono"></p>
                 </div>
               </div>
             </section>
@@ -273,6 +297,7 @@ app.get('/', (c) => {
         </div>
       </div>
 
+      <script src="/static/enhanced-tracking.js"></script>
       <script src="/static/app.js"></script>
     </div>
   );
