@@ -15,8 +15,10 @@
 ## 🌐 URL
 
 - **Production**: https://plan-craft.pages.dev ✅ **LIVE**
-- **Latest Deployment**: https://5c298acb.plan-craft.pages.dev
+- **Latest Deployment**: https://c65dfcb9.plan-craft.pages.dev
 - **GitHub Repository**: https://github.com/sungli01/plan-craft
+- **설계서 v2.4**: [PLAN_CRAFT_SPECIFICATION_V2.4.md](./PLAN_CRAFT_SPECIFICATION_V2.4.md)
+- **구현 보고서 v2.4**: [IMPLEMENTATION_REPORT_V2.4.md](./IMPLEMENTATION_REPORT_V2.4.md)
 - **Sandbox Dev**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
 - **API Base**: `/api`
 
