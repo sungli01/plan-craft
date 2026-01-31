@@ -1,4 +1,4 @@
-# Plan-Craft v2.4 - AI 자율 풀스택 개발 엔진
+# Plan-Craft v2.5 - AI 자율 풀스택 개발 엔진
 
 **Code-First Edition** - 작동하는 코드가 모든 것의 중심입니다.
 
@@ -15,16 +15,63 @@
 ## 🌐 URL
 
 - **Production**: https://plan-craft.pages.dev ✅ **LIVE**
-- **Latest Deployment**: https://c65dfcb9.plan-craft.pages.dev
+- **Latest Deployment**: https://17f2610b.plan-craft.pages.dev
 - **GitHub Repository**: https://github.com/sungli01/plan-craft
 - **설계서 v2.4**: [PLAN_CRAFT_SPECIFICATION_V2.4.md](./PLAN_CRAFT_SPECIFICATION_V2.4.md)
 - **구현 보고서 v2.4**: [IMPLEMENTATION_REPORT_V2.4.md](./IMPLEMENTATION_REPORT_V2.4.md)
 - **Sandbox Dev**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
 - **API Base**: `/api`
 
-## ✨ v2.4 최신 기능 (NEW!)
+## ✨ v2.5 최신 기능 (NEW!)
 
-### 📱 반응형 단일 페이지 레이아웃 (신규!)
+### 🤖 AI 모델 정보 대시보드 (신규!)
+
+#### 1. 활성 AI 모델 카드
+- ✅ **Master Orchestrator (GPT-4o)**
+  - 전체 프로세스 조율 및 의사결정
+  - 상태: 활성화 ✓
+  
+- ✅ **Code Agent (GPT-4o)**
+  - 코드 생성 및 구현
+  - 상태: 활성화 ✓
+  
+- ✅ **Quality Agent (GPT-4o)**
+  - 품질 검증 및 테스트
+  - 상태: 활성화 ✓
+  
+- ✅ **DevOps Agent (GPT-4o)**
+  - 빌드 및 배포 자동화
+  - 상태: 활성화 ✓
+
+#### 2. 개선된 프로젝트 제어
+- ✅ **일시중지 버튼**
+  - 프로젝트 일시 중지
+  - 시간 추적 자동 중단
+  - 시간 정보 UI 숨김 처리
+  
+- ✅ **취소 버튼 (신규!)**
+  - 프로젝트 완전 취소
+  - 확인 대화창으로 안전 보호
+  - 복구 불가능 경고
+
+#### 3. 스크롤 제거 - 전체 페이지 표시
+- ✅ **좌측 컬럼**
+  - 스크롤 제거
+  - 모든 콘텐츠 한 페이지에 표시
+  
+- ✅ **우측 컬럼**
+  - 빌드 로그 영역 고정 높이 제거
+  - 자연스러운 콘텐츠 흐름
+
+#### 4. 시간 추적 자동 제어
+- ✅ **일시중지 시**
+  - 시간 정보 자동 숨김
+  - 진행률 바 제거
+  - "시간 추적 중단" 로그 표시
+
+## v2.4 기능
+
+### 📱 반응형 단일 페이지 레이아웃
 
 #### 1. 2컬럼 그리드 레이아웃
 - ✅ **데스크톱 (XL 이상)**
