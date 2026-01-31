@@ -200,27 +200,37 @@ class ProgressTimer {
     const remaining = Math.max(0, this.totalDuration - elapsed);
     const progress = Math.min(100, (elapsed / this.totalDuration) * 100);
 
-    // Update time display
-    const timeDisplay = document.getElementById('project-time-display');
-    if (timeDisplay) {
-      timeDisplay.innerHTML = `
-        <div class="flex items-center justify-between text-sm">
-          <span class="text-blue-600">
-            <i class="fas fa-clock mr-1"></i>
-            경과: <strong>${this.formatTime(elapsed)}</strong>
-          </span>
-          <span class="text-orange-600">
-            남은 시간: <strong>${this.formatTime(remaining)}</strong>
-          </span>
-        </div>
-      `;
+    // Hide start message
+    const startMessage = document.getElementById('progress-start-message');
+    if (startMessage) {
+      startMessage.style.display = 'none';
+    }
+
+    // Update elapsed time text
+    const elapsedText = document.getElementById('elapsed-time-text');
+    if (elapsedText) {
+      elapsedText.textContent = this.formatTime(elapsed);
+    }
+
+    // Update remaining time text
+    const remainingText = document.getElementById('remaining-time-text');
+    if (remainingText) {
+      remainingText.textContent = this.formatTime(remaining);
     }
 
     // Update progress bar
     const progressBar = document.getElementById('project-progress-bar');
     if (progressBar) {
-      progressBar.style.width = `${progress}%`;
+      progressBar.style.width = `${progress.toFixed(1)}%`;
     }
+
+    // Update progress percentage
+    const progressPercentage = document.getElementById('progress-percentage');
+    if (progressPercentage && progress > 5) {
+      progressPercentage.textContent = `${progress.toFixed(0)}%`;
+    }
+
+    console.log(`[Progress] ${this.formatTime(elapsed)} / ${this.formatTime(this.totalDuration)} (${progress.toFixed(1)}%)`);
   }
 
   /**

@@ -269,6 +269,44 @@ app.get('/', (c) => {
           {/* Right Column - Pipeline & Console */}
           <div class="flex flex-col gap-4 md:gap-6">
             
+            {/* Time Progress Display - VISIBLE BY DEFAULT */}
+            <section id="time-progress-section" class="glass-panel rounded-xl md:rounded-2xl p-4 md:p-6 shadow-xl flex-shrink-0">
+              <h2 class="text-lg md:text-xl font-bold mb-3 text-gray-800">
+                <i class="fas fa-clock mr-2 text-blue-600"></i>
+                진행 시간 (10초마다 자동 업데이트)
+              </h2>
+              
+              {/* Time Display */}
+              <div id="project-time-display" class="mb-3">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-blue-600 font-semibold">
+                    <i class="fas fa-hourglass-start mr-1"></i>
+                    경과: <strong id="elapsed-time-text">대기 중</strong>
+                  </span>
+                  <span class="text-orange-600 font-semibold">
+                    <i class="fas fa-hourglass-end mr-1"></i>
+                    남은 시간: <strong id="remaining-time-text">대기 중</strong>
+                  </span>
+                </div>
+              </div>
+              
+              {/* Progress Bar */}
+              <div class="bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+                <div 
+                  id="project-progress-bar" 
+                  class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full transition-all duration-1000 flex items-center justify-end pr-2"
+                  style="width: 0%"
+                >
+                  <span id="progress-percentage" class="text-white text-xs font-bold"></span>
+                </div>
+              </div>
+              
+              {/* Start Message */}
+              <p id="progress-start-message" class="text-center text-gray-500 text-xs mt-2">
+                프로젝트를 시작하면 진행 시간이 표시됩니다
+              </p>
+            </section>
+            
             {/* Pipeline Status */}
             <section class="glass-panel rounded-xl md:rounded-2xl p-4 md:p-6 shadow-xl flex-shrink-0">
               <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4 text-gray-800">
@@ -299,6 +337,7 @@ app.get('/', (c) => {
 
       <script src="/static/enhanced-tracking.js"></script>
       <script src="/static/real-execution.js"></script>
+      <script src="/static/demo-mode.js"></script>
       <script src="/static/app.js"></script>
       <script>
         {`
