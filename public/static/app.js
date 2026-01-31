@@ -718,7 +718,7 @@ async function loadActiveProjects() {
       const timeInfo = calculateTimeInfo(project);
       
       return `
-        <div class="bg-white rounded-xl p-6 border-2 ${statusInfo.borderColor} hover:shadow-lg transition-all" id="project-card-${project.projectId}">
+        <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl p-5 border-2 ${statusInfo.borderColor} hover:shadow-xl transition-all" id="project-card-${project.projectId}">
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
@@ -727,8 +727,8 @@ async function loadActiveProjects() {
                   ${statusInfo.label}
                 </span>
               </div>
-              <p class="text-sm text-gray-600 mb-3">${project.projectId}</p>
-              <div class="flex items-center gap-4 text-sm">
+              <p class="text-xs text-gray-500 mb-3">${project.projectId}</p>
+              <div class="flex items-center gap-4 text-sm mb-3">
                 <span class="text-purple-600 font-semibold">
                   <i class="fas fa-layer-group mr-1"></i>
                   ${project.currentPhase}
@@ -737,15 +737,25 @@ async function loadActiveProjects() {
                   <i class="fas fa-percentage mr-1"></i>
                   ${project.progress.toFixed(0)}% 완료
                 </span>
-                <span id="time-info-${project.projectId}">
+              </div>
+              
+              {/* Time Info Display */}
+              <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 border border-blue-200 mb-3">
+                <div class="flex justify-between items-center text-xs mb-2" id="time-info-${project.projectId}">
                   ${timeInfo.html}
-                </span>
+                </div>
+                <div class="bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                  <div 
+                    class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-2.5 rounded-full transition-all duration-1000"
+                    style="width: ${timeInfo.progress || 0}%"
+                  ></div>
+                </div>
               </div>
             </div>
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2 ml-3">
               <a 
                 href="/projects/${project.projectId}"
-                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center whitespace-nowrap"
               >
                 <i class="fas fa-eye mr-2"></i>
                 상세보기
@@ -755,7 +765,7 @@ async function loadActiveProjects() {
                 class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
                 title="프로젝트 중지"
               >
-                <i class="fas fa-pause mr-2"></i>
+                <i class="fas fa-pause mr-1"></i>
                 중지
               </button>
               <button
@@ -763,20 +773,13 @@ async function loadActiveProjects() {
                 class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
                 title="프로젝트 취소"
               >
-                <i class="fas fa-times mr-2"></i>
+                <i class="fas fa-times mr-1"></i>
                 취소
               </button>
             </div>
           </div>
-          
-          <!-- Progress Bar -->
-          <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-            <div 
-              class="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-300"
-              style="width: ${project.progress.toFixed(0)}%"
-            ></div>
-          </div>
-          
+        </div>
+      `;
           <!-- Time Bar -->
           <div id="time-bar-${project.projectId}">
             ${timeInfo.progressBar}
