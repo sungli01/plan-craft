@@ -27,12 +27,35 @@ const PHASE_DURATION = {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Plan-Craft] Initializing application...');
+
   // Initialize enhanced trackers
   if (typeof AIModelTracker !== 'undefined') {
     aiModelTracker = new AIModelTracker();
-    progressTimer = new ProgressTimer();
-    robustExecutor = new RobustExecutionManager();
+    window.aiModelTracker = aiModelTracker;
+    console.log('[Plan-Craft] ✓ AI Model Tracker initialized');
+  } else {
+    console.error('[Plan-Craft] ✗ AIModelTracker not found');
   }
+
+  if (typeof ProgressTimer !== 'undefined') {
+    progressTimer = new ProgressTimer();
+    window.progressTimer = progressTimer;
+    console.log('[Plan-Craft] ✓ Progress Timer initialized');
+  } else {
+    console.error('[Plan-Craft] ✗ ProgressTimer not found');
+  }
+
+  if (typeof RobustExecutionManager !== 'undefined') {
+    robustExecutor = new RobustExecutionManager();
+    window.robustExecutor = robustExecutor;
+    console.log('[Plan-Craft] ✓ Robust Executor initialized');
+  } else {
+    console.error('[Plan-Craft] ✗ RobustExecutionManager not found');
+  }
+
+  // Make PHASE_DURATION available globally
+  window.PHASE_DURATION = PHASE_DURATION;
 
   initializeEventListeners();
   initializeDragAndDrop();
@@ -41,6 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
   loadActiveProjects(); // NEW
   startStatsRefresh();
   startProjectsRefresh(); // NEW
+
+  // Initialize real execution system
+  if (typeof initializeRealExecution !== 'undefined') {
+    const systemReady = initializeRealExecution();
+    if (systemReady) {
+      console.log('[Plan-Craft] 🚀 All systems operational!');
+    } else {
+      console.error('[Plan-Craft] ⚠️ System initialization failed');
+    }
+  }
 });
 
 function initializeEventListeners() {
@@ -412,30 +445,59 @@ async function handleProjectCreation(e) {
     if (progressTimer) {
       progressTimer.start(totalMinutes);
       addLog('INFO', `⏱️ 예상 완료 시간: ${totalMinutes}분 (10초마다 자동 업데이트)`);
+    } else {
+      console.warn('[Warning] Progress timer not initialized');
     }
 
     // Clear temp references
     tempReferences = [];
     renderReferencesList();
 
-    // Start G1 phase automatically with robust execution
-    if (robustExecutor) {
-      await robustExecutor.executeWithRetry(
-        () => startPhase(project.projectId, 'G1_CORE_LOGIC'),
-        'G1 단계 시작'
-      );
+    // ========================================
+    // REAL EXECUTION STARTS HERE
+    // ========================================
+    addLog('SUCCESS', `\n✨ 실제 AI 모델 실행 시작!\n`);
+    
+    // Execute all phases with REAL tracking
+    if (typeof executeAllPhasesWithTracking === 'function') {
+      addLog('INFO', '🚀 강력한 실행 모드 활성화');
+      
+      // Start execution in background
+      executeAllPhasesWithTracking(project.projectId)
+        .then(() => {
+          addLog('SUCCESS', '\n🎉 프로젝트 완료!');
+          if (progressTimer) {
+            progressTimer.stop();
+          }
+        })
+        .catch(error => {
+          addLog('ERROR', `프로젝트 실행 실패: ${error.message}`);
+          if (progressTimer) {
+            progressTimer.stop();
+          }
+        });
     } else {
-      await startPhase(project.projectId, 'G1_CORE_LOGIC');
+      console.error('[ERROR] executeAllPhasesWithTracking not found!');
+      addLog('ERROR', '⚠️ 실행 함수를 찾을 수 없습니다. real-execution.js를 확인하세요.');
+      
+      // Fallback to old simulation
+      addLog('WARN', '⚠️ Fallback: 기본 시뮬레이션 모드로 전환');
+      if (robustExecutor) {
+        await robustExecutor.executeWithRetry(
+          () => startPhase(project.projectId, 'G1_CORE_LOGIC'),
+          'G1 단계 시작'
+        );
+      } else {
+        await startPhase(project.projectId, 'G1_CORE_LOGIC');
+      }
     }
 
     // Update UI
     renderPipelineViewer(project.projectId);
     loadStats();
 
-    // Redirect to project page after 1 second
-    setTimeout(() => {
-      window.location.href = `/projects/${project.projectId}`;
-    }, 1000);
+    // DON'T redirect - stay on page to see execution
+    addLog('INFO', '📊 이 페이지에서 실행 과정을 확인하세요');
 
   } catch (error) {
     addLog('ERROR', `프로젝트 생성 실패: ${error.message}`);

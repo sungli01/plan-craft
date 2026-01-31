@@ -298,7 +298,30 @@ app.get('/', (c) => {
       </div>
 
       <script src="/static/enhanced-tracking.js"></script>
+      <script src="/static/real-execution.js"></script>
       <script src="/static/app.js"></script>
+      <script>
+        {`
+          // Force initialize on page load
+          window.addEventListener('load', () => {
+            console.log('[Page Load] Initializing Plan-Craft systems...');
+            
+            // Wait a bit for all scripts to load
+            setTimeout(() => {
+              if (typeof initializeRealExecution === 'function') {
+                const success = initializeRealExecution();
+                if (success) {
+                  console.log('[Plan-Craft] 🚀 System ready!');
+                } else {
+                  console.error('[Plan-Craft] ❌ System initialization failed!');
+                }
+              } else {
+                console.error('[Plan-Craft] ❌ initializeRealExecution not found!');
+              }
+            }, 500);
+          });
+        `}
+      </script>
     </div>
   );
 });
