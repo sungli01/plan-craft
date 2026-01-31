@@ -14,10 +14,11 @@
 
 ## 🌐 URL
 
-- **Production**: https://plan-craft.pages.dev (준비 중)
+- **Production**: https://plan-craft.pages.dev ✅ **LIVE**
+- **Latest Deployment**: https://8d6a6ef6.plan-craft.pages.dev
+- **GitHub Repository**: https://github.com/sungli01/plan-craft
 - **Sandbox Dev**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
 - **API Base**: `/api`
-- **GitHub**: (연결 예정)
 
 ## ✨ v2.2 최신 기능 (NEW!)
 
