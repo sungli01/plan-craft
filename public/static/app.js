@@ -659,11 +659,28 @@ function addLog(level, message) {
   const color = colors[level] || 'text-gray-400';
   const icon = icons[level] || '•';
   const logEntry = document.createElement('div');
-  logEntry.className = `${color} mb-1`;
+  logEntry.className = `${color} mb-1 log-entry`;
   logEntry.innerHTML = `[${timestamp}] ${icon} [${level}] ${message}`;
 
-  terminal.appendChild(logEntry);
-  terminal.scrollTop = terminal.scrollHeight;
+  // Insert at the TOP (최신이 위로)
+  const firstChild = terminal.firstChild;
+  if (firstChild) {
+    terminal.insertBefore(logEntry, firstChild);
+  } else {
+    terminal.appendChild(logEntry);
+  }
+
+  // Keep only last 10 logs (최대 10개만 유지)
+  const logs = terminal.querySelectorAll('.log-entry');
+  if (logs.length > 10) {
+    // Remove oldest logs from the bottom
+    for (let i = 10; i < logs.length; i++) {
+      logs[i].remove();
+    }
+  }
+
+  // Do NOT scroll (keep viewing the top where new logs appear)
+  // terminal.scrollTop = 0; // Optional: auto-scroll to top
 }
 
 function startStatsRefresh() {
@@ -806,7 +823,7 @@ function getProjectStatusInfo(project) {
 }
 
 /**
- * Calculate time information for a project
+ * Calculate time information for a project (in SECONDS, not minutes)
  */
 function calculateTimeInfo(project) {
   const phases = Object.keys(PHASE_DURATION);
@@ -815,49 +832,88 @@ function calculateTimeInfo(project) {
   if (currentPhaseIndex === -1) {
     return {
       html: '<span class="text-gray-500"><i class="fas fa-clock mr-1"></i>시간 계산 중...</span>',
-      progressBar: ''
+      progressBar: '',
+      elapsedSeconds: 0,
+      remainingSeconds: 0,
+      totalSeconds: 0
     };
   }
   
-  // Calculate elapsed time (completed phases)
-  let elapsedMinutes = 0;
+  // Calculate elapsed time (completed phases) in SECONDS
+  let elapsedSeconds = 0;
   for (let i = 0; i < currentPhaseIndex; i++) {
-    elapsedMinutes += PHASE_DURATION[phases[i]];
+    elapsedSeconds += PHASE_DURATION[phases[i]] * 60; // Convert minutes to seconds
+  }
+  
+  // Add current phase progress (simulate with timestamp)
+  if (project.startTime) {
+    const now = Date.now();
+    const projectStart = new Date(project.startTime).getTime();
+    const actualElapsed = Math.floor((now - projectStart) / 1000); // seconds
+    elapsedSeconds = Math.min(actualElapsed, elapsedSeconds + PHASE_DURATION[project.currentPhase] * 60);
   }
   
   // Calculate remaining time
-  let remainingMinutes = 0;
+  let remainingSeconds = 0;
   for (let i = currentPhaseIndex; i < phases.length; i++) {
-    remainingMinutes += PHASE_DURATION[phases[i]];
+    remainingSeconds += PHASE_DURATION[phases[i]] * 60; // Convert to seconds
   }
+  remainingSeconds = Math.max(0, remainingSeconds - (project.startTime ? Math.floor((Date.now() - new Date(project.startTime).getTime()) / 1000) : 0));
   
-  const totalMinutes = elapsedMinutes + remainingMinutes;
-  const timeProgress = (elapsedMinutes / totalMinutes) * 100;
+  const totalSeconds = elapsedSeconds + remainingSeconds;
+  const timeProgress = totalSeconds > 0 ? (elapsedSeconds / totalSeconds) * 100 : 0;
   
   return {
     html: `
-      <span class="text-orange-600">
-        <i class="fas fa-hourglass-half mr-1"></i>
-        ${formatTime(elapsedMinutes)} / ${formatTime(totalMinutes)}
+      <span class="text-blue-600">
+        <i class="fas fa-hourglass-start mr-1"></i>
+        경과: <strong>${formatTimeSeconds(elapsedSeconds)}</strong>
       </span>
-      <span class="text-green-600">
-        <i class="fas fa-clock mr-1"></i>
-        ${formatTime(remainingMinutes)} 남음
+      <span class="text-orange-600 ml-2">
+        <i class="fas fa-hourglass-end mr-1"></i>
+        남음: <strong>${formatTimeSeconds(remainingSeconds)}</strong>
       </span>
     `,
     progressBar: `
       <div class="flex items-center gap-2 text-xs text-gray-600 mt-2">
-        <i class="fas fa-stopwatch"></i>
-        <div class="flex-1 bg-gray-200 rounded-full h-1.5">
+        <div class="flex-1 bg-gray-200 rounded-full h-2">
           <div 
-            class="bg-gradient-to-r from-orange-400 to-red-500 h-1.5 rounded-full"
-            style="width: ${timeProgress.toFixed(0)}%"
+            class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
+            style="width: ${timeProgress.toFixed(1)}%"
           ></div>
         </div>
-        <span>${formatTime(elapsedMinutes)} 경과</span>
+        <span class="font-mono font-semibold">${timeProgress.toFixed(0)}%</span>
       </div>
-    `
+    `,
+    elapsedSeconds,
+    remainingSeconds,
+    totalSeconds,
+    progress: timeProgress
   };
+}
+
+/**
+ * Format seconds to readable time (초단위 포맷)
+ */
+function formatTimeSeconds(seconds) {
+  if (seconds < 60) {
+    return `${seconds}초`;
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}분 ${secs}초`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (minutes > 0 && secs > 0) {
+      return `${hours}시간 ${minutes}분 ${secs}초`;
+    } else if (minutes > 0) {
+      return `${hours}시간 ${minutes}분`;
+    } else {
+      return `${hours}시간`;
+    }
+  }
 }
 
 /**

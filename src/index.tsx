@@ -17,14 +17,20 @@ app.get('/', (c) => {
       <div class="container mx-auto max-w-full 2xl:max-w-[1920px]">
         <header class="mb-4 md:mb-6 text-center">
           <h1 class="text-3xl md:text-5xl font-bold mb-2 gradient-text">
-            <i class="fas fa-magic mr-2 md:mr-3"></i>
+            <i class="fas fa-file-contract mr-2 md:mr-3"></i>
             Plan-Craft
           </h1>
-          <p class="text-white text-sm md:text-lg opacity-90">AI 자율 풀스택 개발 엔진 - Code-First Edition v2.4</p>
+          <p class="text-white text-sm md:text-lg opacity-90 font-semibold">AI 자율 문서 생성 엔진 - Document-First Edition v2.8</p>
           <p class="text-white text-xs md:text-sm opacity-75 mt-1 md:mt-2">
-            <i class="fas fa-sparkles mr-1 md:mr-2"></i>
-            참조 문서 첨부 • 프로젝트 중단/재개 • 업그레이드 • PDF 출력
+            <i class="fas fa-lightbulb mr-1 md:mr-2"></i>
+            기획보고서 • 가설 검증 • 프로토타입 문서화 • HTML/PDF 다운로드
           </p>
+          <div class="mt-3 md:mt-4 bg-white/20 backdrop-blur-sm rounded-lg p-2 md:p-3 inline-block">
+            <p class="text-white text-xs md:text-sm font-medium">
+              <i class="fas fa-check-circle text-green-300 mr-1"></i>
+              <strong>핵심 목적:</strong> 아이디어 → 기획문서 생성 → 가설 검증 → 프로토타입 문서 제공
+            </p>
+          </div>
         </header>
 
         {/* Two Column Layout - No Fixed Height */}
@@ -37,8 +43,8 @@ app.get('/', (c) => {
             <section class="glass-panel rounded-xl md:rounded-2xl p-4 md:p-6 shadow-xl flex-shrink-0">
               <div class="flex justify-between items-center mb-3 md:mb-4">
                 <h2 class="text-lg md:text-xl font-bold text-gray-800">
-                  <i class="fas fa-list mr-2 text-indigo-600"></i>
-                  진행 중인 프로젝트
+                  <i class="fas fa-folder-open mr-2 text-indigo-600"></i>
+                  진행 중인 문서
                 </h2>
                 <button
                   id="refresh-projects-btn"
@@ -229,12 +235,53 @@ app.get('/', (c) => {
                   </div>
                 </div>
 
+                {/* Document Output Format Selection */}
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-blue-200">
+                  <label class="block text-sm font-bold mb-3 text-gray-800">
+                    <i class="fas fa-file-download mr-2 text-blue-600"></i>
+                    문서 출력 형식 선택
+                  </label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <label class="relative flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="output-format"
+                        value="html"
+                        checked
+                        class="sr-only peer"
+                      />
+                      <div class="w-full bg-white border-2 border-gray-300 rounded-lg p-3 text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-all hover:border-blue-400">
+                        <i class="fas fa-code text-2xl text-blue-600 mb-1"></i>
+                        <p class="text-xs font-semibold text-gray-800">HTML</p>
+                        <p class="text-xs text-gray-500 mt-1">웹 문서</p>
+                      </div>
+                    </label>
+                    <label class="relative flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="output-format"
+                        value="pdf"
+                        class="sr-only peer"
+                      />
+                      <div class="w-full bg-white border-2 border-gray-300 rounded-lg p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 transition-all hover:border-red-400">
+                        <i class="fas fa-file-pdf text-2xl text-red-600 mb-1"></i>
+                        <p class="text-xs font-semibold text-gray-800">PDF</p>
+                        <p class="text-xs text-gray-500 mt-1">인쇄용</p>
+                      </div>
+                    </label>
+                  </div>
+                  <p class="text-xs text-gray-600 mt-2 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    완료 후 선택한 형식으로 다운로드
+                  </p>
+                </div>
+
                 <button
                   type="submit"
                   class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg text-sm md:text-base"
                 >
-                  <i class="fas fa-rocket mr-2"></i>
-                  프로젝트 생성 및 시작
+                  <i class="fas fa-file-alt mr-2"></i>
+                  문서 생성 시작
                 </button>
               </form>
             </section>
