@@ -70,13 +70,13 @@ app.get('/', (c) => {
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-purple-900">Master Orchestrator</h3>
-                      <p class="text-xs text-purple-600">GPT-4o</p>
+                      <p class="text-xs text-purple-600">Claude 3.5 Sonnet</p>
                     </div>
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">전체 프로세스 조율 및 의사결정</p>
+                  <p class="text-xs text-gray-700">전체 프로세스 조율 및 의사결정 • 복잡한 추론</p>
                 </div>
 
                 {/* Code Agent */}
@@ -87,13 +87,13 @@ app.get('/', (c) => {
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-blue-900">Code Agent</h3>
-                      <p class="text-xs text-blue-600">GPT-4o</p>
+                      <p class="text-xs text-blue-600">GPT-4 Turbo</p>
                     </div>
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">코드 생성 및 구현</p>
+                  <p class="text-xs text-gray-700">코드 생성 및 구현 • 128K 컨텍스트</p>
                 </div>
 
                 {/* Quality Agent */}
@@ -104,13 +104,13 @@ app.get('/', (c) => {
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-green-900">Quality Agent</h3>
-                      <p class="text-xs text-green-600">GPT-4o</p>
+                      <p class="text-xs text-green-600">GPT-4o-mini</p>
                     </div>
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">품질 검증 및 테스트</p>
+                  <p class="text-xs text-gray-700">품질 검증 및 테스트 • 빠르고 경제적</p>
                 </div>
 
                 {/* DevOps Agent */}
@@ -121,13 +121,13 @@ app.get('/', (c) => {
                     </div>
                     <div class="flex-1">
                       <h3 class="text-sm font-bold text-orange-900">DevOps Agent</h3>
-                      <p class="text-xs text-orange-600">GPT-4o</p>
+                      <p class="text-xs text-orange-600">Gemini 2.0 Flash</p>
                     </div>
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
                       <i class="fas fa-check-circle"></i>
                     </span>
                   </div>
-                  <p class="text-xs text-gray-700">빌드 및 배포 자동화</p>
+                  <p class="text-xs text-gray-700">빌드 및 배포 자동화 • 초고속 처리</p>
                 </div>
               </div>
             </section>
