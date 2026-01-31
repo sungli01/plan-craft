@@ -42,6 +42,16 @@ export interface PhaseState {
   artifacts?: string[]; // Generated file paths
 }
 
+export interface ReferenceDocument {
+  id: string;
+  type: 'url' | 'file' | 'image';
+  url?: string;
+  fileName?: string;
+  fileSize?: number;
+  content?: string;
+  uploadedAt: number;
+}
+
 export interface ProjectState {
   projectId: string;
   projectName: string;
@@ -49,8 +59,20 @@ export interface ProjectState {
   techStack: string[];
   currentPhase: PhaseGate;
   phases: Map<PhaseGate, PhaseState>;
+  references: ReferenceDocument[]; // NEW: Reference documents
+  isPaused: boolean; // NEW: Project pause state
+  isCancelled: boolean; // NEW: Project cancellation state
+  upgrades: ProjectUpgrade[]; // NEW: Upgrade history
   createdAt: number;
   updatedAt: number;
+}
+
+export interface ProjectUpgrade {
+  upgradeId: string;
+  instruction: string;
+  references: ReferenceDocument[];
+  timestamp: number;
+  completedAt?: number;
 }
 
 /**
@@ -124,6 +146,10 @@ export class PipelineStateManager {
       techStack: [],
       currentPhase: PhaseGate.G1_CORE_LOGIC,
       phases: new Map(),
+      references: [], // Initialize references
+      isPaused: false,
+      isCancelled: false,
+      upgrades: [],
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -237,5 +263,66 @@ export class PipelineStateManager {
     const phases = Array.from(this.state.phases.values());
     const completedPhases = phases.filter(p => p.status === PhaseStatus.COMPLETED).length;
     return (completedPhases / phases.length) * 100;
+  }
+
+  // NEW: Reference document management
+  addReference(reference: ReferenceDocument): void {
+    this.state.references.push(reference);
+    this.state.updatedAt = Date.now();
+  }
+
+  getReferences(): ReferenceDocument[] {
+    return this.state.references;
+  }
+
+  // NEW: Project control methods
+  pauseProject(): void {
+    this.state.isPaused = true;
+    this.state.updatedAt = Date.now();
+  }
+
+  resumeProject(): void {
+    this.state.isPaused = false;
+    this.state.updatedAt = Date.now();
+  }
+
+  cancelProject(): void {
+    this.state.isCancelled = true;
+    this.state.isPaused = true;
+    this.state.updatedAt = Date.now();
+  }
+
+  isProjectPaused(): boolean {
+    return this.state.isPaused;
+  }
+
+  isProjectCancelled(): boolean {
+    return this.state.isCancelled;
+  }
+
+  // NEW: Upgrade management
+  addUpgrade(instruction: string, references: ReferenceDocument[]): string {
+    const upgradeId = `upgrade_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const upgrade: ProjectUpgrade = {
+      upgradeId,
+      instruction,
+      references,
+      timestamp: Date.now()
+    };
+    this.state.upgrades.push(upgrade);
+    this.state.updatedAt = Date.now();
+    return upgradeId;
+  }
+
+  completeUpgrade(upgradeId: string): void {
+    const upgrade = this.state.upgrades.find(u => u.upgradeId === upgradeId);
+    if (upgrade) {
+      upgrade.completedAt = Date.now();
+      this.state.updatedAt = Date.now();
+    }
+  }
+
+  getUpgrades(): ProjectUpgrade[] {
+    return this.state.upgrades;
   }
 }
