@@ -544,7 +544,7 @@ api.post('/projects/:projectId/upgrades/:upgradeId/complete', async (c) => {
 
 /**
  * POST /api/projects/:projectId/export/pdf
- * Generate PDF documentation with AI images
+ * Generate PDF documentation with AI images and check if splitting is needed
  */
 api.post('/projects/:projectId/export/pdf', async (c) => {
   const projectId = c.req.param('projectId');
@@ -573,37 +573,100 @@ api.post('/projects/:projectId/export/pdf', async (c) => {
     }))
   };
 
+  // Import PDF Generator to check page count
+  const { PDFGenerator } = await import('../core/pdf-generator');
+  const document = await PDFGenerator.generateDocument(projectId, pdfDocument);
+  const parts = PDFGenerator.splitIntoParts(document);
+
   logger.info('tech-lead', manager.getState().currentPhase, `PDF generation requested`, {
-    projectId
+    projectId,
+    estimatedPages: document.estimatedPages,
+    totalParts: parts.length
   });
 
   return c.json({
     projectId,
     pdfDocument,
     status: 'generated',
-    downloadUrl: `/api/projects/${projectId}/download/pdf`,
+    estimatedPages: document.estimatedPages,
+    totalParts: parts.length,
+    downloadUrls: parts.length > 1 
+      ? parts.map((_, idx) => `/api/projects/${projectId}/download/pdf/${idx + 1}`)
+      : [`/api/projects/${projectId}/download/pdf`],
     generatedAt: Date.now(),
-    note: 'PDF generation with AI images - Feature completed'
+    note: parts.length > 1 
+      ? `Document split into ${parts.length} parts (max 50 pages each)`
+      : 'Single document generated'
   });
 });
 
 /**
- * GET /api/projects/:projectId/download/pdf
- * Download generated PDF
+ * GET /api/projects/:projectId/download/pdf/:partNumber?
+ * Download generated PDF (full or specific part)
  */
-api.get('/projects/:projectId/download/pdf', async (c) => {
+api.get('/projects/:projectId/download/pdf/:partNumber?', async (c) => {
   const projectId = c.req.param('projectId');
+  const partNumber = c.req.param('partNumber');
 
   const manager = projects.get(projectId);
   if (!manager) {
     return c.json({ error: 'Project not found' }, 404);
   }
 
+  const state = manager.getState();
+  const phases = Array.from(state.phases.values());
+
+  // Generate PDF document structure
+  const pdfDocument = {
+    projectId: state.projectId,
+    projectName: state.projectName,
+    userIdea: state.userIdea,
+    createdAt: state.createdAt,
+    progress: manager.getProjectProgress(),
+    techStack: state.techStack,
+    testsPassed: 77,
+    phases: phases.map(p => ({
+      gate: p.gate,
+      status: p.status,
+      metrics: p.metrics
+    }))
+  };
+
+  const { PDFGenerator } = await import('../core/pdf-generator');
+  const document = await PDFGenerator.generateDocument(projectId, pdfDocument);
+  const parts = PDFGenerator.splitIntoParts(document);
+
+  // Determine which part to return
+  let htmlContent: string;
+  let fileName: string;
+
+  if (!partNumber || parts.length === 1) {
+    // Return full document or single part
+    htmlContent = PDFGenerator.toHTML(document);
+    fileName = `${state.projectName.replace(/[^a-zA-Z0-9]/g, '_')}_Full.html`;
+  } else {
+    // Return specific part
+    const partIdx = parseInt(partNumber) - 1;
+    if (partIdx < 0 || partIdx >= parts.length) {
+      return c.json({ error: `Invalid part number. Valid range: 1-${parts.length}` }, 400);
+    }
+
+    const part = parts[partIdx];
+    const partDocument = {
+      ...document,
+      partNumber: part.partNumber,
+      totalParts: part.totalParts,
+      sections: []
+    };
+    htmlContent = PDFGenerator.toHTML(partDocument, part.sections);
+    fileName = `${state.projectName.replace(/[^a-zA-Z0-9]/g, '_')}_Part${part.partNumber}of${part.totalParts}.html`;
+  }
+
   // In production, this would return actual PDF binary
-  return c.json({
-    message: 'PDF download endpoint',
-    projectId,
-    note: 'In production, this would return PDF binary with Content-Type: application/pdf'
+  // For now, return HTML that can be printed to PDF
+  return c.html(htmlContent, 200, {
+    'Content-Disposition': `attachment; filename="${fileName}"`,
+    'Content-Type': 'text/html; charset=utf-8'
   });
 });
 

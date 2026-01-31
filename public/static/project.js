@@ -136,15 +136,95 @@ async function handleUpgradeProject() {
 }
 
 async function handleExportPDF() {
-  addProjectLog('INFO', 'PDF 생성 중...');
-  addProjectLog('INFO', 'AI 이미지 생성 중 (다이어그램, 아키텍처)...');
+  try {
+    addProjectLog('INFO', 'PDF 생성 중...');
+    addProjectLog('INFO', '페이지 수 계산 및 분할 확인 중...');
+    
+    // Request PDF generation
+    const response = await fetch(`${API_BASE}/projects/${PROJECT_ID}/export/pdf`, {
+      method: 'POST'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    addProjectLog('SUCCESS', `PDF 생성 완료!`);
+    addProjectLog('INFO', `예상 페이지 수: ${result.estimatedPages}페이지`);
+    
+    if (result.totalParts > 1) {
+      addProjectLog('INFO', `📄 문서가 ${result.totalParts}개 파트로 분할되었습니다 (각 최대 50페이지)`);
+      
+      // Create download buttons for each part
+      const downloadSection = document.createElement('div');
+      downloadSection.className = 'mt-4 p-4 bg-purple-50 rounded-lg border-2 border-purple-300';
+      downloadSection.innerHTML = `
+        <div class="text-center mb-3">
+          <strong class="text-purple-700">📥 다운로드 옵션</strong>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-center">
+          ${result.downloadUrls.map((url, idx) => `
+            <button 
+              onclick="downloadPDFPart('${url}', ${idx + 1}, ${result.totalParts})"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-all transform hover:scale-105 shadow-md text-sm">
+              <i class="fas fa-download mr-1"></i>
+              Part ${idx + 1}/${result.totalParts}
+            </button>
+          `).join('')}
+        </div>
+        <div class="text-center mt-3">
+          <button 
+            onclick="downloadAllParts(${JSON.stringify(result.downloadUrls).replace(/"/g, '&quot;')})"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+            <i class="fas fa-download mr-2"></i>
+            전체 다운로드 (${result.totalParts}개 파일)
+          </button>
+        </div>
+      `;
+      
+      // Insert download section after the export button
+      const exportBtn = document.getElementById('export-pdf-btn');
+      if (exportBtn && exportBtn.parentElement) {
+        const existingSection = document.getElementById('pdf-download-section');
+        if (existingSection) {
+          existingSection.remove();
+        }
+        downloadSection.id = 'pdf-download-section';
+        exportBtn.parentElement.insertBefore(downloadSection, exportBtn.nextSibling);
+      }
+    } else {
+      // Single document - download directly
+      addProjectLog('INFO', '단일 문서로 생성되었습니다');
+      window.open(result.downloadUrls[0], '_blank');
+    }
+    
+    addProjectLog('SUCCESS', result.note);
+  } catch (error) {
+    addProjectLog('ERROR', `PDF 생성 실패: ${error.message}`);
+    console.error('PDF Export Error:', error);
+  }
+}
+
+// Helper function to download a single PDF part
+function downloadPDFPart(url, partNumber, totalParts) {
+  addProjectLog('INFO', `Part ${partNumber}/${totalParts} 다운로드 시작...`);
+  window.open(url, '_blank');
+  addProjectLog('SUCCESS', `Part ${partNumber} 다운로드 완료!`);
+}
+
+// Helper function to download all parts sequentially
+async function downloadAllParts(urls) {
+  addProjectLog('INFO', `전체 ${urls.length}개 파일 다운로드 시작...`);
   
-  // Simulate PDF generation
-  setTimeout(() => {
-    addProjectLog('SUCCESS', 'PDF 생성 완료!');
-    addProjectLog('INFO', 'PDF 다운로드 기능은 곧 추가될 예정입니다.');
-    alert('PDF 출력 기능은 Feature 5에서 구현됩니다.\n\n포함될 내용:\n- 프로젝트 개요\n- AI 생성 아키텍처 다이어그램\n- API 문서\n- 코드 스니펫\n- 테스트 결과');
-  }, 2000);
+  for (let i = 0; i < urls.length; i++) {
+    await new Promise(resolve => setTimeout(resolve, 500)); // Delay between downloads
+    window.open(urls[i], '_blank');
+    addProjectLog('SUCCESS', `Part ${i + 1}/${urls.length} 다운로드 완료`);
+  }
+  
+  addProjectLog('SUCCESS', `모든 파일 다운로드 완료! (총 ${urls.length}개)`);
 }
 
 async function loadProjectData() {

@@ -21,9 +21,103 @@ export interface PDFDocument {
     version: string;
     author: string;
   };
+  estimatedPages?: number;
+  partNumber?: number;
+  totalParts?: number;
+}
+
+export interface PDFPart {
+  document: PDFDocument;
+  partNumber: number;
+  totalParts: number;
+  sections: PDFSection[];
+  estimatedPages: number;
 }
 
 export class PDFGenerator {
+  private static readonly MAX_PAGES_PER_PART = 50;
+  private static readonly AVG_LINES_PER_PAGE = 45;
+  private static readonly AVG_CHARS_PER_LINE = 80;
+  /**
+   * Estimate pages for a section
+   */
+  private static estimateSectionPages(section: PDFSection): number {
+    let pages = 1; // Header takes ~1/4 page
+    
+    // Content estimation
+    const contentLines = section.content.split('\n').length;
+    const contentChars = section.content.length;
+    const estimatedLines = Math.max(
+      contentLines,
+      Math.ceil(contentChars / this.AVG_CHARS_PER_LINE)
+    );
+    pages += estimatedLines / this.AVG_LINES_PER_PAGE;
+    
+    // Images (each takes ~1/3 page)
+    if (section.images && section.images.length > 0) {
+      pages += section.images.length * 0.33;
+    }
+    
+    // Code blocks (formatted, takes more space)
+    if (section.code) {
+      const codeLines = section.code.split('\n').length;
+      pages += (codeLines / this.AVG_LINES_PER_PAGE) * 1.2; // Code takes 20% more space
+    }
+    
+    return Math.ceil(pages);
+  }
+
+  /**
+   * Split document into parts of max 50 pages each
+   */
+  static splitIntoParts(document: PDFDocument): PDFPart[] {
+    const parts: PDFPart[] = [];
+    let currentPart: PDFSection[] = [];
+    let currentPages = 0;
+    let partNumber = 1;
+    
+    for (const section of document.sections) {
+      const sectionPages = this.estimateSectionPages(section);
+      
+      // If adding this section exceeds limit, create new part
+      if (currentPages + sectionPages > this.MAX_PAGES_PER_PART && currentPart.length > 0) {
+        parts.push({
+          document: { ...document, partNumber, sections: [] },
+          partNumber,
+          totalParts: 0, // Will be set later
+          sections: [...currentPart],
+          estimatedPages: currentPages
+        });
+        currentPart = [];
+        currentPages = 0;
+        partNumber++;
+      }
+      
+      currentPart.push(section);
+      currentPages += sectionPages;
+    }
+    
+    // Add last part
+    if (currentPart.length > 0) {
+      parts.push({
+        document: { ...document, partNumber, sections: [] },
+        partNumber,
+        totalParts: 0,
+        sections: [...currentPart],
+        estimatedPages: currentPages
+      });
+    }
+    
+    // Update total parts
+    const totalParts = parts.length;
+    parts.forEach(part => {
+      part.totalParts = totalParts;
+      part.document.totalParts = totalParts;
+    });
+    
+    return parts;
+  }
+
   /**
    * Generate PDF document structure from project data
    */
@@ -103,7 +197,7 @@ export class PDFGenerator {
       type: 'deployment'
     });
 
-    return {
+    const document: PDFDocument = {
       projectId,
       projectName: projectData.projectName,
       userIdea: projectData.userIdea,
@@ -114,6 +208,14 @@ export class PDFGenerator {
         author: 'Plan-Craft AI Engine'
       }
     };
+    
+    // Calculate total estimated pages
+    document.estimatedPages = sections.reduce(
+      (total, section) => total + this.estimateSectionPages(section),
+      0
+    );
+    
+    return document;
   }
 
   private static generateAPIDocumentation(): string {
@@ -165,8 +267,19 @@ export class PDFGenerator {
   /**
    * Convert document to HTML (for PDF generation)
    */
-  static toHTML(document: PDFDocument): string {
-    const sectionsHTML = document.sections.map(section => {
+  static toHTML(document: PDFDocument, sections?: PDFSection[]): string {
+    const sectionsToRender = sections || document.sections;
+    // Add part indicator if document is split
+    let partIndicator = '';
+    if (document.partNumber && document.totalParts && document.totalParts > 1) {
+      partIndicator = `
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 30px; font-weight: bold;">
+          📄 Part ${document.partNumber} of ${document.totalParts}
+        </div>
+      `;
+    }
+    
+    const sectionsHTML = sectionsToRender.map(section => {
       let imagesHTML = '';
       if (section.images && section.images.length > 0) {
         imagesHTML = section.images.map(url => 
@@ -240,6 +353,7 @@ export class PDFGenerator {
     <p><strong>생성자:</strong> ${document.metadata.author}</p>
   </div>
   
+  ${partIndicator}
   ${sectionsHTML}
   
   <footer style="margin-top: 60px; padding-top: 20px; border-top: 2px solid #eee; text-align: center; color: #999; font-size: 12px;">
