@@ -20,7 +20,7 @@ app.get('/', (c) => {
             <i class="fas fa-magic mr-2 md:mr-3"></i>
             Plan-Craft
           </h1>
-          <p class="text-white text-sm md:text-lg opacity-90">AI 자율 풀스택 개발 엔진 - Code-First Edition v2.3</p>
+          <p class="text-white text-sm md:text-lg opacity-90">AI 자율 풀스택 개발 엔진 - Code-First Edition v2.4</p>
           <p class="text-white text-xs md:text-sm opacity-75 mt-1 md:mt-2">
             <i class="fas fa-sparkles mr-1 md:mr-2"></i>
             참조 문서 첨부 • 프로젝트 중단/재개 • 업그레이드 • PDF 출력
