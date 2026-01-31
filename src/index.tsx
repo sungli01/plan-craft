@@ -28,6 +28,28 @@ app.get('/', (c) => {
         </header>
 
         <div class="grid gap-6">
+          {/* Active Projects List */}
+          <section class="glass-panel rounded-2xl p-8 shadow-xl">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-list mr-2 text-indigo-600"></i>
+                진행 중인 프로젝트
+              </h2>
+              <button
+                id="refresh-projects-btn"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all"
+              >
+                <i class="fas fa-sync-alt mr-2"></i>
+                새로고침
+              </button>
+            </div>
+            <div id="active-projects-list" class="space-y-4">
+              <div class="text-gray-600 text-center py-8">
+                진행 중인 프로젝트가 없습니다. 새 프로젝트를 시작하세요!
+              </div>
+            </div>
+          </section>
+
           {/* Pipeline Status */}
           <section class="glass-panel rounded-2xl p-8 shadow-xl">
             <h2 class="text-2xl font-bold mb-6 text-gray-800">

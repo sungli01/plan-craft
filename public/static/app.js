@@ -1,9 +1,24 @@
-// Plan-Craft Frontend v2.1 - Enhanced References UX
+// Plan-Craft Frontend v2.3 - Enhanced Project Management & Time Estimation
 const API_BASE = '/api';
 
 let currentProject = null;
 let statsRefreshInterval = null;
+let projectsRefreshInterval = null;
 let tempReferences = []; // Temporary storage for references before project creation
+
+// Phase time estimation (in minutes)
+const PHASE_DURATION = {
+  'G1_CORE_LOGIC': 3,
+  'G2_API_SERVER': 4,
+  'G3_UI_COMPONENTS': 5,
+  'G4_INTEGRATION': 3,
+  'G5_UNIT_TESTS': 4,
+  'G6_SECURITY_SCAN': 2,
+  'G7_BUILD_OPTIMIZATION': 2,
+  'G8_DEPLOYMENT': 3,
+  'G9_DOCUMENTATION': 2,
+  'G10_HANDOVER': 1
+};
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeDragAndDrop();
   initializeURLDetection();
   loadStats();
+  loadActiveProjects(); // NEW
   startStatsRefresh();
+  startProjectsRefresh(); // NEW
 });
 
 function initializeEventListeners() {
@@ -25,6 +42,11 @@ function initializeEventListeners() {
     selectFilesBtn.addEventListener('click', () => {
       document.getElementById('file-input').click();
     });
+  }
+
+  const refreshProjectsBtn = document.getElementById('refresh-projects-btn');
+  if (refreshProjectsBtn) {
+    refreshProjectsBtn.addEventListener('click', loadActiveProjects);
   }
 
   const fileInput = document.getElementById('file-input');
@@ -551,6 +573,224 @@ function startStatsRefresh() {
   statsRefreshInterval = setInterval(loadStats, 5000);
 }
 
+function startProjectsRefresh() {
+  projectsRefreshInterval = setInterval(loadActiveProjects, 10000); // Every 10 seconds
+}
+
+/**
+ * Load and display active projects
+ */
+async function loadActiveProjects() {
+  try {
+    const response = await fetch(`${API_BASE}/stats`);
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const container = document.getElementById('active-projects-list');
+    if (!container) return;
+
+    if (!data.projects || data.projects.length === 0) {
+      container.innerHTML = `
+        <div class="text-gray-600 text-center py-8">
+          <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+          <p>진행 중인 프로젝트가 없습니다. 새 프로젝트를 시작하세요!</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = data.projects.map(project => {
+      const statusInfo = getProjectStatusInfo(project);
+      const timeInfo = calculateTimeInfo(project);
+      
+      return `
+        <div class="bg-white rounded-xl p-6 border-2 ${statusInfo.borderColor} hover:shadow-lg transition-all">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-gray-800">${project.projectName}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.textColor}">
+                  ${statusInfo.label}
+                </span>
+              </div>
+              <p class="text-sm text-gray-600 mb-3">${project.projectId}</p>
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-purple-600 font-semibold">
+                  <i class="fas fa-layer-group mr-1"></i>
+                  ${project.currentPhase}
+                </span>
+                <span class="text-blue-600">
+                  <i class="fas fa-percentage mr-1"></i>
+                  ${project.progress.toFixed(0)}% 완료
+                </span>
+                ${timeInfo.html}
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <a 
+                href="/projects/${project.projectId}"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center"
+              >
+                <i class="fas fa-eye mr-2"></i>
+                상세보기
+              </a>
+              <button
+                onclick="quickStopProject('${project.projectId}')"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center"
+                title="프로젝트 중지"
+              >
+                <i class="fas fa-stop mr-2"></i>
+                중지
+              </button>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+            <div 
+              class="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-300"
+              style="width: ${project.progress.toFixed(0)}%"
+            ></div>
+          </div>
+          
+          <!-- Time Bar -->
+          ${timeInfo.progressBar}
+        </div>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Failed to load projects:', error);
+  }
+}
+
+/**
+ * Get project status display info
+ */
+function getProjectStatusInfo(project) {
+  if (project.isCompleted) {
+    return {
+      label: '완료',
+      bgColor: 'bg-green-100',
+      textColor: 'text-green-700',
+      borderColor: 'border-green-300'
+    };
+  }
+  
+  // Check if paused (you'll need to add isPaused to project state)
+  const currentPhase = project.currentPhase || '';
+  if (currentPhase.includes('PAUSED')) {
+    return {
+      label: '일시중지',
+      bgColor: 'bg-yellow-100',
+      textColor: 'text-yellow-700',
+      borderColor: 'border-yellow-300'
+    };
+  }
+  
+  return {
+    label: '진행 중',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-700',
+    borderColor: 'border-blue-300'
+  };
+}
+
+/**
+ * Calculate time information for a project
+ */
+function calculateTimeInfo(project) {
+  const phases = Object.keys(PHASE_DURATION);
+  const currentPhaseIndex = phases.indexOf(project.currentPhase);
+  
+  if (currentPhaseIndex === -1) {
+    return {
+      html: '<span class="text-gray-500"><i class="fas fa-clock mr-1"></i>시간 계산 중...</span>',
+      progressBar: ''
+    };
+  }
+  
+  // Calculate elapsed time (completed phases)
+  let elapsedMinutes = 0;
+  for (let i = 0; i < currentPhaseIndex; i++) {
+    elapsedMinutes += PHASE_DURATION[phases[i]];
+  }
+  
+  // Calculate remaining time
+  let remainingMinutes = 0;
+  for (let i = currentPhaseIndex; i < phases.length; i++) {
+    remainingMinutes += PHASE_DURATION[phases[i]];
+  }
+  
+  const totalMinutes = elapsedMinutes + remainingMinutes;
+  const timeProgress = (elapsedMinutes / totalMinutes) * 100;
+  
+  return {
+    html: `
+      <span class="text-orange-600">
+        <i class="fas fa-hourglass-half mr-1"></i>
+        ${formatTime(elapsedMinutes)} / ${formatTime(totalMinutes)}
+      </span>
+      <span class="text-green-600">
+        <i class="fas fa-clock mr-1"></i>
+        ${formatTime(remainingMinutes)} 남음
+      </span>
+    `,
+    progressBar: `
+      <div class="flex items-center gap-2 text-xs text-gray-600 mt-2">
+        <i class="fas fa-stopwatch"></i>
+        <div class="flex-1 bg-gray-200 rounded-full h-1.5">
+          <div 
+            class="bg-gradient-to-r from-orange-400 to-red-500 h-1.5 rounded-full"
+            style="width: ${timeProgress.toFixed(0)}%"
+          ></div>
+        </div>
+        <span>${formatTime(elapsedMinutes)} 경과</span>
+      </div>
+    `
+  };
+}
+
+/**
+ * Format minutes to readable time
+ */
+function formatTime(minutes) {
+  if (minutes < 1) {
+    return '< 1분';
+  } else if (minutes < 60) {
+    return `${Math.round(minutes)}분`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return mins > 0 ? `${hours}시간 ${mins}분` : `${hours}시간`;
+  }
+}
+
+/**
+ * Quick stop project from dashboard
+ */
+async function quickStopProject(projectId) {
+  if (!confirm('이 프로젝트를 중지하시겠습니까?\n\n중지된 프로젝트는 나중에 재개할 수 없습니다.')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/projects/${projectId}/cancel`, {
+      method: 'POST'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    addLog('SUCCESS', `프로젝트 ${projectId} 중지됨`);
+    loadActiveProjects(); // Refresh list
+    loadStats(); // Refresh stats
+  } catch (error) {
+    addLog('ERROR', `프로젝트 중지 실패: ${error.message}`);
+  }
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -559,5 +799,8 @@ function sleep(ms) {
 window.addEventListener('beforeunload', () => {
   if (statsRefreshInterval) {
     clearInterval(statsRefreshInterval);
+  }
+  if (projectsRefreshInterval) {
+    clearInterval(projectsRefreshInterval);
   }
 });
