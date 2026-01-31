@@ -604,7 +604,7 @@ async function loadActiveProjects() {
       const timeInfo = calculateTimeInfo(project);
       
       return `
-        <div class="bg-white rounded-xl p-6 border-2 ${statusInfo.borderColor} hover:shadow-lg transition-all">
+        <div class="bg-white rounded-xl p-6 border-2 ${statusInfo.borderColor} hover:shadow-lg transition-all" id="project-card-${project.projectId}">
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
@@ -623,24 +623,34 @@ async function loadActiveProjects() {
                   <i class="fas fa-percentage mr-1"></i>
                   ${project.progress.toFixed(0)}% 완료
                 </span>
-                ${timeInfo.html}
+                <span id="time-info-${project.projectId}">
+                  ${timeInfo.html}
+                </span>
               </div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-2">
               <a 
                 href="/projects/${project.projectId}"
-                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
               >
                 <i class="fas fa-eye mr-2"></i>
                 상세보기
               </a>
               <button
                 onclick="quickStopProject('${project.projectId}')"
-                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center"
+                class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
                 title="프로젝트 중지"
               >
-                <i class="fas fa-stop mr-2"></i>
+                <i class="fas fa-pause mr-2"></i>
                 중지
+              </button>
+              <button
+                onclick="quickCancelProject('${project.projectId}')"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-all inline-flex items-center justify-center"
+                title="프로젝트 취소"
+              >
+                <i class="fas fa-times mr-2"></i>
+                취소
               </button>
             </div>
           </div>
@@ -654,7 +664,9 @@ async function loadActiveProjects() {
           </div>
           
           <!-- Time Bar -->
-          ${timeInfo.progressBar}
+          <div id="time-bar-${project.projectId}">
+            ${timeInfo.progressBar}
+          </div>
         </div>
       `;
     }).join('');
@@ -769,8 +781,43 @@ function formatTime(minutes) {
 /**
  * Quick stop project from dashboard
  */
-async function quickStopProject(projectId) {
-  if (!confirm('이 프로젝트를 중지하시겠습니까?\n\n중지된 프로젝트는 나중에 재개할 수 없습니다.')) {
+window.quickStopProject = async function(projectId) {
+  if (!confirm('이 프로젝트를 일시중지 하시겠습니까?')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/projects/${projectId}/pause`, {
+      method: 'POST'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    // Remove time info on pause
+    const timeInfo = document.getElementById(`time-info-${projectId}`);
+    const timeBar = document.getElementById(`time-bar-${projectId}`);
+    if (timeInfo) {
+      timeInfo.style.display = 'none';
+    }
+    if (timeBar) {
+      timeBar.style.display = 'none';
+    }
+    
+    addLog('SUCCESS', `프로젝트 ${projectId} 일시중지됨 - 시간 추적 중단`);
+    loadActiveProjects(); // Refresh list
+    loadStats(); // Refresh stats
+  } catch (error) {
+    addLog('ERROR', `프로젝트 중지 실패: ${error.message}`);
+  }
+}
+
+/**
+ * Quick cancel project from dashboard
+ */
+window.quickCancelProject = async function(projectId) {
+  if (!confirm('이 프로젝트를 취소하시겠습니까?\n\n취소된 프로젝트는 복구할 수 없습니다.')) {
     return;
   }
   
@@ -783,11 +830,11 @@ async function quickStopProject(projectId) {
       throw new Error(`HTTP ${response.status}`);
     }
     
-    addLog('SUCCESS', `프로젝트 ${projectId} 중지됨`);
+    addLog('SUCCESS', `프로젝트 ${projectId} 취소됨`);
     loadActiveProjects(); // Refresh list
     loadStats(); // Refresh stats
   } catch (error) {
-    addLog('ERROR', `프로젝트 중지 실패: ${error.message}`);
+    addLog('ERROR', `프로젝트 취소 실패: ${error.message}`);
   }
 }
 
