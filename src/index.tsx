@@ -351,6 +351,7 @@ app.get('/', (c) => {
       <script src="/static/enhanced-tracking.js"></script>
       <script src="/static/real-execution.js"></script>
       <script src="/static/demo-mode.js"></script>
+      <script src="/static/aggressive-debug.js"></script>
       <script src="/static/app.js"></script>
       <script>
         {`
