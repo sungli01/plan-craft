@@ -171,6 +171,12 @@ class ProgressTimer {
     this.startTime = Date.now();
     this.totalDuration = totalMinutes * 60; // convert to seconds
 
+    // Hide start message immediately
+    const startMessage = document.getElementById('progress-start-message');
+    if (startMessage) {
+      startMessage.style.display = 'none';
+    }
+
     // Update every 10 seconds
     this.updateInterval = setInterval(() => {
       this.updateProgress();
