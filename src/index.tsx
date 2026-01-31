@@ -57,52 +57,61 @@ app.get('/', (c) => {
                 />
               </div>
               <div>
-                <label class="block text-sm font-semibold mb-2 text-gray-700">아이디어 설명</label>
+                <label class="block text-sm font-semibold mb-2 text-gray-700">
+                  아이디어 설명
+                  <span class="text-xs text-purple-600 ml-2">
+                    <i class="fas fa-info-circle"></i> URL을 복사해서 붙여넣으면 자동으로 참조 문서로 추가됩니다
+                  </span>
+                </label>
                 <textarea
                   id="user-idea"
                   rows="4"
                   class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="예: 사용자가 상품을 검색하고 장바구니에 담아 구매할 수 있는 온라인 쇼핑몰"
+                  placeholder="예: 사용자가 상품을 검색하고 장바구니에 담아 구매할 수 있는 온라인 쇼핑몰&#10;&#10;참조 링크를 바로 붙여넣을 수 있습니다:&#10;https://stripe.com/docs/api&#10;https://tailwindcss.com/docs"
                   required
                 ></textarea>
+                <div id="detected-urls" class="mt-2 text-xs text-gray-600"></div>
               </div>
               
-              {/* NEW: Reference Documents Section */}
+              {/* NEW: Drag & Drop File Upload Area */}
+              <div 
+                id="dropzone"
+                class="border-2 border-dashed border-purple-300 rounded-xl p-8 bg-purple-50 text-center hover:border-purple-500 hover:bg-purple-100 transition-all cursor-pointer"
+              >
+                <i class="fas fa-cloud-upload-alt text-5xl text-purple-400 mb-3"></i>
+                <p class="text-gray-700 font-semibold mb-2">
+                  파일을 여기에 드래그 앤 드롭하세요
+                </p>
+                <p class="text-sm text-gray-500 mb-3">
+                  또는 클릭해서 파일 선택 (이미지, PDF, 텍스트 등)
+                </p>
+                <input
+                  type="file"
+                  id="file-input"
+                  multiple
+                  accept="image/*,.pdf,.txt,.md,.doc,.docx"
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  id="select-files-btn"
+                  class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-6 rounded-lg transition-colors inline-flex items-center"
+                >
+                  <i class="fas fa-folder-open mr-2"></i>
+                  파일 선택
+                </button>
+              </div>
+
+              {/* Reference Documents List */}
               <div class="border-2 border-dashed border-purple-300 rounded-xl p-6 bg-purple-50">
                 <label class="block text-sm font-semibold mb-3 text-gray-700">
                   <i class="fas fa-paperclip mr-2 text-purple-600"></i>
-                  참조 문서 (선택사항)
+                  참조 문서 목록
                 </label>
-                <div class="space-y-3">
-                  <div>
-                    <label class="text-xs text-gray-600 mb-1 block">참조 URL</label>
-                    <input
-                      type="url"
-                      id="reference-url"
-                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                      placeholder="https://example.com/api-docs"
-                    />
+                <div id="references-list" class="space-y-2">
+                  <div class="text-xs text-gray-500 text-center py-4">
+                    아직 추가된 참조 문서가 없습니다
                   </div>
-                  <div>
-                    <label class="text-xs text-gray-600 mb-1 block">설명 (선택)</label>
-                    <input
-                      type="text"
-                      id="reference-description"
-                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                      placeholder="예: 결제 API 문서"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    id="add-reference-btn"
-                    class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-                  >
-                    <i class="fas fa-plus mr-2"></i>
-                    참조 추가
-                  </button>
-                </div>
-                <div id="references-list" class="mt-4 space-y-2">
-                  {/* Dynamic references will be added here */}
                 </div>
               </div>
 

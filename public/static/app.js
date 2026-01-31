@@ -1,4 +1,4 @@
-// Plan-Craft Frontend v2.0 - Main Dashboard
+// Plan-Craft Frontend v2.1 - Enhanced References UX
 const API_BASE = '/api';
 
 let currentProject = null;
@@ -8,6 +8,8 @@ let tempReferences = []; // Temporary storage for references before project crea
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
   initializeEventListeners();
+  initializeDragAndDrop();
+  initializeURLDetection();
   loadStats();
   startStatsRefresh();
 });
@@ -18,38 +20,244 @@ function initializeEventListeners() {
     form.addEventListener('submit', handleProjectCreation);
   }
 
-  const addRefBtn = document.getElementById('add-reference-btn');
-  if (addRefBtn) {
-    addRefBtn.addEventListener('click', handleAddReference);
+  const selectFilesBtn = document.getElementById('select-files-btn');
+  if (selectFilesBtn) {
+    selectFilesBtn.addEventListener('click', () => {
+      document.getElementById('file-input').click();
+    });
+  }
+
+  const fileInput = document.getElementById('file-input');
+  if (fileInput) {
+    fileInput.addEventListener('change', handleFileSelect);
   }
 }
 
-function handleAddReference() {
-  const urlInput = document.getElementById('reference-url');
-  const descInput = document.getElementById('reference-description');
+/**
+ * NEW: Drag and Drop functionality
+ */
+function initializeDragAndDrop() {
+  const dropzone = document.getElementById('dropzone');
+  if (!dropzone) return;
 
-  const url = urlInput.value.trim();
-  if (!url) {
-    alert('참조 URL을 입력해주세요.');
-    return;
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  // Highlight drop zone when item is dragged over it
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.add('border-purple-600', 'bg-purple-200');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.remove('border-purple-600', 'bg-purple-200');
+    }, false);
+  });
+
+  // Handle dropped files
+  dropzone.addEventListener('drop', handleDrop, false);
+}
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  handleFiles(files);
+}
+
+function handleFileSelect(e) {
+  const files = e.target.files;
+  handleFiles(files);
+}
+
+function handleFiles(files) {
+  [...files].forEach(file => {
+    addLog('INFO', `파일 추가 중: ${file.name} (${formatFileSize(file.size)})`);
+    
+    // Read file content if it's a text-based file
+    if (isTextFile(file)) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const reference = {
+          id: `file_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          type: 'file',
+          fileName: file.name,
+          fileSize: file.size,
+          content: e.target.result.substring(0, 1000), // First 1000 chars
+          uploadedAt: Date.now()
+        };
+        tempReferences.push(reference);
+        renderReferencesList();
+        addLog('SUCCESS', `파일 추가됨: ${file.name}`);
+      };
+      reader.readAsText(file);
+    } else if (isImageFile(file)) {
+      // For images, store as base64
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const reference = {
+          id: `image_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          type: 'image',
+          fileName: file.name,
+          fileSize: file.size,
+          url: e.target.result, // base64 data URL
+          uploadedAt: Date.now()
+        };
+        tempReferences.push(reference);
+        renderReferencesList();
+        addLog('SUCCESS', `이미지 추가됨: ${file.name}`);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // For other files, just store metadata
+      const reference = {
+        id: `file_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        type: 'file',
+        fileName: file.name,
+        fileSize: file.size,
+        content: `[${file.type || 'Unknown type'}] ${file.name}`,
+        uploadedAt: Date.now()
+      };
+      tempReferences.push(reference);
+      renderReferencesList();
+      addLog('SUCCESS', `파일 추가됨: ${file.name}`);
+    }
+  });
+}
+
+function isTextFile(file) {
+  const textTypes = [
+    'text/', 'application/json', 'application/xml',
+    '.txt', '.md', '.js', '.ts', '.jsx', '.tsx', '.css', '.html'
+  ];
+  return textTypes.some(type => 
+    file.type.includes(type) || file.name.toLowerCase().endsWith(type)
+  );
+}
+
+function isImageFile(file) {
+  return file.type.startsWith('image/');
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+/**
+ * NEW: URL Detection in textarea
+ */
+function initializeURLDetection() {
+  const textarea = document.getElementById('user-idea');
+  if (!textarea) return;
+
+  textarea.addEventListener('input', () => {
+    detectAndExtractURLs();
+  });
+
+  textarea.addEventListener('paste', (e) => {
+    // Wait for paste to complete
+    setTimeout(() => {
+      detectAndExtractURLs();
+    }, 100);
+  });
+}
+
+function detectAndExtractURLs() {
+  const textarea = document.getElementById('user-idea');
+  const detectedUrlsDiv = document.getElementById('detected-urls');
+  
+  if (!textarea || !detectedUrlsDiv) return;
+
+  const text = textarea.value;
+  
+  // URL regex pattern
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  const urls = text.match(urlPattern);
+
+  if (urls && urls.length > 0) {
+    // Show detected URLs
+    detectedUrlsDiv.innerHTML = `
+      <div class="flex items-center justify-between bg-purple-100 rounded-lg px-3 py-2 mt-2">
+        <span class="flex items-center">
+          <i class="fas fa-link text-purple-600 mr-2"></i>
+          <span class="text-purple-700">${urls.length}개의 URL이 감지되었습니다</span>
+        </span>
+        <button
+          type="button"
+          onclick="extractDetectedURLs()"
+          class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium py-1 px-3 rounded transition-colors"
+        >
+          <i class="fas fa-download mr-1"></i>
+          참조로 추가
+        </button>
+      </div>
+    `;
+  } else {
+    detectedUrlsDiv.innerHTML = '';
   }
+}
 
-  const reference = {
-    id: `temp_ref_${Date.now()}`,
-    type: 'url',
-    url: url,
-    content: descInput.value.trim() || url,
-    uploadedAt: Date.now()
-  };
+window.extractDetectedURLs = function() {
+  const textarea = document.getElementById('user-idea');
+  if (!textarea) return;
 
-  tempReferences.push(reference);
-  renderReferencesList();
+  const text = textarea.value;
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  const urls = text.match(urlPattern);
 
-  // Clear inputs
-  urlInput.value = '';
-  descInput.value = '';
+  if (urls && urls.length > 0) {
+    urls.forEach(url => {
+      // Check if URL already exists
+      const exists = tempReferences.some(ref => ref.url === url);
+      if (!exists) {
+        const reference = {
+          id: `url_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          type: 'url',
+          url: url,
+          content: extractDomainName(url),
+          uploadedAt: Date.now()
+        };
+        tempReferences.push(reference);
+        addLog('SUCCESS', `URL 추가됨: ${url}`);
+      }
+    });
 
-  addLog('INFO', `참조 추가: ${reference.content}`);
+    renderReferencesList();
+    
+    // Clear detected URLs display
+    const detectedUrlsDiv = document.getElementById('detected-urls');
+    if (detectedUrlsDiv) {
+      detectedUrlsDiv.innerHTML = `
+        <div class="text-green-600 text-xs flex items-center">
+          <i class="fas fa-check-circle mr-1"></i>
+          ${urls.length}개의 URL이 참조 문서로 추가되었습니다
+        </div>
+      `;
+      setTimeout(() => {
+        detectedUrlsDiv.innerHTML = '';
+      }, 3000);
+    }
+  }
+};
+
+function extractDomainName(url) {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname.replace('www.', '');
+  } catch (e) {
+    return url;
+  }
 }
 
 function renderReferencesList() {
@@ -57,33 +265,60 @@ function renderReferencesList() {
   if (!list) return;
 
   if (tempReferences.length === 0) {
-    list.innerHTML = '';
+    list.innerHTML = `
+      <div class="text-xs text-gray-500 text-center py-4">
+        아직 추가된 참조 문서가 없습니다
+      </div>
+    `;
     return;
   }
 
-  list.innerHTML = tempReferences.map((ref, index) => `
-    <div class="flex items-center justify-between bg-white rounded-lg p-3 border border-purple-200">
-      <div class="flex-1">
-        <div class="flex items-center">
-          <i class="fas fa-link text-purple-600 mr-2"></i>
-          <span class="text-sm font-medium text-gray-700">${ref.content}</span>
+  list.innerHTML = tempReferences.map((ref, index) => {
+    let icon = 'fa-link';
+    let iconColor = 'text-purple-600';
+    let displayName = ref.content || ref.fileName || ref.url;
+    let subtitle = '';
+
+    if (ref.type === 'file') {
+      icon = 'fa-file-alt';
+      iconColor = 'text-blue-600';
+      subtitle = `${ref.fileName} (${formatFileSize(ref.fileSize)})`;
+    } else if (ref.type === 'image') {
+      icon = 'fa-image';
+      iconColor = 'text-pink-600';
+      subtitle = `${ref.fileName} (${formatFileSize(ref.fileSize)})`;
+    } else if (ref.type === 'url') {
+      icon = 'fa-link';
+      iconColor = 'text-purple-600';
+      subtitle = ref.url;
+    }
+
+    return `
+      <div class="flex items-center justify-between bg-white rounded-lg p-3 border-2 border-purple-200 hover:border-purple-400 transition-all">
+        <div class="flex items-center flex-1 min-w-0">
+          <i class="fas ${icon} ${iconColor} mr-3 text-lg"></i>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-700 truncate">${displayName}</div>
+            ${subtitle ? `<div class="text-xs text-gray-500 truncate">${subtitle}</div>` : ''}
+          </div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">${ref.url}</div>
+        <button
+          onclick="removeReference(${index})"
+          class="ml-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full p-2 transition-all"
+          title="삭제"
+        >
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-      <button
-        onclick="removeReference(${index})"
-        class="ml-3 text-red-500 hover:text-red-700 transition-colors"
-      >
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 window.removeReference = function(index) {
+  const ref = tempReferences[index];
   tempReferences.splice(index, 1);
   renderReferencesList();
-  addLog('INFO', '참조 제거됨');
+  addLog('INFO', `참조 제거됨: ${ref.fileName || ref.url || ref.content}`);
 };
 
 async function handleProjectCreation(e) {
@@ -102,6 +337,15 @@ async function handleProjectCreation(e) {
   // Show references in log
   if (tempReferences.length > 0) {
     addLog('INFO', `${tempReferences.length}개의 참조 문서 포함`);
+    tempReferences.forEach(ref => {
+      if (ref.type === 'url') {
+        addLog('INFO', `  - URL: ${ref.url}`);
+      } else if (ref.type === 'file') {
+        addLog('INFO', `  - 파일: ${ref.fileName}`);
+      } else if (ref.type === 'image') {
+        addLog('INFO', `  - 이미지: ${ref.fileName}`);
+      }
+    });
   }
 
   try {
