@@ -796,11 +796,29 @@ lsof -i :3000
   - 실시간 품질 모니터링
   - 95% 이상 품질 보증
 
-### Phase 2: 문서 생성 엔진 (우선순위: 높음)
-- [ ] Plan-Craft v5.0 HTML 템플릿
-- [ ] Mermaid 다이어그램 자동 생성
-- [ ] 이미지 생성 통합 (RAG 기반)
-- [ ] PDF 변환 및 다운로드
+### Phase 2: 문서 생성 엔진 ✅ 완료 (v7.2.0-beta)
+- [x] **Document Generator** - `document-generator.js` (19KB)
+  - Plan-Craft v5.0 HTML 템플릿 엔진
+  - 기술/경영/개발 보고서 유형별 목차 자동 구성
+  - 첫 페이지 요약 레이아웃 + 상세 섹션 페이지
+  
+- [x] **Diagram Generator** - `diagram-generator.js` (13KB)
+  - Mermaid 다이어그램 자동 생성
+  - 5가지 다이어그램 타입 지원 (Flowchart, Sequence, Gantt, Architecture, State, ER)
+  - 오케스트레이터 사고 흐름 시각화
+  - 멀티 에이전트 피드백 루프 시퀀스
+  
+- [x] **Image Pipeline** - `image-pipeline.js` (13KB)
+  - RAG 기반 이미지 검색 및 관련성 분석
+  - 커스텀 이미지 생성 (Hero image, Architecture diagram, Workflow)
+  - 이미지 최적화 및 배치 처리
+  - 이미지 캐시 및 큐 관리
+  
+- [x] **PDF Converter** - `pdf-converter.js` (12KB)
+  - 3가지 변환 방법 (Browser print, jsPDF, Server-side)
+  - HTML 최적화 및 PDF 스타일링
+  - 변환 히스토리 관리
+  - 다운로드 큐 시스템
 
 ### Phase 3: AI 모델 통합 (우선순위: 중간)
 - [ ] OpenAI/Claude/Gemini API 연동

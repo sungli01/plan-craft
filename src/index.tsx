@@ -16,8 +16,9 @@ app.get('/', (c) => {
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.2.0-alpha-phase1">
+      <meta name="version" content="7.2.0-beta-phase2">
       <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
       <style>
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -281,21 +282,21 @@ app.get('/', (c) => {
               >
                 <div class="text-cyan-400">
                   ╔═══════════════════════════════════════════════╗<br/>
-                  ║  Plan-Craft v7.2.0 Console - Phase 1         ║<br/>
-                  ║  RAG + Feedback Loop + Integrity Engine      ║<br/>
+                  ║  Plan-Craft v7.2.0 Console - Phase 2         ║<br/>
+                  ║  Document Generation Engine Ready            ║<br/>
                   ╚═══════════════════════════════════════════════╝
                 </div>
                 <div class="mt-2 text-yellow-400">
                   <span class="text-gray-500">[00:00:00]</span> Awaiting project initialization...
                 </div>
                 <div class="mt-1 text-green-400">
-                  <span class="text-gray-500">[00:00:00]</span> ✓ RAG System initialized
+                  <span class="text-gray-500">[00:00:00]</span> ✓ Phase 1: RAG + Feedback + Integrity
                 </div>
                 <div class="mt-1 text-green-400">
-                  <span class="text-gray-500">[00:00:00]</span> ✓ Feedback Loop ready
+                  <span class="text-gray-500">[00:00:00]</span> ✓ Phase 2: Document + Diagram + Image + PDF
                 </div>
-                <div class="mt-1 text-green-400">
-                  <span class="text-gray-500">[00:00:00]</span> ✓ Integrity Engine active
+                <div class="mt-1 text-cyan-400">
+                  <span class="text-gray-500">[00:00:00]</span> → Ready for professional report generation
                 </div>
               </div>
             </section>
@@ -314,6 +315,12 @@ app.get('/', (c) => {
       <script type="module" src="/static/rag-system.js"></script>
       <script type="module" src="/static/feedback-loop.js"></script>
       <script type="module" src="/static/integrity-engine.js"></script>
+      
+      <!-- Phase 2: Document Generation Modules -->
+      <script type="module" src="/static/document-generator.js"></script>
+      <script type="module" src="/static/diagram-generator.js"></script>
+      <script type="module" src="/static/image-pipeline.js"></script>
+      <script type="module" src="/static/pdf-converter.js"></script>
       
       <script type="module" src="/static/unified-core.js"></script>
       <script type="module" src="/static/app-v4.js"></script>
