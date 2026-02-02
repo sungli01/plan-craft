@@ -1165,24 +1165,78 @@ class UnifiedCore {
    * Create agent card element
    */
   createAgentCard(agent) {
+    // Color mapping for Tailwind classes (use predefined classes only)
+    const colorClasses = {
+      'purple': {
+        bg: 'bg-gradient-to-br from-purple-50 to-purple-100',
+        border: 'border-purple-200',
+        icon: 'bg-purple-600',
+        text: 'text-purple-900',
+        subtext: 'text-purple-600',
+        spinner: 'border-purple-200 border-t-purple-600'
+      },
+      'blue': {
+        bg: 'bg-gradient-to-br from-blue-50 to-blue-100',
+        border: 'border-blue-200',
+        icon: 'bg-blue-600',
+        text: 'text-blue-900',
+        subtext: 'text-blue-600',
+        spinner: 'border-blue-200 border-t-blue-600'
+      },
+      'indigo': {
+        bg: 'bg-gradient-to-br from-indigo-50 to-indigo-100',
+        border: 'border-indigo-200',
+        icon: 'bg-indigo-600',
+        text: 'text-indigo-900',
+        subtext: 'text-indigo-600',
+        spinner: 'border-indigo-200 border-t-indigo-600'
+      },
+      'green': {
+        bg: 'bg-gradient-to-br from-green-50 to-green-100',
+        border: 'border-green-200',
+        icon: 'bg-green-600',
+        text: 'text-green-900',
+        subtext: 'text-green-600',
+        spinner: 'border-green-200 border-t-green-600'
+      },
+      'pink': {
+        bg: 'bg-gradient-to-br from-pink-50 to-pink-100',
+        border: 'border-pink-200',
+        icon: 'bg-pink-600',
+        text: 'text-pink-900',
+        subtext: 'text-pink-600',
+        spinner: 'border-pink-200 border-t-pink-600'
+      },
+      'orange': {
+        bg: 'bg-gradient-to-br from-orange-50 to-orange-100',
+        border: 'border-orange-200',
+        icon: 'bg-orange-600',
+        text: 'text-orange-900',
+        subtext: 'text-orange-600',
+        spinner: 'border-orange-200 border-t-orange-600'
+      }
+    };
+
+    const colors = colorClasses[agent.color] || colorClasses['blue'];
+
     const card = document.createElement('div');
-    card.className = `ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-${agent.color}-50 to-${agent.color}-100 rounded-lg border-2 border-${agent.color}-200`;
+    card.className = `ai-agent-status agent-card flex items-center gap-2 p-3 ${colors.bg} rounded-lg border-2 ${colors.border}`;
     card.setAttribute('data-agent', agent.name.toLowerCase().replace(/\s+/g, '-'));
     card.setAttribute('data-model', agent.model);
 
     card.innerHTML = `
       <div class="relative">
-        <div class="w-10 h-10 bg-${agent.color}-600 rounded-full flex items-center justify-center">
+        <div class="w-10 h-10 ${colors.icon} rounded-full flex items-center justify-center">
           <i class="fas ${agent.icon} text-white text-lg"></i>
         </div>
         <div class="agent-spinner absolute inset-0 hidden">
-          <div class="w-full h-full rounded-full border-4 border-${agent.color}-200 border-t-${agent.color}-600 animate-spin"></div>
+          <div class="w-full h-full rounded-full border-4 ${colors.spinner} animate-spin"></div>
         </div>
         <div class="agent-status-dot absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-sm font-bold text-${agent.color}-900">${agent.name}</h3>
-        <p class="text-xs text-${agent.color}-600 truncate">${agent.role}</p>
+        <h3 class="text-sm font-bold ${colors.text}">${agent.name}</h3>
+        <p class="text-xs ${colors.subtext} truncate">${agent.role}</p>
         <div class="agent-model-display mt-1">
           <div class="text-xs text-gray-400">
             대기 중: ${agent.model}

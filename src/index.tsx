@@ -63,7 +63,7 @@ app.get('/', (c) => {
               진행 중인 문서
             </h2>
             
-            <div class="flex justify-between items-start gap-4 mb-4">
+            <div class="flex justify-between items-start gap-4">
               {/* Left: Projects List (max 3) */}
               <div class="flex-1">
                 <div id="active-projects-container" class="space-y-3">
@@ -99,18 +99,16 @@ app.get('/', (c) => {
                   <i class="fas fa-times-circle text-lg"></i>
                   <span>전체취소</span>
                 </button>
+                
+                {/* Thinking Process Button - Below control buttons */}
+                <button
+                  id="open-thinking-process-btn"
+                  class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-3 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                >
+                  <i class="fas fa-brain"></i>
+                  <span>사고과정 보기</span>
+                </button>
               </div>
-            </div>
-            
-            {/* Thinking Process Button - Bottom Right */}
-            <div class="flex justify-end">
-              <button
-                id="open-thinking-process-btn"
-                class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-              >
-                <i class="fas fa-brain"></i>
-                <span>사고과정 보기</span>
-              </button>
             </div>
           </section>
 
