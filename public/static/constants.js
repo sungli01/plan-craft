@@ -59,10 +59,130 @@ export const PHASE_TO_MODEL = {
  * Maps AI models to their agent names
  */
 export const MODEL_TO_AGENT = {
+  // Latest models (2026)
+  'gpt-4o': 'Master Orchestrator',
+  'claude-3-opus': 'Master Orchestrator',
   'claude-3.5-sonnet': 'Master Orchestrator',
   'gpt-4-turbo': 'Code Agent',
   'gpt-4o-mini': 'Quality Agent',
-  'gemini-2.0-flash': 'DevOps Agent'
+  'gemini-2.0-flash': 'DevOps Agent',
+  'gemini-1.5-pro': 'DevOps Agent',
+  // Legacy models (for compatibility)
+  'gpt-3.5-turbo': 'Code Agent',
+  'claude-3-sonnet': 'Master Orchestrator',
+  'claude-3-haiku': 'Quality Agent'
+};
+
+/**
+ * Available AI Models by Provider
+ * Latest models with ratings and capabilities
+ */
+export const AI_MODELS = {
+  openai: {
+    name: 'OpenAI',
+    models: [
+      {
+        id: 'gpt-4o',
+        name: 'GPT-4O',
+        rating: 4.8,
+        speed: 'fast',
+        cost: 'medium',
+        capabilities: ['coding', 'reasoning', 'creative', 'analysis'],
+        description: '최신 GPT-4 Optimized 모델 - 빠르고 정확한 응답'
+      },
+      {
+        id: 'gpt-4-turbo',
+        name: 'GPT-4 Turbo',
+        rating: 4.7,
+        speed: 'fast',
+        cost: 'medium',
+        capabilities: ['coding', 'reasoning', 'analysis'],
+        description: 'GPT-4의 빠른 버전 - 128K 컨텍스트'
+      },
+      {
+        id: 'gpt-4o-mini',
+        name: 'GPT-4O Mini',
+        rating: 4.5,
+        speed: 'very-fast',
+        cost: 'low',
+        capabilities: ['coding', 'analysis', 'qa'],
+        description: '경량화 모델 - 빠르고 경제적'
+      }
+    ]
+  },
+  anthropic: {
+    name: 'Anthropic',
+    models: [
+      {
+        id: 'claude-3-opus',
+        name: 'Claude 3 Opus',
+        rating: 4.9,
+        speed: 'medium',
+        cost: 'high',
+        capabilities: ['coding', 'reasoning', 'creative', 'analysis', 'complex-tasks'],
+        description: '최고 성능 모델 - 복잡한 작업에 최적'
+      },
+      {
+        id: 'claude-3.5-sonnet',
+        name: 'Claude 3.5 Sonnet',
+        rating: 4.8,
+        speed: 'fast',
+        cost: 'medium',
+        capabilities: ['coding', 'reasoning', 'creative', 'analysis'],
+        description: '균형잡힌 성능 - 대부분의 작업에 적합'
+      },
+      {
+        id: 'claude-3-sonnet',
+        name: 'Claude 3 Sonnet',
+        rating: 4.6,
+        speed: 'fast',
+        cost: 'medium',
+        capabilities: ['coding', 'reasoning', 'analysis'],
+        description: '빠르고 효율적인 모델'
+      },
+      {
+        id: 'claude-3-haiku',
+        name: 'Claude 3 Haiku',
+        rating: 4.4,
+        speed: 'very-fast',
+        cost: 'low',
+        capabilities: ['qa', 'analysis', 'simple-tasks'],
+        description: '초고속 경량 모델'
+      }
+    ]
+  },
+  google: {
+    name: 'Google AI',
+    models: [
+      {
+        id: 'gemini-2.0-flash',
+        name: 'Gemini 2.0 Flash',
+        rating: 4.7,
+        speed: 'very-fast',
+        cost: 'low',
+        capabilities: ['coding', 'reasoning', 'multimodal'],
+        description: '최신 Gemini - 초고속 처리'
+      },
+      {
+        id: 'gemini-1.5-pro',
+        name: 'Gemini 1.5 Pro',
+        rating: 4.6,
+        speed: 'fast',
+        cost: 'medium',
+        capabilities: ['coding', 'reasoning', 'multimodal', 'long-context'],
+        description: 'Pro 버전 - 1M 토큰 컨텍스트'
+      },
+      {
+        id: 'gemini-1.5-flash',
+        name: 'Gemini 1.5 Flash',
+        rating: 4.5,
+        speed: 'very-fast',
+        cost: 'low',
+        capabilities: ['qa', 'analysis', 'multimodal'],
+        description: '빠른 Flash 모델'
+      }
+    ]
+  }
 };
 
 /**

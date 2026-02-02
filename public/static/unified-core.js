@@ -178,83 +178,33 @@ class UnifiedCore {
   }
 
   /**
-   * Show completion modal
+   * Show completion modal (delegates to downloadManager)
    */
   showCompletionModal(project) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-    modal.innerHTML = `
-      <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-        <div class="text-center mb-6">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-check-circle text-4xl text-green-600"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-2">📋 문서 생성 완료!</h2>
-          <p class="text-gray-600">${this.escapeHtml(project.projectName)}</p>
-        </div>
-
-        <div class="mb-6">
-          <label class="block text-sm font-semibold text-gray-700 mb-3">
-            <i class="fas fa-file-download mr-1"></i>
-            출력 형식을 선택하세요
-          </label>
-          <div class="flex gap-3">
-            <label class="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-all ${project.outputFormat === 'html' ? 'border-purple-500 bg-purple-50' : ''}">
-              <input type="radio" name="output-format-final-${project.projectId}" value="html" ${project.outputFormat === 'html' ? 'checked' : ''} class="text-purple-600" />
-              <i class="fab fa-html5 text-2xl text-orange-600"></i>
-              <span class="font-medium">HTML</span>
-            </label>
-            <label class="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-all ${project.outputFormat === 'pdf' ? 'border-purple-500 bg-purple-50' : ''}">
-              <input type="radio" name="output-format-final-${project.projectId}" value="pdf" ${project.outputFormat === 'pdf' ? 'checked' : ''} class="text-purple-600" />
-              <i class="fas fa-file-pdf text-2xl text-red-600"></i>
-              <span class="font-medium">PDF</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <button
-            onclick="this.closest('.fixed').remove()"
-            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-all"
-          >
-            닫기
-          </button>
-          <button
-            onclick="window.unifiedCore.downloadDocument('${project.projectId}')"
-            class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-lg"
-          >
-            <i class="fas fa-download mr-2"></i>
-            다운로드
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
+    if (window.downloadManager) {
+      window.downloadManager.showDownloadModal(project);
+    } else {
+      // Fallback
+      alert(`✅ 프로젝트 완료!\n\n${project.projectName}\n\n다운로드 관리자를 사용할 수 없습니다.`);
+    }
   }
 
   /**
-   * Download document
+   * Download document (delegates to downloadManager)
    */
   downloadDocument(projectId) {
-    const project = this.projects.get(projectId);
-    if (!project) return;
+    if (window.downloadManager) {
+      window.downloadManager.handleDownload(projectId);
+    } else {
+      this.addLog('ERROR', '다운로드 관리자를 사용할 수 없습니다');
+    }
+  }
 
-    const modal = document.querySelector('.fixed');
-    const formatInput = document.querySelector(`input[name="output-format-final-${projectId}"]:checked`);
-    const format = formatInput?.value || project.outputFormat;
-    
-    const filename = `${project.projectName}_${Date.now()}.${format}`;
-    
-    this.addLog('SUCCESS', `📥 문서 다운로드: ${filename}`);
-    
-    // Close modal
-    if (modal) modal.remove();
-    
-    // Simulate download
-    setTimeout(() => {
-      alert(`문서가 다운로드되었습니다!\n\n파일명: ${filename}\n형식: ${format.toUpperCase()}`);
-    }, 500);
+  /**
+   * Get project (public method for external access)
+   */
+  getProject(projectId) {
+    return this.projects.get(projectId);
   }
 
   /**

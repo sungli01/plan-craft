@@ -229,21 +229,37 @@ app.get('/', (c) => {
             </button>
           </form>
 
-          {/* Demo Mode Buttons */}
-          <div class="mt-4 pt-4 border-t-2 border-gray-200 flex gap-3">
+          {/* Demo Mode Buttons + NEW: API Keys & History */}
+          <div class="mt-4 pt-4 border-t-2 border-gray-200 grid grid-cols-2 gap-3">
             <button
               id="demo-mode-btn"
-              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
             >
               <i class="fas fa-play mr-1"></i>
-              데모 모드 실행 (기능 확인)
+              데모 모드
             </button>
             <button
               id="error-demo-btn"
-              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
+              class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
             >
               <i class="fas fa-exclamation-triangle mr-1"></i>
-              에러 모달 데모
+              에러 데모
+            </button>
+            <button
+              id="api-keys-btn"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
+              onclick="window.apiKeyManager?.showSetupModal()"
+            >
+              <i class="fas fa-key mr-1"></i>
+              API 키 설정
+            </button>
+            <button
+              id="download-history-btn"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all"
+              onclick="window.showDownloadHistory?.()"
+            >
+              <i class="fas fa-history mr-1"></i>
+              다운로드 기록
             </button>
           </div>
         </section>
@@ -298,10 +314,81 @@ app.get('/', (c) => {
 
       </div>
 
-      {/* Load Scripts - UNIFIED CORE v4.0 */}
+      {/* Load Scripts - v5.0 NEW MODULES */}
       <script type="module" src="/static/constants.js"></script>
+      <script type="module" src="/static/api-key-manager.js"></script>
+      <script type="module" src="/static/model-selector.js"></script>
+      <script type="module" src="/static/download-manager.js"></script>
       <script type="module" src="/static/unified-core.js"></script>
       <script type="module" src="/static/app-v4.js"></script>
+      
+      {/* Download History Helper */}
+      <script>{`
+        window.showDownloadHistory = function() {
+          const history = window.downloadManager?.getHistory() || [];
+          
+          if (history.length === 0) {
+            alert('다운로드 기록이 없습니다.');
+            return;
+          }
+
+          const modal = document.createElement('div');
+          modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+          modal.innerHTML = \`
+            <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">
+                  <i class="fas fa-history text-green-600 mr-2"></i>
+                  다운로드 기록 (최근 10개)
+                </h2>
+                <button
+                  onclick="this.closest('.fixed').remove()"
+                  class="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
+              <div class="space-y-3">
+                \${history.map((item, index) => \`
+                  <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-all">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 mb-1">\${item.projectName}</h3>
+                        <p class="text-xs text-gray-600">
+                          <i class="far fa-clock mr-1"></i>
+                          \${new Date(item.downloadedAt).toLocaleString('ko-KR')}
+                        </p>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="bg-\${item.format === 'html' ? 'orange' : 'red'}-100 text-\${item.format === 'html' ? 'orange' : 'red'}-700 px-3 py-1 rounded-full text-xs font-bold">
+                          \${item.format.toUpperCase()}
+                        </span>
+                        <button
+                          onclick="window.downloadManager?.redownload(\${index})"
+                          class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                        >
+                          <i class="fas fa-download mr-1"></i>
+                          재다운로드
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                \`).join('')}
+              </div>
+
+              <button
+                onclick="this.closest('.fixed').remove()"
+                class="w-full mt-6 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-all"
+              >
+                닫기
+              </button>
+            </div>
+          \`;
+
+          document.body.appendChild(modal);
+        };
+      `}</script>
       
       {/* Legacy tracking scripts (for backward compatibility) */}
       <script src="/static/enhanced-tracking.js"></script>

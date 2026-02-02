@@ -1,0 +1,531 @@
+// Plan-Craft v5.0 - Download Manager Module
+// ============================================
+// Handles document downloads with format selection and preview
+
+import { jsPDF } from 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm';
+
+/**
+ * Download Manager
+ * Manages document generation and downloads
+ */
+class DownloadManager {
+  constructor() {
+    this.downloadHistory = this.loadHistory();
+  }
+
+  /**
+   * Load download history from localStorage
+   */
+  loadHistory() {
+    try {
+      const stored = localStorage.getItem('plan-craft-download-history');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('[DownloadManager] Failed to load history:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Save download history
+   */
+  saveHistory() {
+    try {
+      localStorage.setItem('plan-craft-download-history', JSON.stringify(this.downloadHistory));
+    } catch (error) {
+      console.error('[DownloadManager] Failed to save history:', error);
+    }
+  }
+
+  /**
+   * Generate document content
+   */
+  generateDocumentContent(project) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ko-KR');
+    const timeStr = now.toLocaleTimeString('ko-KR');
+
+    return `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${project.projectName} - 기획 문서</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 60px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #666;
+        }
+        .meta-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .meta-info p {
+            margin: 8px 0;
+            color: #555;
+        }
+        .meta-info strong {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            font-size: 1.8em;
+            color: #6366f1;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .section h3 {
+            font-size: 1.4em;
+            color: #4f46e5;
+            margin: 20px 0 10px;
+        }
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .idea-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .progress-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .progress-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .progress-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .progress-card .label {
+            opacity: 0.9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+            color: #666;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 ${project.projectName}</h1>
+            <p class="subtitle">AI 자율 문서 생성 시스템</p>
+        </div>
+
+        <div class="meta-info">
+            <p><strong>프로젝트 ID:</strong> ${project.projectId}</p>
+            <p><strong>생성 일시:</strong> ${dateStr} ${timeStr}</p>
+            <p><strong>문서 형식:</strong> <span class="badge">${project.outputFormat.toUpperCase()}</span></p>
+            <p><strong>상태:</strong> <span class="badge">${project.status === 'completed' ? '완료' : '진행중'}</span></p>
+        </div>
+
+        <div class="section">
+            <h2>1. 프로젝트 개요</h2>
+            <div class="idea-box">
+                <h3>💡 핵심 아이디어</h3>
+                <p>${project.userIdea || '아이디어 설명이 제공되지 않았습니다.'}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. 프로젝트 진행 현황</h2>
+            <div class="progress-info">
+                <div class="progress-card">
+                    <div class="label">완료율</div>
+                    <div class="value">${project.progress || 100}%</div>
+                </div>
+                <div class="progress-card">
+                    <div class="label">현재 단계</div>
+                    <div class="value">${project.currentPhaseIndex + 1}/10</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. 주요 기능 및 특징</h2>
+            <p>본 프로젝트는 다음과 같은 주요 기능과 특징을 가지고 있습니다:</p>
+            <ul style="margin-left: 30px; margin-top: 10px;">
+                <li style="margin-bottom: 10px;">사용자 친화적인 인터페이스 설계</li>
+                <li style="margin-bottom: 10px;">확장 가능한 시스템 아키텍처</li>
+                <li style="margin-bottom: 10px;">실시간 데이터 처리 및 분석</li>
+                <li style="margin-bottom: 10px;">보안 및 개인정보 보호 강화</li>
+                <li style="margin-bottom: 10px;">다양한 플랫폼 지원</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>4. 기술 스택</h2>
+            <p>본 프로젝트는 최신 기술 스택을 활용하여 개발되었습니다:</p>
+            <div style="margin-top: 20px;">
+                <span class="badge">AI/ML</span>
+                <span class="badge">Cloud Computing</span>
+                <span class="badge">Web Development</span>
+                <span class="badge">Data Analytics</span>
+                <span class="badge">Security</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. 예상 일정 및 마일스톤</h2>
+            <p>프로젝트는 다음과 같은 단계로 진행됩니다:</p>
+            <ol style="margin-left: 30px; margin-top: 10px;">
+                <li style="margin-bottom: 10px;"><strong>1단계:</strong> 요구사항 분석 및 기획 (완료)</li>
+                <li style="margin-bottom: 10px;"><strong>2단계:</strong> 시스템 설계 및 아키텍처 구성 (완료)</li>
+                <li style="margin-bottom: 10px;"><strong>3단계:</strong> 핵심 기능 개발 (완료)</li>
+                <li style="margin-bottom: 10px;"><strong>4단계:</strong> 테스트 및 품질 검증 (완료)</li>
+                <li style="margin-bottom: 10px;"><strong>5단계:</strong> 배포 및 운영 (준비 완료)</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>6. 결론</h2>
+            <p>본 프로젝트는 혁신적인 아이디어와 최신 기술을 결합하여 사용자에게 최고의 가치를 제공합니다. 
+            체계적인 개발 프로세스를 통해 안정적이고 확장 가능한 시스템을 구축하였으며, 
+            지속적인 개선과 업데이트를 통해 더욱 발전할 것입니다.</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Plan-Craft v5.0</strong></p>
+            <p>AI 자율 문서 생성 시스템</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                본 문서는 AI를 활용하여 자동 생성되었습니다.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+  }
+
+  /**
+   * Show download modal with format selection
+   */
+  showDownloadModal(project) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.id = 'download-modal';
+
+    modal.innerHTML = `
+      <div class="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 shadow-2xl">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check-circle text-4xl text-green-600"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">📋 문서 생성 완료!</h2>
+          <p class="text-gray-600">${this.escapeHtml(project.projectName)}</p>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-semibold text-gray-700 mb-3">
+            <i class="fas fa-file-download mr-1"></i>
+            출력 형식을 선택하세요
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="relative flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-all ${project.outputFormat === 'html' ? 'border-purple-500 bg-purple-50' : ''}">
+              <input 
+                type="radio" 
+                name="output-format-final" 
+                value="html" 
+                ${project.outputFormat === 'html' ? 'checked' : ''} 
+                class="absolute opacity-0"
+                onchange="document.querySelectorAll('label[for^=format]').forEach(l => l.classList.remove('border-purple-500', 'bg-purple-50')); this.closest('label').classList.add('border-purple-500', 'bg-purple-50')"
+              />
+              <i class="fab fa-html5 text-4xl text-orange-600 mb-2"></i>
+              <span class="font-semibold text-lg">HTML</span>
+              <span class="text-xs text-gray-600 mt-1">웹 브라우저에서 열기</span>
+            </label>
+            <label class="relative flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-all ${project.outputFormat === 'pdf' ? 'border-purple-500 bg-purple-50' : ''}">
+              <input 
+                type="radio" 
+                name="output-format-final" 
+                value="pdf" 
+                ${project.outputFormat === 'pdf' ? 'checked' : ''} 
+                class="absolute opacity-0"
+                onchange="document.querySelectorAll('label[for^=format]').forEach(l => l.classList.remove('border-purple-500', 'bg-purple-50')); this.closest('label').classList.add('border-purple-500', 'bg-purple-50')"
+              />
+              <i class="fas fa-file-pdf text-4xl text-red-600 mb-2"></i>
+              <span class="font-semibold text-lg">PDF</span>
+              <span class="text-xs text-gray-600 mt-1">PDF 파일로 저장</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+          <p class="text-sm text-blue-800 flex items-start gap-2">
+            <i class="fas fa-info-circle mt-0.5"></i>
+            <span>
+              <strong>다운로드 위치:</strong> 브라우저 기본 다운로드 폴더에 저장됩니다.
+              HTML 형식 선택 시 새 탭에서 미리보기가 표시됩니다.
+            </span>
+          </p>
+        </div>
+
+        <div class="flex gap-3">
+          <button
+            onclick="document.getElementById('download-modal').remove()"
+            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-all"
+          >
+            <i class="fas fa-times mr-2"></i>
+            취소
+          </button>
+          <button
+            onclick="window.downloadManager.handleDownload('${project.projectId}')"
+            class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-lg"
+          >
+            <i class="fas fa-download mr-2"></i>
+            다운로드
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Handle download
+   */
+  async handleDownload(projectId) {
+    const project = window.unifiedCore?.getProject?.(projectId);
+    if (!project) {
+      alert('프로젝트를 찾을 수 없습니다.');
+      return;
+    }
+
+    const modal = document.getElementById('download-modal');
+    const formatInput = document.querySelector('input[name="output-format-final"]:checked');
+    const format = formatInput?.value || project.outputFormat;
+
+    try {
+      if (format === 'html') {
+        await this.downloadHTML(project);
+      } else {
+        await this.downloadPDF(project);
+      }
+
+      // Add to history
+      this.addToHistory(project, format);
+
+      // Close modal
+      if (modal) modal.remove();
+
+    } catch (error) {
+      console.error('[DownloadManager] Download failed:', error);
+      alert(`다운로드 실패: ${error.message}`);
+    }
+  }
+
+  /**
+   * Download as HTML
+   */
+  async downloadHTML(project) {
+    const content = this.generateDocumentContent(project);
+    const filename = `${project.projectName}_${Date.now()}.html`;
+
+    // Open in new tab for preview
+    const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+
+    // Also trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Show success message
+    setTimeout(() => {
+      alert(`✅ HTML 문서가 다운로드되었습니다!\n\n파일명: ${filename}\n위치: 브라우저 기본 다운로드 폴더\n\n새 탭에서 미리보기가 열렸습니다.`);
+    }, 500);
+
+    if (window.unifiedCore?.addLog) {
+      window.unifiedCore.addLog('SUCCESS', `📥 HTML 다운로드 완료: ${filename}`);
+    }
+  }
+
+  /**
+   * Download as PDF (simplified - using browser print)
+   */
+  async downloadPDF(project) {
+    const content = this.generateDocumentContent(project);
+    const filename = `${project.projectName}_${Date.now()}.pdf`;
+
+    // Create temporary iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Write content
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    iframeDoc.write(content);
+    iframeDoc.close();
+
+    // Wait for content to load
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Trigger print dialog
+    iframe.contentWindow.print();
+
+    // Show instruction
+    alert(`📄 PDF 다운로드 안내\n\n1. 인쇄 대화상자가 열립니다\n2. 대상을 "PDF로 저장"으로 선택하세요\n3. 저장 위치를 선택하고 저장하세요\n\n파일명: ${filename}`);
+
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 1000);
+
+    if (window.unifiedCore?.addLog) {
+      window.unifiedCore.addLog('SUCCESS', `📥 PDF 생성 완료: ${filename}`);
+    }
+  }
+
+  /**
+   * Add to download history
+   */
+  addToHistory(project, format) {
+    const historyItem = {
+      projectId: project.projectId,
+      projectName: project.projectName,
+      format: format,
+      downloadedAt: Date.now(),
+      content: this.generateDocumentContent(project)
+    };
+
+    // Add to beginning of array
+    this.downloadHistory.unshift(historyItem);
+
+    // Keep only last 10
+    if (this.downloadHistory.length > 10) {
+      this.downloadHistory = this.downloadHistory.slice(0, 10);
+    }
+
+    this.saveHistory();
+    console.log('[DownloadManager] Added to history:', historyItem.projectName);
+  }
+
+  /**
+   * Get download history
+   */
+  getHistory() {
+    return this.downloadHistory;
+  }
+
+  /**
+   * Re-download from history
+   */
+  async redownload(historyIndex) {
+    const item = this.downloadHistory[historyIndex];
+    if (!item) {
+      alert('히스토리 항목을 찾을 수 없습니다.');
+      return;
+    }
+
+    const project = {
+      projectId: item.projectId,
+      projectName: item.projectName,
+      outputFormat: item.format,
+      progress: 100,
+      status: 'completed',
+      userIdea: '(히스토리에서 재다운로드)',
+      currentPhaseIndex: 9
+    };
+
+    if (item.format === 'html') {
+      await this.downloadHTML(project);
+    } else {
+      await this.downloadPDF(project);
+    }
+  }
+
+  /**
+   * Escape HTML
+   */
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
+   * Get project from unified core
+   */
+  getProject(projectId) {
+    return window.unifiedCore?.projects?.get(projectId);
+  }
+}
+
+// Create singleton instance
+const downloadManager = new DownloadManager();
+
+// Expose to window
+if (typeof window !== 'undefined') {
+  window.downloadManager = downloadManager;
+}
+
+export default downloadManager;
+
+console.log('[Download Manager Module] ✅ Loaded successfully');
+console.log('[Download Manager] History items:', downloadManager.getHistory().length);
