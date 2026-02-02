@@ -897,25 +897,33 @@ class UnifiedCore {
     const allModelCards = document.querySelectorAll('.ai-agent-status');
     
     allModelCards.forEach(modelCard => {
-      // Hide spinner
+      // Hide and stop spinner animation
       const spinner = modelCard.querySelector('.agent-spinner');
-      if (spinner) spinner.classList.add('hidden');
-
-      // Change status dot back to green (idle)
-      const dot = modelCard.querySelector('.agent-status-dot');
-      if (dot) {
-        dot.classList.remove('bg-blue-500', 'animate-pulse');
-        dot.classList.add('bg-green-500');
+      if (spinner) {
+        spinner.classList.add('hidden');
+        spinner.classList.remove('animate-spin');
       }
 
-      // Hide current model name
-      const modelNameDisplay = modelCard.querySelector('.agent-current-model');
-      if (modelNameDisplay) {
-        modelNameDisplay.classList.add('hidden');
+      // Change status dot to gray (stopped)
+      const dot = modelCard.querySelector('.agent-status-dot');
+      if (dot) {
+        dot.classList.remove('bg-blue-500', 'bg-green-500', 'animate-pulse');
+        dot.classList.add('bg-gray-400');
+      }
+
+      // Reset model display to waiting state
+      const modelDisplay = modelCard.querySelector('.agent-model-display');
+      if (modelDisplay) {
+        const modelAttr = modelCard.getAttribute('data-model');
+        modelDisplay.innerHTML = `
+          <div class="text-xs text-gray-400">
+            대기 중: ${modelAttr || 'N/A'}
+          </div>
+        `;
       }
     });
 
-    this.addLog('INFO', '🛑 모든 AI 모델 비활성화됨');
+    this.addLog('INFO', '🛑 모든 AI 에이전트 정지됨');
   }
 
   /**

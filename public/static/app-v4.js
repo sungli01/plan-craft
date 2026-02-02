@@ -64,7 +64,7 @@ class PlanCraftApp {
       stopAllBtn.addEventListener('click', () => unifiedCore.stopAllProjects());
     }
     if (cancelAllBtn) {
-      stopAllBtn.addEventListener('click', () => unifiedCore.cancelAllProjects());
+      cancelAllBtn.addEventListener('click', () => unifiedCore.cancelAllProjects());
     }
     if (partialCancelBtn) {
       partialCancelBtn.addEventListener('click', () => {
