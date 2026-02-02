@@ -16,7 +16,8 @@ app.get('/', (c) => {
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <script src="https://cdn.tailwindcss.com"></script>
+      <meta name="version" content="7.1.2-final">
+      <script src="https://cdn.tailwindcss.com?v=7.1.2"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
       <style>
         @keyframes spin { to { transform: rotate(360deg); } }

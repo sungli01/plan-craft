@@ -1,402 +1,161 @@
-# Plan-Craft v4.0 - AI Document Generation System
+# AI 자율 Plan-Craft 솔루션 개발
 
 ## 📋 프로젝트 개요
+AI 기반 자율 문서 생성 시스템으로, Master Orchestrator가 프로젝트를 분석하여 필요한 AI 에이전트를 동적으로 생성하고 실행합니다.
 
-**Plan-Craft는 보고서 작성을 위한 AI 자율 문서 생성 시스템입니다.**
+## ✨ 주요 기능
 
-- **목적**: 아이디어 → 기획문서 생성 → 가설 검증 → 프로토타입 문서 제공
-- **강조**: 이 시스템은 코딩 도구가 아니라 **보고서 작성 도구**입니다
-- **버전**: v4.0 UNIFIED CORE (Complete Rewrite)
-- **최종 업데이트**: 2026-02-02
+### 1. 동적 AI 에이전트 시스템
+- **Master Orchestrator**: 항상 존재하며 전체 프로세스 조율
+- **자동 에이전트 생성**: 프로젝트 키워드 분석 후 필요한 에이전트 자동 생성
+  - Backend Agent: API, 서버, 데이터베이스 관련
+  - Frontend Agent: UI, 인터페이스, 디자인 관련
+  - Data Agent: 데이터 분석, 시각화 관련
+  - AI Agent: 머신러닝, AI 기능 관련
+  - DevOps Agent: 배포, 운영 관련 (항상 생성)
 
-## 🚀 주요 기능
+### 2. 사고과정 실시간 모니터링
+- 별도 팝업 창으로 AI의 사고과정 실시간 확인
+- 4가지 카테고리: 분석/결정/실행/검증
+- Master Orchestrator가 지속적으로 업데이트
 
-### ✅ 완료된 기능
+### 3. 프로젝트 시간 예측
+- 복잡도 분석 (간단함/보통/복잡함/매우 복잡함)
+- 키워드 기반 자동 분석
+- 예상 소요 시간 계산 및 표시
 
-1. **실시간 프로젝트 진행 추적**
-   - 1초 단위 타이머 (경과 시간/남은 시간)
-   - 10초마다 UI 자동 업데이트
-   - 프로그레스 바 실시간 표시 (0-100%)
+### 4. 애니메이션 제어
+- 실행 중: 풍차 애니메이션 + 파란색 상태 점
+- 대기 중: 초록색 상태 점
+- 전체 취소: 애니메이션 정지 + 회색 상태 점
 
-2. **AI 모델 상태 표시**
-   - Master Orchestrator (Claude 3.5 Sonnet)
-   - Code Agent (GPT-4 Turbo)
-   - Quality Agent (GPT-4O Mini)
-   - DevOps Agent (Gemini 2.0 Flash)
-   - 회전 애니메이션 (작업 중)
-   - 파란 점 (현재 동작 중)
-   - 초록 점 (대기 중)
-
-3. **빌드 로그 시스템**
-   - HH:MM:SS 형식 타임스탬프
-   - 10초마다 상세 단계 설명
-   - 색상 코딩 (INFO: 파란색, SUCCESS: 초록색, WARN: 노란색, ERROR: 빨간색)
-   - 최대 15개 로그 자동 관리
-
-4. **프로젝트 완료 팝업**
-   - HTML/PDF 선택 옵션
-   - 다운로드 버튼
-   - 프로젝트 정보 표시
-
-5. **프로젝트 제어**
-   - 중지 버튼 (개별/전체)
-   - 일부 취소 버튼 (준비 중)
-   - 전체 취소 버튼
-   - 상태 동기화 보장
-
-6. **시스템 통계**
-   - 전체 프로젝트 수
-   - 진행 중 프로젝트 수
-   - 일시정지 프로젝트 수
-   - 완료된 프로젝트 수
-
-7. **최대 3개 동시 진행**
-   - MAX_PROJECTS = 3
-   - 자동 제한 검증
-
-## 🏗️ 시스템 아키텍처
-
-### v4.0 UNIFIED CORE 구조
+## 🎨 UI 구조
 
 ```
-Plan-Craft v4.0
-│
-├─ unified-core.js (21.9 KB) ⭐ 핵심 통합 시스템
-│  ├─ 프로젝트 관리 (생성, 실행, 중지, 취소)
-│  ├─ 타이머 관리 (1초 단위 정확도)
-│  ├─ UI 업데이트 (매초 자동)
-│  ├─ 로그 시스템
-│  ├─ AI 모델 추적
-│  └─ 완료 모달 관리
-│
-├─ app-v4.js (7.6 KB) ⭐ 메인 애플리케이션
-│  ├─ 이벤트 핸들러
-│  ├─ 파일 업로드
-│  ├─ 프로젝트 생성 폼
-│  └─ 데모 모드
-│
-└─ constants.js (4.3 KB) ⭐ 공통 상수
-   ├─ PHASE_DURATION (단계별 소요 시간)
-   ├─ PHASE_TO_MODEL (단계 → AI 모델 매핑)
-   ├─ MODEL_TO_AGENT (모델 → 에이전트 매핑)
-   └─ APP_CONFIG (앱 설정)
+┌─────────────────────────────────────────┐
+│ AI Agent 상태 (Master Orchestrator)     │
+│ + 동적 에이전트들                        │
+└─────────────────────────────────────────┘
+
+┌──────────────────┬──────────────────────┐
+│ 진행 중인 문서    │  ┌─────────────┐    │
+│ (최대 3개)        │  │   중지      │    │
+│                  │  ├─────────────┤    │
+│                  │  │  일부취소   │    │
+│                  │  ├─────────────┤    │
+│                  │  │  전체취소   │    │
+│                  │  ├─────────────┤    │
+│                  │  │사고과정 보기│    │
+│                  │  └─────────────┘    │
+└──────────────────┴──────────────────────┘
+
+┌─────────────────────────────────────────┐
+│ 새 프로젝트 시작                         │
+│ - 프로젝트 이름                          │
+│ - 아이디어 설명                          │
+│ - 참조 문서 업로드                       │
+│ - 출력 형식 (HTML/PDF)                   │
+└─────────────────────────────────────────┘
+
+┌──────────────┬──────────────────────────┐
+│ 시스템 통계   │ 빌드 로그                │
+│ (2x2 그리드) │ (터미널 스타일)          │
+└──────────────┴──────────────────────────┘
 ```
 
-### 데이터 흐름
-
-```
-사용자 입력
-    ↓
-프로젝트 생성 (unified-core.createProject)
-    ↓
-실행 시작 (unified-core.startExecution)
-    ↓
-타이머 시작 (unified-core.startTimer)
-    ↓
-10단계 실행 (unified-core.executePhase)
-    ├─ AI 모델 활성화
-    ├─ 로그 추가 (10초마다)
-    ├─ 진행도 업데이트
-    └─ AI 모델 비활성화
-    ↓
-프로젝트 완료 (unified-core.completeProject)
-    ↓
-완료 모달 표시 (HTML/PDF 선택)
-```
-
-## 📝 문서 생성 프로세스
-
-### 10단계 게이트 시스템
-
-| 단계 | 게이트 | 담당 AI | 소요 시간 | 설명 |
-|------|--------|---------|----------|------|
-| G1 | 핵심 로직 구현 | Master Orchestrator | 3분 | 요구사항 분석, 구조 설계, 초안 작성 |
-| G2 | API 서버 구축 | Code Agent | 4분 | 내용 검토, 중간 점검, 세부 작성 |
-| G3 | UI 컴포넌트 개발 | Code Agent | 5분 | 품질 확인, 최종 검토, 문서 정리 |
-| G4 | 시스템 통합 | Master Orchestrator | 3분 | 완료 확인 |
-| G5 | 단위 테스트 작성 | Quality Agent | 4분 | 테스트 계획 수립 |
-| G6 | 보안 스캔 수행 | Quality Agent | 2분 | 보안 검증 |
-| G7 | 빌드 최적화 | DevOps Agent | 2분 | 최적화 검토 |
-| G8 | 배포 준비 | DevOps Agent | 3분 | 배포 준비 확인 |
-| G9 | 문서화 작업 | Code Agent | 2분 | 최종 문서 작성 |
-| G10 | 최종 인수인계 | Master Orchestrator | 1분 | 완료 확인 및 제공 |
-
-**총 소요 시간: 29분 (1,740초)**
-
-### 각 단계별 세부 작업 (10초 단위)
-
-1. 요구사항 분석 중
-2. 구조 설계 중
-3. 초안 작성 중
-4. 내용 검토 중
-5. 중간 점검 중
-6. 세부 작성 중
-7. 품질 확인 중
-8. 최종 검토 중
-9. 문서 정리 중
-10. 완료 확인 중
-
-## 🔧 기술 스택
-
-- **Backend**: Hono (Edge Runtime)
-- **Frontend**: Vanilla JavaScript (ES6 Modules)
-- **Styling**: TailwindCSS (CDN)
-- **Icons**: Font Awesome 6.4.0
-- **Platform**: Cloudflare Pages
-- **Language**: TypeScript + JSX
-
-## 🌐 URL 정보
-
-- **Sandbox URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
-- **GitHub**: https://github.com/sungli01/plan-craft
-- **Production**: (배포 후 업데이트 예정)
-
-## 💾 데이터 모델
-
-### Project 객체 구조
-
-```javascript
-{
-  projectId: 'proj_1234567890_abc123',      // 고유 ID
-  projectName: 'AI 쇼핑몰 기획서',          // 프로젝트 이름
-  userIdea: '사용자가 상품을 검색하고...',  // 아이디어 설명
-  outputFormat: 'html',                      // 출력 형식 (html/pdf)
-  status: 'active',                          // 상태 (active/paused/completed/cancelled)
-  currentPhase: 'G1_CORE_LOGIC',            // 현재 단계
-  currentPhaseIndex: 0,                      // 현재 단계 인덱스 (0-9)
-  progress: 45,                              // 진행도 (0-100%)
-  startTime: 1738483200000,                  // 시작 시간 (timestamp)
-  estimatedDuration: 1740,                   // 예상 소요 시간 (초)
-  logs: []                                   // 로그 배열
-}
-```
-
-### 상태 관리
-
-- **projects**: Map<projectId, Project>
-- **activeExecutions**: Map<projectId, ExecutionInfo>
-- **timers**: Map<projectId, TimerInfo>
-
-모든 상태는 `unified-core.js`에서 중앙 관리됩니다.
-
-## 📖 사용 방법
-
-### 1. 로컬 개발
+## 🚀 로컬 실행
 
 ```bash
-# 의존성 설치
-cd /home/user/webapp
-npm install
+# 개발 서버 시작
+npm run dev:sandbox
+
+# 또는 PM2로 실행
+pm2 start ecosystem.config.cjs
 
 # 빌드
 npm run build
-
-# 개발 서버 시작 (PM2)
-pm2 start ecosystem.config.cjs
-
-# 서비스 확인
-curl http://localhost:3000
-
-# 로그 확인
-pm2 logs plan-craft --nostream
 ```
 
-### 2. 프로젝트 생성
+## 🌐 배포
 
-1. **Sandbox URL 접속**
-2. **"새 프로젝트 시작" 섹션에서:**
-   - 프로젝트 이름 입력
-   - 아이디어 설명 입력
-   - (선택) 참조 문서 업로드
-   - 출력 형식 선택 (HTML/PDF)
-3. **"문서 생성 시작" 버튼 클릭**
-
-### 3. 진행 상황 확인
-
-- **상단**: AI 에이전트 상태 (초록 점 = 대기, 파란 점 = 동작 중)
-- **진행 중인 문서**: 
-  - 프로젝트 카드 (최대 3개)
-  - 프로그레스 바 (0-100%)
-  - 경과 시간 / 남은 시간
-- **빌드 로그**: 실시간 진행 상황 (HH:MM:SS 형식)
-- **시스템 통계**: 전체/진행/정지/완료 개수
-
-### 4. 프로젝트 제어
-
-- **중지**: 일시 정지 (재개 기능 준비 중)
-- **전체 취소**: 모든 프로젝트 취소 (되돌릴 수 없음)
-
-### 5. 완료 및 다운로드
-
-- 프로젝트 완료 시 자동 팝업
-- HTML 또는 PDF 선택
-- 다운로드 버튼 클릭
-
-## 🧪 데모 모드
-
-빠른 기능 확인을 위한 데모 모드 제공:
-
-1. **"데모 모드 실행"** 버튼 클릭
-2. 자동으로 샘플 프로젝트 생성
-3. 전체 프로세스 시연
-
-## ⚠️ 제한 사항
-
-- 최대 동시 진행 프로젝트: **3개**
-- 각 단계별 소요 시간: 고정 (1~5분)
-- 실제 문서 생성 기능: 시뮬레이션 (백엔드 연동 필요)
-
-## 🐛 알려진 문제
-
-- ~~프로젝트 상태 동기화 문제~~ ✅ v4.0에서 해결
-- ~~타이머 UI 업데이트 안됨~~ ✅ v4.0에서 해결
-- ~~중지/취소 버튼 작동 안함~~ ✅ v4.0에서 해결
-- 일부 취소 기능: 준비 중
-
-## 🔜 개발 예정 기능
-
-- [ ] 실제 AI API 연동 (Claude, GPT-4, Gemini)
-- [ ] 프로젝트 재개 기능
-- [ ] 일부 취소 기능
-- [ ] 실제 문서 생성 및 다운로드
-- [ ] Cloudflare D1 데이터베이스 연동
-- [ ] 프로젝트 히스토리 저장
-- [ ] 사용자 인증 시스템
-
-## 📊 프로젝트 구조
-
-```
-webapp/
-├── src/
-│   ├── index.tsx           # Hono 서버 엔트리포인트
-│   ├── renderer.tsx        # HTML 렌더러
-│   └── api/
-│       └── routes.ts       # API 라우트
-├── public/
-│   └── static/
-│       ├── constants.js    # 공통 상수 (4.3 KB)
-│       ├── unified-core.js # 통합 코어 시스템 (21.9 KB) ⭐
-│       ├── app-v4.js       # 메인 애플리케이션 (7.6 KB) ⭐
-│       ├── enhanced-tracking.js
-│       ├── real-execution.js
-│       └── aggressive-debug.js
-├── dist/                   # 빌드 출력
-│   ├── _worker.js          # Cloudflare Worker
-│   └── _routes.json        # 라우팅 설정
-├── ecosystem.config.cjs    # PM2 설정
-├── wrangler.jsonc          # Cloudflare 설정
-├── package.json
-├── tsconfig.json
-└── README.md               # 이 문서
-```
-
-## 📚 모듈 설명
-
-### 1. unified-core.js (핵심 통합 시스템)
-
-**단일 진실 공급원 (Single Source of Truth)**
-
-- **프로젝트 관리**: `createProject()`, `startExecution()`, `stopProject()`, `cancelAllProjects()`
-- **타이머 관리**: `startTimer()`, `stopTimer()`, `getElapsedTime()`, `getRemainingTime()`
-- **UI 업데이트**: `updateAllUI()` (매초 자동 실행)
-- **로그 시스템**: `addLog()` (레벨별 색상 코딩)
-- **AI 모델 추적**: `activateAIModel()`, `deactivateAIModel()`
-- **완료 처리**: `completeProject()`, `showCompletionModal()`, `downloadDocument()`
-
-**장점:**
-- 모든 상태가 하나의 객체에서 관리
-- 동기화 문제 원천 차단
-- 간단한 디버깅
-
-### 2. app-v4.js (메인 애플리케이션)
-
-**사용자 인터랙션 담당**
-
-- 이벤트 핸들러 설정
-- 파일 업로드 관리
-- 프로젝트 생성 폼 처리
-- 데모 모드 실행
-
-### 3. constants.js (공통 상수)
-
-**설정 중앙화**
-
-- `PHASE_DURATION`: 각 단계별 소요 시간 (분)
-- `PHASE_TO_MODEL`: 단계 → AI 모델 매핑
-- `MODEL_TO_AGENT`: 모델 → 에이전트 이름 매핑
-- `PHASE_TASKS`: 단계별 작업 설명
-- `APP_CONFIG`: 앱 전역 설정 (MAX_PROJECTS, REFRESH_INTERVAL 등)
-
-## 🔒 보안 고려사항
-
-- 사용자 입력 HTML 이스케이프
-- XSS 방지
-- CORS 설정
-- API 레이트 리미팅 (예정)
-
-## 🚀 배포 정보
-
-### Sandbox 환경
-
-- **URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
+현재 Sandbox 환경에서 실행 중:
+- **URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-cbeee0f9.sandbox.novita.ai
+- **버전**: v7.1.2-final
 - **포트**: 3000
-- **PM2**: 실행 중
-- **상태**: ✅ Active
 
-### Production 배포 (예정)
+## 📦 기술 스택
 
-```bash
-# Cloudflare Pages 배포
-npm run build
-wrangler pages deploy dist --project-name plan-craft
+- **Framework**: Hono (Cloudflare Workers)
+- **Frontend**: Vanilla JavaScript + TailwindCSS
+- **Build Tool**: Vite
+- **Process Manager**: PM2
+- **Deployment**: Cloudflare Pages
+
+## 📂 주요 파일
+
+- `src/index.tsx` - 메인 HTML 구조
+- `public/static/unified-core.js` - 통합 상태 관리
+- `public/static/thinking-process.js` - 사고과정 모듈
+- `public/static/app-v4.js` - 메인 애플리케이션 로직
+- `public/static/constants.js` - 상수 정의
+
+## ✅ 완료된 작업 (Tasks 1-4)
+
+1. ✅ UI 기본 구조 - Master Orchestrator 중심 레이아웃
+2. ✅ 사고과정 보기 팝업 - 실시간 모니터링
+3. ✅ 동적 AI 에이전트 시스템 - 키워드 기반 자동 생성
+4. ✅ 전체 취소 시 애니메이션 정지 - 완전한 상태 제어
+
+## 🔄 Git 정보
+
+- **Repository**: https://github.com/sungli01/plan-craft
+- **Latest Commit**: 71671ef
+- **Branch**: main
+
+## 📝 테스트 시나리오
+
+### 시나리오 1: 동적 에이전트 생성
+```
+프로젝트 이름: "종합 플랫폼"
+아이디어: "API 기반 백엔드와 React 프론트엔드를 가진 데이터 분석 플랫폼"
+
+예상 생성 에이전트:
+- Master Orchestrator (필수)
+- Backend Agent (api, backend 키워드)
+- Frontend Agent (react, 프론트엔드 키워드)
+- Data Agent (데이터, 분석 키워드)
+- DevOps Agent (필수)
 ```
 
-## 🤝 기여 가이드
+### 시나리오 2: 사고과정 모니터링
+1. "사고과정 보기" 버튼 클릭
+2. 팝업 창 열림 (600x800, 우측 상단)
+3. 프로젝트 생성 시 실시간 업데이트 확인
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### 시나리오 3: 전체 취소
+1. 프로젝트 실행 중
+2. "전체취소" 버튼 클릭
+3. 확인:
+   - 모든 애니메이션 정지
+   - 상태 점 회색으로 변경
+   - "대기 중" 텍스트 표시
 
-## 📄 라이선스
+## 🎯 버전 정보
 
-MIT License
+- **v7.1.2-final** (현재)
+  - 프로젝트 이름 변경
+  - 캐시 방지 헤더 추가
+  - 버전 메타 태그 추가
+  
+- **v7.1** 
+  - 전체 취소 애니메이션 정지
+  - 버튼 이벤트 핸들러 수정
+  
+- **v7.0**
+  - 동적 AI 에이전트 시스템
+  - 사고과정 팝업
+  - Tailwind 클래스 수정
 
-## 📞 문의
+## 📞 지원
 
-- GitHub: https://github.com/sungli01/plan-craft
-- Issues: https://github.com/sungli01/plan-craft/issues
-
-## 🎉 변경 이력
-
-### v4.0 (2026-02-02) - UNIFIED CORE REWRITE
-
-**완전 재작성:**
-- ✅ 통합 코어 시스템 (unified-core.js)
-- ✅ 1초 단위 정확한 타이머
-- ✅ 실시간 UI 업데이트 (매초)
-- ✅ 프로젝트 상태 동기화 보장
-- ✅ AI 모델 애니메이션 및 추적
-- ✅ 빌드 로그 시간 명확화 (HH:MM:SS)
-- ✅ 10초마다 상세 단계 설명
-- ✅ 프로젝트 완료 팝업 (HTML/PDF 선택)
-- ✅ 중지/취소 버튼 정상 작동
-- ✅ 문서 작성 목적 명확화
-
-### v3.1 (2026-02-01)
-
-- 모듈형 아키텍처 (7개 모듈)
-- 실행 엔진 분리
-- 실시간 타이머 모듈
-
-### v3.0 (2026-01-31)
-
-- UI 완전 재설계
-- 최대 3개 동시 프로젝트 지원
-- AI 에이전트 상태 바 추가
-
----
-
-**Plan-Craft v4.0 - Document Generation System**
-*아이디어를 문서로, 문서를 현실로* 📋✨
+문제가 발생하거나 개선 제안이 있으시면 GitHub Issues를 통해 알려주세요.
