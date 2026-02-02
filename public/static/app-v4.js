@@ -64,11 +64,19 @@ class PlanCraftApp {
       stopAllBtn.addEventListener('click', () => unifiedCore.stopAllProjects());
     }
     if (cancelAllBtn) {
-      cancelAllBtn.addEventListener('click', () => unifiedCore.cancelAllProjects());
+      stopAllBtn.addEventListener('click', () => unifiedCore.cancelAllProjects());
     }
     if (partialCancelBtn) {
       partialCancelBtn.addEventListener('click', () => {
         unifiedCore.showError('준비 중', '일부 취소 기능은 곧 제공될 예정입니다.');
+      });
+    }
+
+    // Thinking Process button
+    const thinkingBtn = document.getElementById('open-thinking-process-btn');
+    if (thinkingBtn && window.thinkingProcess) {
+      thinkingBtn.addEventListener('click', () => {
+        window.thinkingProcess.openThinkingWindow();
       });
     }
 
@@ -137,18 +145,68 @@ class PlanCraftApp {
     }
 
     try {
-      // Create project
-      const project = await unifiedCore.createProject({
-        projectName,
-        userIdea,
-        references: this.tempReferences,
-        outputFormat
-      });
+      // Step 1: Analyze and estimate time
+      if (window.timeEstimator) {
+        unifiedCore.addLog('INFO', '🔍 프로젝트 규모 분석 중...');
+        
+        const estimation = window.timeEstimator.analyzeProject(
+          projectName, 
+          userIdea, 
+          this.tempReferences
+        );
 
-      // Reset form
-      document.getElementById('project-form')?.reset();
-      this.tempReferences = [];
-      this.renderFileList();
+        // Show estimation modal
+        window.timeEstimator.showEstimationModal(estimation);
+
+        // Store for confirmation
+        window.pendingProjectData = {
+          projectName,
+          userIdea,
+          references: this.tempReferences,
+          outputFormat,
+          estimation
+        };
+
+        // Wait for user confirmation
+        window.confirmProjectStart = () => {
+          this.createAndStartProject(window.pendingProjectData);
+          window.pendingProjectData = null;
+          window.confirmProjectStart = null;
+        };
+
+        // Reset form
+        document.getElementById('project-form')?.reset();
+        this.tempReferences = [];
+        this.renderFileList();
+
+      } else {
+        // Fallback: create directly
+        this.createAndStartProject({
+          projectName,
+          userIdea,
+          references: this.tempReferences,
+          outputFormat
+        });
+      }
+
+    } catch (error) {
+      console.error('[App] Project creation failed:', error);
+      unifiedCore.showError('프로젝트 생성 실패', error.message);
+    }
+  }
+
+  /**
+   * Create and start project (after time estimation)
+   */
+  async createAndStartProject(data) {
+    try {
+      // Add thinking process
+      if (window.thinkingProcess) {
+        window.thinkingProcess.addProjectAnalysis(data.projectName, data.userIdea);
+      }
+
+      // Create project
+      const project = await unifiedCore.createProject(data);
 
       // Render UI
       unifiedCore.renderProjects();

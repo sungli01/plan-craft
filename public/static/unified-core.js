@@ -468,6 +468,9 @@ class UnifiedCore {
       this.stopProject(project.projectId);
     });
 
+    // Stop all AI model animations
+    this.deactivateAllAIModels();
+
     this.addLog('WARN', `⏸️ 모든 프로젝트 중지됨 (${activeProjects.length}개)`);
   }
 
@@ -496,6 +499,9 @@ class UnifiedCore {
         execution.status = 'cancelled';
       }
     });
+
+    // Stop all AI model animations
+    this.deactivateAllAIModels();
 
     this.renderProjects();
     this.updateStats();
@@ -565,7 +571,22 @@ class UnifiedCore {
       dot.classList.add('bg-blue-500', 'animate-pulse');
     }
 
+    // Show current model name
+    const modelNameDisplay = modelCard.querySelector('.agent-current-model');
+    if (modelNameDisplay) {
+      modelNameDisplay.classList.remove('hidden');
+      const modelNameSpan = modelNameDisplay.querySelector('.model-name');
+      if (modelNameSpan) {
+        modelNameSpan.textContent = modelName;
+      }
+    }
+
     this.addLog('INFO', `🤖 AI 모델 활성화: ${agentName} (${modelName})`);
+    
+    // Add to thinking process
+    if (window.thinkingProcess) {
+      window.thinkingProcess.addExecution(task, 0, `${agentName} 모델 활성화: ${modelName}`);
+    }
   }
 
   /**
@@ -585,6 +606,40 @@ class UnifiedCore {
       dot.classList.remove('bg-blue-500', 'animate-pulse');
       dot.classList.add('bg-green-500');
     }
+
+    // Hide current model name
+    const modelNameDisplay = modelCard.querySelector('.agent-current-model');
+    if (modelNameDisplay) {
+      modelNameDisplay.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Deactivate all AI models (called on stop/cancel)
+   */
+  deactivateAllAIModels() {
+    const allModelCards = document.querySelectorAll('.ai-agent-status');
+    
+    allModelCards.forEach(modelCard => {
+      // Hide spinner
+      const spinner = modelCard.querySelector('.agent-spinner');
+      if (spinner) spinner.classList.add('hidden');
+
+      // Change status dot back to green (idle)
+      const dot = modelCard.querySelector('.agent-status-dot');
+      if (dot) {
+        dot.classList.remove('bg-blue-500', 'animate-pulse');
+        dot.classList.add('bg-green-500');
+      }
+
+      // Hide current model name
+      const modelNameDisplay = modelCard.querySelector('.agent-current-model');
+      if (modelNameDisplay) {
+        modelNameDisplay.classList.add('hidden');
+      }
+    });
+
+    this.addLog('INFO', '🛑 모든 AI 모델 비활성화됨');
   }
 
   /**

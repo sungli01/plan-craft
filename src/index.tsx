@@ -18,6 +18,19 @@ app.get('/', (c) => {
         
         {/* NEW: Top AI Agent Status Bar */}
         <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-robot text-purple-600"></i>
+              AI Agent 상태
+            </h2>
+            <button
+              id="open-thinking-process-btn"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+            >
+              <i class="fas fa-brain"></i>
+              <span>사고과정 보기</span>
+            </button>
+          </div>
           <div class="grid grid-cols-4 gap-3">
             {/* Master Orchestrator */}
             <div class="ai-agent-status flex items-center gap-2 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border-2 border-purple-200" data-model="claude-3.5-sonnet">
@@ -32,7 +45,11 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-purple-900">Master Orchestrator</h3>
-                <p class="text-xs text-purple-600">전체 프로세스 조율 및 의사결정</p>
+                <p class="text-xs text-purple-600 truncate">전체 프로세스 조율 및 의사결정</p>
+                <p class="agent-current-model text-xs font-bold text-purple-800 mt-1 hidden">
+                  <i class="fas fa-play-circle mr-1"></i>
+                  <span class="model-name">claude-3.5-sonnet</span>
+                </p>
               </div>
             </div>
 
@@ -49,7 +66,11 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-blue-900">Code Agent</h3>
-                <p class="text-xs text-blue-600">코드 생성 및 구현 • 128K 컨텍스트</p>
+                <p class="text-xs text-blue-600 truncate">코드 생성 및 구현 • 128K 컨텍스트</p>
+                <p class="agent-current-model text-xs font-bold text-blue-800 mt-1 hidden">
+                  <i class="fas fa-play-circle mr-1"></i>
+                  <span class="model-name">gpt-4-turbo</span>
+                </p>
               </div>
             </div>
 
@@ -66,7 +87,11 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-green-900">Quality Agent</h3>
-                <p class="text-xs text-green-600">품질 검증 및 테스트 • 빠르고 경제적</p>
+                <p class="text-xs text-green-600 truncate">품질 검증 및 테스트 • 빠르고 경제적</p>
+                <p class="agent-current-model text-xs font-bold text-green-800 mt-1 hidden">
+                  <i class="fas fa-play-circle mr-1"></i>
+                  <span class="model-name">gpt-4o-mini</span>
+                </p>
               </div>
             </div>
 
@@ -83,7 +108,11 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-orange-900">DevOps Agent</h3>
-                <p class="text-xs text-orange-600">빌드 및 배포 자동화 • 초고속 처리</p>
+                <p class="text-xs text-orange-600 truncate">빌드 및 배포 자동화 • 초고속 처리</p>
+                <p class="agent-current-model text-xs font-bold text-orange-800 mt-1 hidden">
+                  <i class="fas fa-play-circle mr-1"></i>
+                  <span class="model-name">gemini-2.0-flash</span>
+                </p>
               </div>
             </div>
           </div>
