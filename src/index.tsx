@@ -248,10 +248,10 @@ app.get('/', (c) => {
           </div>
         </section>
 
-        {/* Bottom: System Stats + Build Log */}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* System Stats (4 cards in 2x2 or 4x1) */}
-          <section class="lg:col-span-1">
+        {/* Bottom: System Stats + Build Log - EQUAL SIZE */}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* System Stats (4 cards in 2x2) */}
+          <section class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
             <h3 class="text-lg font-bold mb-3 text-gray-800 flex items-center gap-2">
               <i class="fas fa-chart-bar text-indigo-600"></i>
               시스템 통계
@@ -276,8 +276,8 @@ app.get('/', (c) => {
             </div>
           </section>
 
-          {/* Build Log */}
-          <section class="lg:col-span-2 bg-gray-900 rounded-xl p-4 shadow-lg">
+          {/* Build Log - EQUAL SIZE */}
+          <section class="bg-gray-900 rounded-xl p-4 shadow-lg">
             <h3 class="text-lg font-bold mb-3 text-white flex items-center gap-2">
               <i class="fas fa-terminal text-green-400"></i>
               빌드 로그
@@ -298,11 +298,17 @@ app.get('/', (c) => {
 
       </div>
 
-      {/* Load Scripts */}
+      {/* Load Scripts - NEW MODULAR ARCHITECTURE */}
+      <script type="module" src="/static/constants.js"></script>
+      <script type="module" src="/static/api-client.js"></script>
+      <script type="module" src="/static/project-manager.js"></script>
+      <script type="module" src="/static/ui-renderer.js"></script>
+      <script type="module" src="/static/app-v3.js"></script>
+      
+      {/* Legacy tracking scripts (for backward compatibility) */}
       <script src="/static/enhanced-tracking.js"></script>
       <script src="/static/real-execution.js"></script>
       <script src="/static/aggressive-debug.js"></script>
-      <script src="/static/app.js"></script>
     </div>
   );
 });
