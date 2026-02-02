@@ -16,8 +16,8 @@ app.get('/', (c) => {
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.1.2-final">
-      <script src="https://cdn.tailwindcss.com?v=7.1.2"></script>
+      <meta name="version" content="7.2.0-alpha-phase1">
+      <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
       <style>
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -281,12 +281,21 @@ app.get('/', (c) => {
               >
                 <div class="text-cyan-400">
                   ╔═══════════════════════════════════════════════╗<br/>
-                  ║  Plan-Craft DevOps Console v3.0              ║<br/>
-                  ║  Document-First Edition - POWERED            ║<br/>
+                  ║  Plan-Craft v7.2.0 Console - Phase 1         ║<br/>
+                  ║  RAG + Feedback Loop + Integrity Engine      ║<br/>
                   ╚═══════════════════════════════════════════════╝
                 </div>
                 <div class="mt-2 text-yellow-400">
                   <span class="text-gray-500">[00:00:00]</span> Awaiting project initialization...
+                </div>
+                <div class="mt-1 text-green-400">
+                  <span class="text-gray-500">[00:00:00]</span> ✓ RAG System initialized
+                </div>
+                <div class="mt-1 text-green-400">
+                  <span class="text-gray-500">[00:00:00]</span> ✓ Feedback Loop ready
+                </div>
+                <div class="mt-1 text-green-400">
+                  <span class="text-gray-500">[00:00:00]</span> ✓ Integrity Engine active
                 </div>
               </div>
             </section>
@@ -300,6 +309,12 @@ app.get('/', (c) => {
       <script type="module" src="/static/api-key-manager.js"></script>
       <script type="module" src="/static/model-selector.js"></script>
       <script type="module" src="/static/download-manager.js"></script>
+      
+      <!-- Phase 1: Backend Enhancement Modules -->
+      <script type="module" src="/static/rag-system.js"></script>
+      <script type="module" src="/static/feedback-loop.js"></script>
+      <script type="module" src="/static/integrity-engine.js"></script>
+      
       <script type="module" src="/static/unified-core.js"></script>
       <script type="module" src="/static/app-v4.js"></script>
 

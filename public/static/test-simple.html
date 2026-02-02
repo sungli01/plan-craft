@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-100 p-8">
+    <h1 class="text-3xl font-bold text-blue-900">Test Page</h1>
+    <button id="test-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">
+        Click Me
+    </button>
+    <script>
+        document.getElementById('test-btn').addEventListener('click', () => {
+            alert('Button clicked!');
+        });
+        console.log('Simple test page loaded successfully');
+    </script>
+</body>
+</html>

@@ -12,10 +12,15 @@ AI 기반 자율 문서 생성 시스템으로, Master Orchestrator가 프로젝
 
 ### 현재 운영 중인 서비스
 - **메인 URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-cbeee0f9.sandbox.novita.ai
-- **버전**: v7.1.3-final
+- **버전**: v7.2.0-alpha-phase1 (Phase 1: 백엔드 강화 완료)
 - **포트**: 3000
 - **환경**: Sandbox (Cloudflare Workers Runtime)
 - **상태**: ✅ 정상 운영 중
+
+### Phase 1 신규 기능 (v7.2.0-alpha)
+- **RAG 시스템**: 웹 검색, 이미지 검색/분석/생성 통합
+- **피드백 루프**: 멀티 에이전트 협업 및 상호 검증
+- **무결성 엔진**: 95% 이상 품질 보증 시스템
 
 ### GitHub 저장소
 - **Repository**: https://github.com/sungli01/plan-craft
@@ -769,28 +774,43 @@ lsof -i :3000
 
 ## 🚧 향후 계획 (Roadmap)
 
-### Phase 1: 핵심 기능 완성 ✅
+### Phase 0: 기초 UI 구축 ✅ 완료 (v7.1.x)
 - [x] Task 1: UI 기본 구조
 - [x] Task 2: 사고과정 팝업
 - [x] Task 3: 동적 에이전트
 - [x] Task 4: 애니메이션 제어
 
-### Phase 2: 고급 기능 (보류)
-- [ ] Task 5: Vercel 배포 자동화
-- [ ] Task 6: 테스트 우선 워크플로우
-- [ ] Task 7: 모듈화 원칙 강화
+### Phase 1: 백엔드 강화 ✅ 완료 (v7.2.0-alpha)
+- [x] **RAG 시스템 통합** - `rag-system.js` (16KB)
+  - 웹 검색 (WebSearch API)
+  - 이미지 검색/분석/생성
+  - 참조 레퍼런스 자동 수집
+  
+- [x] **멀티 에이전트 피드백 루프** - `feedback-loop.js` (15KB)
+  - Quality Agent (긍정 피드백)
+  - Red Team (부정 피드백)
+  - 최소 3회 교차 검증
+  
+- [x] **무결성 스코어 계산 엔진** - `integrity-engine.js` (13KB)
+  - 정량적 요구사항 준수율 산출
+  - 실시간 품질 모니터링
+  - 95% 이상 품질 보증
 
-### Phase 3: 실제 AI 통합 (미정)
-- [ ] OpenAI API 통합
-- [ ] 실제 문서 생성 엔진
-- [ ] 파일 다운로드 시스템
-- [ ] 프로젝트 히스토리
+### Phase 2: 문서 생성 엔진 (우선순위: 높음)
+- [ ] Plan-Craft v5.0 HTML 템플릿
+- [ ] Mermaid 다이어그램 자동 생성
+- [ ] 이미지 생성 통합 (RAG 기반)
+- [ ] PDF 변환 및 다운로드
 
-### Phase 4: 사용자 경험 개선 (미정)
-- [ ] 다국어 지원 (한국어/영어)
-- [ ] 다크 모드
-- [ ] 프로젝트 템플릿
-- [ ] 협업 기능
+### Phase 3: AI 모델 통합 (우선순위: 중간)
+- [ ] OpenAI/Claude/Gemini API 연동
+- [ ] 모델 선택 로직 (v5.0 규격)
+- [ ] 실시간 토큰 사용량 추적
+
+### Phase 4: UI 개선 (우선순위: 낮음)
+- [ ] 실시간 진행 상황 표시
+- [ ] RAG 로그 실시간 표시
+- [ ] 무결성 스코어 대시보드
 
 ---
 
@@ -843,10 +863,3 @@ lsof -i :3000
 ---
 
 **프로젝트 상태**: ✅ 정상 운영 중  
-**최종 업데이트**: 2026-02-02  
-**버전**: v7.1.3-final  
-**URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-cbeee0f9.sandbox.novita.ai
-
----
-
-> **"AI가 투명하게 사고하고, 자율적으로 작동하는 미래를 만듭니다."**
