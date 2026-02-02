@@ -22,6 +22,7 @@ class UnifiedCore {
     this.projects = new Map();
     this.activeExecutions = new Map();
     this.timers = new Map();
+    this.dynamicAgents = new Map(); // Dynamic agents for current projects
     this.initialized = false;
   }
 
@@ -69,6 +70,9 @@ class UnifiedCore {
     };
 
     this.projects.set(projectId, project);
+    
+    // Create dynamic agents based on project idea
+    this.createDynamicAgents(projectId, data.userIdea || '');
     
     this.addLog('INFO', `📋 프로젝트 생성: ${project.projectName} (ID: ${projectId})`);
     this.addLog('INFO', `⏱️ 예상 소요 시간: ${timeEstimate.estimatedTimeText} (복잡도: ${timeEstimate.complexityLabel})`);
@@ -1016,6 +1020,188 @@ class UnifiedCore {
   /**
    * Get all projects
    */
+  /**
+   * Analyze project and determine required agents
+   */
+  analyzeProjectRequirements(projectIdea) {
+    const idea = projectIdea.toLowerCase();
+    const requiredAgents = [];
+
+    // Always add Master Orchestrator
+    requiredAgents.push({
+      name: 'Master Orchestrator',
+      role: '전체 조율 및 전략',
+      model: 'claude-3.5-sonnet',
+      color: 'purple',
+      icon: 'fa-crown',
+      reason: '프로젝트 전체 전략 수립 및 조율'
+    });
+
+    // Analyze project idea keywords
+    const keywords = {
+      backend: ['api', 'backend', 'server', 'database', 'crud', '백엔드', '서버', '데이터베이스'],
+      frontend: ['ui', 'frontend', 'interface', 'design', '화면', '인터페이스', '디자인', 'ux'],
+      data: ['data', 'analysis', 'visualization', 'chart', '분석', '데이터', '시각화'],
+      ai: ['ai', 'ml', 'machine learning', 'nlp', 'gpt', '인공지능', '머신러닝'],
+      deployment: ['deploy', 'devops', 'ci/cd', 'production', '배포', '운영']
+    };
+
+    // Backend Agent
+    if (keywords.backend.some(kw => idea.includes(kw))) {
+      requiredAgents.push({
+        name: 'Backend Agent',
+        role: 'API 및 데이터베이스 설계',
+        model: 'gpt-4-turbo',
+        color: 'blue',
+        icon: 'fa-server',
+        reason: '백엔드 로직 및 API 설계 필요'
+      });
+    }
+
+    // Frontend Agent
+    if (keywords.frontend.some(kw => idea.includes(kw))) {
+      requiredAgents.push({
+        name: 'Frontend Agent',
+        role: 'UI/UX 설계 및 구현',
+        model: 'gpt-4o',
+        color: 'indigo',
+        icon: 'fa-palette',
+        reason: 'UI/UX 설계 및 구현 필요'
+      });
+    }
+
+    // Data Agent
+    if (keywords.data.some(kw => idea.includes(kw))) {
+      requiredAgents.push({
+        name: 'Data Agent',
+        role: '데이터 분석 및 시각화',
+        model: 'claude-3-opus',
+        color: 'green',
+        icon: 'fa-chart-line',
+        reason: '데이터 분석 및 시각화 필요'
+      });
+    }
+
+    // AI Agent
+    if (keywords.ai.some(kw => idea.includes(kw))) {
+      requiredAgents.push({
+        name: 'AI Agent',
+        role: 'AI/ML 모델 설계',
+        model: 'gpt-4-turbo',
+        color: 'pink',
+        icon: 'fa-brain',
+        reason: 'AI/ML 기능 구현 필요'
+      });
+    }
+
+    // DevOps Agent (always add for deployment)
+    requiredAgents.push({
+      name: 'DevOps Agent',
+      role: '빌드 및 배포 자동화',
+      model: 'gemini-2.0-flash',
+      color: 'orange',
+      icon: 'fa-rocket',
+      reason: '배포 및 운영 관리 필요'
+    });
+
+    return requiredAgents;
+  }
+
+  /**
+   * Create dynamic agents for a project
+   */
+  createDynamicAgents(projectId, projectIdea) {
+    const agents = this.analyzeProjectRequirements(projectIdea);
+    this.dynamicAgents.set(projectId, agents);
+
+    // Log to thinking process
+    if (window.thinkingProcess) {
+      window.thinkingProcess.addThought(
+        'analysis',
+        `프로젝트 분석 완료: ${agents.length}개의 AI 에이전트 생성\n` +
+        agents.map(a => `• ${a.name}: ${a.reason}`).join('\n')
+      );
+    }
+
+    // Render dynamic agents
+    this.renderDynamicAgents();
+
+    return agents;
+  }
+
+  /**
+   * Render dynamic agents to UI
+   */
+  renderDynamicAgents() {
+    const container = document.getElementById('dynamic-agents-container');
+    if (!container) return;
+
+    // Get all unique agents across all active projects
+    const allAgents = new Map();
+
+    this.dynamicAgents.forEach((agents, projectId) => {
+      agents.forEach(agent => {
+        if (!allAgents.has(agent.name)) {
+          allAgents.set(agent.name, agent);
+        }
+      });
+    });
+
+    // Clear existing dynamic agents (keep only Master Orchestrator)
+    container.querySelectorAll('.ai-agent-status').forEach((el, index) => {
+      if (index > 0) el.remove(); // Remove all except first (Master Orchestrator)
+    });
+
+    // Add dynamic agents
+    allAgents.forEach((agent, name) => {
+      if (name === 'Master Orchestrator') return; // Skip, already present
+
+      const agentCard = this.createAgentCard(agent);
+      container.appendChild(agentCard);
+    });
+  }
+
+  /**
+   * Create agent card element
+   */
+  createAgentCard(agent) {
+    const card = document.createElement('div');
+    card.className = `ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-${agent.color}-50 to-${agent.color}-100 rounded-lg border-2 border-${agent.color}-200`;
+    card.setAttribute('data-agent', agent.name.toLowerCase().replace(/\s+/g, '-'));
+    card.setAttribute('data-model', agent.model);
+
+    card.innerHTML = `
+      <div class="relative">
+        <div class="w-10 h-10 bg-${agent.color}-600 rounded-full flex items-center justify-center">
+          <i class="fas ${agent.icon} text-white text-lg"></i>
+        </div>
+        <div class="agent-spinner absolute inset-0 hidden">
+          <div class="w-full h-full rounded-full border-4 border-${agent.color}-200 border-t-${agent.color}-600 animate-spin"></div>
+        </div>
+        <div class="agent-status-dot absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-sm font-bold text-${agent.color}-900">${agent.name}</h3>
+        <p class="text-xs text-${agent.color}-600 truncate">${agent.role}</p>
+        <div class="agent-model-display mt-1">
+          <div class="text-xs text-gray-400">
+            대기 중: ${agent.model}
+          </div>
+        </div>
+      </div>
+    `;
+
+    return card;
+  }
+
+  /**
+   * Clear dynamic agents for a project
+   */
+  clearDynamicAgents(projectId) {
+    this.dynamicAgents.delete(projectId);
+    this.renderDynamicAgents();
+  }
+
   getAllProjects() {
     return Array.from(this.projects.values());
   }

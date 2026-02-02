@@ -294,6 +294,7 @@ app.get('/', (c) => {
 
       {/* Module Scripts */}
       <script type="module" src="/static/constants.js"></script>
+      <script type="module" src="/static/thinking-process.js"></script>
       <script type="module" src="/static/api-key-manager.js"></script>
       <script type="module" src="/static/model-selector.js"></script>
       <script type="module" src="/static/download-manager.js"></script>
@@ -301,6 +302,21 @@ app.get('/', (c) => {
       <script type="module" src="/static/app-v4.js"></script>
 
       <script>
+        // Initialize thinking process button
+        document.addEventListener('DOMContentLoaded', function() {
+          const thinkingBtn = document.getElementById('open-thinking-process-btn');
+          if (thinkingBtn) {
+            thinkingBtn.addEventListener('click', function() {
+              if (window.thinkingProcess) {
+                window.thinkingProcess.openThinkingWindow();
+              } else {
+                console.error('Thinking Process module not loaded');
+                alert('사고과정 모듈이 로드되지 않았습니다.');
+              }
+            });
+          }
+        });
+
         // Download history helper
         window.showDownloadHistory = function() {
           const history = window.downloadManager?.getHistory() || [];
