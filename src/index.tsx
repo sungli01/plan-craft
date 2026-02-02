@@ -12,7 +12,10 @@ app.get('/', (c) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Plan-Craft v6.0 - Document Generation System</title>
+      <title>AI 자율 Plan-Craft 솔루션 개발</title>
+      <meta name="cache-control" content="no-cache, no-store, must-revalidate">
+      <meta name="pragma" content="no-cache">
+      <meta name="expires" content="0">
       <script src="https://cdn.tailwindcss.com"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
       <style>

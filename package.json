@@ -1,5 +1,5 @@
 {
-  "name": "plan-craft",
+  "name": "ai-autonomous-plan-craft",
   "type": "module",
   "scripts": {
     "dev": "vite",
