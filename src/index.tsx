@@ -18,19 +18,10 @@ app.get('/', (c) => {
         
         {/* NEW: Top AI Agent Status Bar */}
         <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
-          <div class="flex items-center justify-between mb-3">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-              <i class="fas fa-robot text-purple-600"></i>
-              AI Agent 상태
-            </h2>
-            <button
-              id="open-thinking-process-btn"
-              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-            >
-              <i class="fas fa-brain"></i>
-              <span>사고과정 보기</span>
-            </button>
-          </div>
+          <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+            <i class="fas fa-robot text-purple-600"></i>
+            AI Agent 상태
+          </h2>
           <div class="grid grid-cols-4 gap-3">
             {/* Master Orchestrator */}
             <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border-2 border-purple-200" data-model="gpt-5.2-preview">
@@ -124,13 +115,22 @@ app.get('/', (c) => {
 
         {/* NEW: Active Projects with Control Buttons */}
         <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-folder-open text-indigo-600"></i>
+              진행 중인 문서
+            </h2>
+            <button
+              id="open-thinking-process-btn"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+            >
+              <i class="fas fa-brain"></i>
+              <span>사고과정 보기</span>
+            </button>
+          </div>
           <div class="flex justify-between items-start gap-4">
             {/* Left: Projects List (max 3) */}
             <div class="flex-1">
-              <h2 class="text-xl font-bold mb-3 text-gray-800 flex items-center gap-2">
-                <i class="fas fa-folder-open text-indigo-600"></i>
-                진행 중인 문서
-              </h2>
               <div id="active-projects-container" class="space-y-3">
                 {/* Projects will be dynamically inserted here */}
                 <div id="no-projects-message" class="text-center py-6 bg-gray-50 rounded-lg">
