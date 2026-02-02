@@ -33,7 +33,7 @@ app.get('/', (c) => {
           </div>
           <div class="grid grid-cols-4 gap-3">
             {/* Master Orchestrator */}
-            <div class="ai-agent-status flex items-center gap-2 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border-2 border-purple-200" data-model="claude-3.5-sonnet">
+            <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border-2 border-purple-200" data-model="gpt-5.2-preview">
               <div class="relative">
                 <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
                   <i class="fas fa-crown text-white text-lg"></i>
@@ -45,16 +45,17 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-purple-900">Master Orchestrator</h3>
-                <p class="text-xs text-purple-600 truncate">전체 프로세스 조율 및 의사결정</p>
-                <p class="agent-current-model text-xs font-bold text-purple-800 mt-1 hidden">
-                  <i class="fas fa-play-circle mr-1"></i>
-                  <span class="model-name">claude-3.5-sonnet</span>
-                </p>
+                <p class="text-xs text-purple-600 truncate">전체 조율 및 전략 • 고급 추론</p>
+                <div class="agent-model-display mt-1">
+                  <div class="text-xs text-gray-400">
+                    대기 중: gpt-5.2-preview
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Code Agent */}
-            <div class="ai-agent-status flex items-center gap-2 p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200" data-model="gpt-4-turbo">
+            <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200" data-model="gpt-5-turbo">
               <div class="relative">
                 <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                   <i class="fas fa-code text-white text-lg"></i>
@@ -66,16 +67,17 @@ app.get('/', (c) => {
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-blue-900">Code Agent</h3>
-                <p class="text-xs text-blue-600 truncate">코드 생성 및 구현 • 128K 컨텍스트</p>
-                <p class="agent-current-model text-xs font-bold text-blue-800 mt-1 hidden">
-                  <i class="fas fa-play-circle mr-1"></i>
-                  <span class="model-name">gpt-4-turbo</span>
-                </p>
+                <p class="text-xs text-blue-600 truncate">코드 생성 및 리팩토링 • 128K context</p>
+                <div class="agent-model-display mt-1">
+                  <div class="text-xs text-gray-400">
+                    대기 중: gpt-5-turbo
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Quality Agent */}
-            <div class="ai-agent-status flex items-center gap-2 p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border-2 border-green-200" data-model="gpt-4o-mini">
+            <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border-2 border-green-200" data-model="gpt-5o-mini">
               <div class="relative">
                 <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                   <i class="fas fa-check-double text-white text-lg"></i>
@@ -88,15 +90,16 @@ app.get('/', (c) => {
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-green-900">Quality Agent</h3>
                 <p class="text-xs text-green-600 truncate">품질 검증 및 테스트 • 빠르고 경제적</p>
-                <p class="agent-current-model text-xs font-bold text-green-800 mt-1 hidden">
-                  <i class="fas fa-play-circle mr-1"></i>
-                  <span class="model-name">gpt-4o-mini</span>
-                </p>
+                <div class="agent-model-display mt-1">
+                  <div class="text-xs text-gray-400">
+                    대기 중: gpt-5o-mini
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* DevOps Agent */}
-            <div class="ai-agent-status flex items-center gap-2 p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border-2 border-orange-200" data-model="gemini-2.0-flash">
+            <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border-2 border-orange-200" data-model="gemini-3.0-flash">
               <div class="relative">
                 <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
                   <i class="fas fa-rocket text-white text-lg"></i>
@@ -109,10 +112,11 @@ app.get('/', (c) => {
               <div class="flex-1 min-w-0">
                 <h3 class="text-sm font-bold text-orange-900">DevOps Agent</h3>
                 <p class="text-xs text-orange-600 truncate">빌드 및 배포 자동화 • 초고속 처리</p>
-                <p class="agent-current-model text-xs font-bold text-orange-800 mt-1 hidden">
-                  <i class="fas fa-play-circle mr-1"></i>
-                  <span class="model-name">gemini-2.0-flash</span>
-                </p>
+                <div class="agent-model-display mt-1">
+                  <div class="text-xs text-gray-400">
+                    대기 중: gemini-3.0-flash
+                  </div>
+                </div>
               </div>
             </div>
           </div>

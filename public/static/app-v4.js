@@ -145,49 +145,20 @@ class PlanCraftApp {
     }
 
     try {
-      // Step 1: Analyze and estimate time
-      if (window.timeEstimator) {
-        unifiedCore.addLog('INFO', '🔍 프로젝트 규모 분석 중...');
-        
-        const estimation = window.timeEstimator.analyzeProject(
-          projectName, 
-          userIdea, 
-          this.tempReferences
-        );
+      // Create project (will show time estimate modal)
+      const project = await unifiedCore.createProject({
+        projectName,
+        userIdea,
+        references: this.tempReferences,
+        outputFormat
+      });
 
-        // Show estimation modal
-        window.timeEstimator.showEstimationModal(estimation);
+      // Reset form
+      document.getElementById('project-form')?.reset();
+      this.tempReferences = [];
+      this.renderFileList();
 
-        // Store for confirmation
-        window.pendingProjectData = {
-          projectName,
-          userIdea,
-          references: this.tempReferences,
-          outputFormat,
-          estimation
-        };
-
-        // Wait for user confirmation
-        window.confirmProjectStart = () => {
-          this.createAndStartProject(window.pendingProjectData);
-          window.pendingProjectData = null;
-          window.confirmProjectStart = null;
-        };
-
-        // Reset form
-        document.getElementById('project-form')?.reset();
-        this.tempReferences = [];
-        this.renderFileList();
-
-      } else {
-        // Fallback: create directly
-        this.createAndStartProject({
-          projectName,
-          userIdea,
-          references: this.tempReferences,
-          outputFormat
-        });
-      }
+      unifiedCore.addLog('SUCCESS', `✅ 프로젝트 생성 완료: ${project.projectName}`);
 
     } catch (error) {
       console.error('[App] Project creation failed:', error);

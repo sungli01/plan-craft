@@ -46,6 +46,13 @@ class UnifiedCore {
   async createProject(data) {
     const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
+    // Analyze project and estimate time
+    const timeEstimate = this.estimateProjectTime(
+      data.projectName || 'Untitled',
+      data.userIdea || '',
+      data.references || []
+    );
+    
     const project = {
       projectId,
       projectName: data.projectName || 'Untitled',
@@ -56,15 +63,189 @@ class UnifiedCore {
       currentPhaseIndex: 0,
       progress: 0,
       startTime: Date.now(),
-      estimatedDuration: this.calculateTotalDuration(),
+      estimatedDuration: timeEstimate.estimatedTime * 60, // Convert minutes to seconds
+      timeEstimate: timeEstimate,
       logs: []
     };
 
     this.projects.set(projectId, project);
     
     this.addLog('INFO', `📋 프로젝트 생성: ${project.projectName} (ID: ${projectId})`);
+    this.addLog('INFO', `⏱️ 예상 소요 시간: ${timeEstimate.estimatedTimeText} (복잡도: ${timeEstimate.complexityLabel})`);
+    
+    // Show time estimate modal
+    this.showTimeEstimateModal(project);
     
     return project;
+  }
+  
+  /**
+   * Estimate project time based on analysis
+   */
+  estimateProjectTime(projectName, userIdea, references = []) {
+    // Determine complexity
+    const complexity = this.analyzeComplexity(userIdea, references);
+    
+    // Calculate base time
+    const baseTime = this.calculateTotalDuration() / 60; // Convert to minutes
+    
+    // Complexity factors
+    const factors = {
+      'simple': 0.7,
+      'medium': 1.0,
+      'complex': 1.5,
+      'very-complex': 2.0
+    };
+    
+    const factor = factors[complexity];
+    const estimatedTime = Math.round(baseTime * factor);
+    
+    return {
+      complexity,
+      complexityLabel: this.getComplexityLabel(complexity),
+      baseTime,
+      factor,
+      estimatedTime, // in minutes
+      estimatedTimeText: this.formatMinutes(estimatedTime)
+    };
+  }
+  
+  /**
+   * Analyze project complexity
+   */
+  analyzeComplexity(userIdea, references) {
+    const idea = userIdea.toLowerCase();
+    let score = 0;
+
+    // Complex keywords
+    const complexKeywords = [
+      'ai', '인공지능', '머신러닝', 'ml', 'deep learning',
+      '블록체인', 'blockchain', '실시간', 'real-time',
+      '대규모', 'scale', '분산', 'distributed'
+    ];
+
+    // Medium keywords
+    const mediumKeywords = [
+      'api', '데이터베이스', 'database', '인증', 'auth',
+      '결제', 'payment', '검색', 'search'
+    ];
+
+    complexKeywords.forEach(keyword => {
+      if (idea.includes(keyword)) score += 2;
+    });
+
+    mediumKeywords.forEach(keyword => {
+      if (idea.includes(keyword)) score += 1;
+    });
+
+    score += references.length * 0.5;
+
+    const wordCount = userIdea.split(/\s+/).length;
+    if (wordCount > 100) score += 2;
+    else if (wordCount > 50) score += 1;
+
+    if (score >= 8) return 'very-complex';
+    if (score >= 5) return 'complex';
+    if (score >= 2) return 'medium';
+    return 'simple';
+  }
+  
+  /**
+   * Get complexity label
+   */
+  getComplexityLabel(complexity) {
+    const labels = {
+      'simple': '간단함 (70%)',
+      'medium': '보통 (100%)',
+      'complex': '복잡함 (150%)',
+      'very-complex': '매우 복잡함 (200%)'
+    };
+    return labels[complexity] || '보통';
+  }
+  
+  /**
+   * Format minutes to readable time
+   */
+  formatMinutes(minutes) {
+    if (minutes < 60) {
+      return `${minutes}분`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}시간 ${mins}분`;
+  }
+  
+  /**
+   * Show time estimate modal
+   */
+  showTimeEstimateModal(project) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+      <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+        <div class="text-center mb-4">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <i class="fas fa-clock text-blue-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">
+            프로젝트 시간 예측
+          </h3>
+          <p class="text-gray-600 text-sm">
+            ${project.projectName}
+          </p>
+        </div>
+        
+        <div class="bg-blue-50 rounded-lg p-4 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-gray-700 font-semibold">복잡도</span>
+            <span class="text-blue-600 font-bold">${project.timeEstimate.complexityLabel}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700 font-semibold">예상 시간</span>
+            <span class="text-blue-600 font-bold text-lg">${project.timeEstimate.estimatedTimeText}</span>
+          </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 mb-4 text-center">
+          프로젝트를 시작하시겠습니까?
+        </p>
+        
+        <div class="flex gap-3">
+          <button
+            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-all"
+            onclick="this.closest('.fixed').remove()"
+          >
+            취소
+          </button>
+          <button
+            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
+            onclick="window.unifiedCore.confirmAndStartProject('${project.projectId}'); this.closest('.fixed').remove();"
+          >
+            <i class="fas fa-play mr-2"></i>
+            시작
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  }
+  
+  /**
+   * Confirm and start project (called from modal)
+   */
+  confirmAndStartProject(projectId) {
+    const project = this.projects.get(projectId);
+    if (!project) {
+      console.error('[UnifiedCore] Project not found:', projectId);
+      return;
+    }
+    
+    // Start execution
+    this.startExecution(projectId);
+    
+    // Render projects
+    this.renderProjects();
   }
 
   /**
@@ -313,6 +494,97 @@ class UnifiedCore {
       const progressText = document.getElementById(`progress-text-${projectId}`);
       if (progressText) {
         progressText.textContent = `${project.progress}%`;
+      }
+    });
+    
+    // Update AI agent model displays
+    this.updateAIAgentModels();
+  }
+  
+  /**
+   * Update AI agent model displays with current running model
+   */
+  updateAIAgentModels() {
+    // Find currently active phase across all projects
+    let activeModel = null;
+    let activeAgent = null;
+    let activeProjectName = null;
+    let hasActiveProjects = false;
+    
+    this.projects.forEach((project) => {
+      if (project.status === 'active' && project.currentPhase) {
+        hasActiveProjects = true;
+        const modelName = PHASE_TO_MODEL[project.currentPhase];
+        const agentName = MODEL_TO_AGENT[modelName];
+        
+        if (modelName && agentName) {
+          activeModel = modelName;
+          activeAgent = agentName;
+          activeProjectName = project.projectName;
+        }
+      }
+    });
+    
+    // Update all agent cards
+    const agents = [
+      { name: 'Master Orchestrator', model: 'gpt-5.2-preview' },
+      { name: 'Code Agent', model: 'gpt-5-turbo' },
+      { name: 'Quality Agent', model: 'gpt-5o-mini' },
+      { name: 'DevOps Agent', model: 'gemini-3.0-flash' }
+    ];
+    
+    agents.forEach((agent, index) => {
+      const agentCard = document.querySelector(`.agent-card:nth-child(${index + 1})`);
+      if (!agentCard) return;
+      
+      const modelDisplayEl = agentCard.querySelector('.agent-model-display');
+      const statusDotEl = agentCard.querySelector('.agent-status-dot');
+      const spinnerEl = agentCard.querySelector('.agent-spinner');
+      
+      // Check if this agent is currently active
+      const isActive = hasActiveProjects && activeAgent === agent.name;
+      
+      if (modelDisplayEl) {
+        if (isActive && activeProjectName) {
+          modelDisplayEl.innerHTML = `
+            <div class="text-xs text-blue-600 font-semibold animate-pulse">
+              <i class="fas fa-bolt mr-1"></i>
+              실행 중: ${agent.model}
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              프로젝트: ${activeProjectName.substring(0, 20)}${activeProjectName.length > 20 ? '...' : ''}
+            </div>
+          `;
+        } else {
+          modelDisplayEl.innerHTML = `
+            <div class="text-xs text-gray-400">
+              대기 중: ${agent.model}
+            </div>
+          `;
+        }
+      }
+      
+      // Update status dot
+      if (statusDotEl) {
+        if (isActive) {
+          statusDotEl.className = 'agent-status-dot absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white animate-pulse';
+        } else if (hasActiveProjects) {
+          statusDotEl.className = 'agent-status-dot absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white';
+        } else {
+          // All stopped - gray
+          statusDotEl.className = 'agent-status-dot absolute -top-1 -right-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white';
+        }
+      }
+      
+      // Update spinner
+      if (spinnerEl) {
+        if (isActive) {
+          spinnerEl.classList.remove('hidden');
+          spinnerEl.classList.add('animate-spin');
+        } else {
+          spinnerEl.classList.add('hidden');
+          spinnerEl.classList.remove('animate-spin');
+        }
       }
     });
   }
