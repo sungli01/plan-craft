@@ -38,6 +38,23 @@ const PHASE_TASKS = {
   'G10_HANDOVER': '최종 인수인계 중'
 };
 
+// Phase duration in minutes (CRITICAL: Must match app.js)
+const PHASE_DURATION = {
+  'G1_CORE_LOGIC': 3,
+  'G2_API_SERVER': 4,
+  'G3_UI_COMPONENTS': 5,
+  'G4_INTEGRATION': 3,
+  'G5_UNIT_TESTS': 4,
+  'G6_SECURITY_SCAN': 2,
+  'G7_BUILD_OPTIMIZATION': 2,
+  'G8_DEPLOYMENT': 3,
+  'G9_DOCUMENTATION': 2,
+  'G10_HANDOVER': 1
+};
+
+// Expose to window for cross-script access
+window.PHASE_DURATION = PHASE_DURATION;
+
 /**
  * Enhanced Phase Execution with REAL AI Model Tracking
  */
@@ -96,7 +113,7 @@ async function executePhaseWithTracking(projectId, gate) {
  * Simulate actual AI model work
  */
 async function simulatePhaseWork(projectId, gate, modelName) {
-  const duration = window.PHASE_DURATION[gate] || 3;
+  const duration = PHASE_DURATION[gate] || 3;
   const steps = 10; // 10 steps per phase
   const stepDuration = (duration * 60 * 1000) / steps; // milliseconds
 
@@ -179,7 +196,7 @@ async function executeAllPhasesWithTracking(projectId) {
  * Calculate total time
  */
 function calculateTotalTime() {
-  return Object.values(window.PHASE_DURATION || {}).reduce((a, b) => a + b, 0);
+  return Object.values(PHASE_DURATION).reduce((a, b) => a + b, 0);
 }
 
 /**
