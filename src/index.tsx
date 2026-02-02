@@ -28,14 +28,14 @@ app.get('/', (c) => {
       <div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 p-4">
         <div class="container mx-auto max-w-7xl">
           
-          {/* AI Agent Status - Only Master Orchestrator initially */}
+          <!-- AI Agent Status - Only Master Orchestrator initially -->
           <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
             <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
               <i class="fas fa-robot text-purple-600"></i>
               AI Agent 상태
             </h2>
             <div id="dynamic-agents-container" class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
-              {/* Master Orchestrator - Always present */}
+              <!-- Master Orchestrator - Always present -->
               <div class="ai-agent-status agent-card flex items-center gap-2 p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border-2 border-purple-200" data-agent="master" data-model="gpt-5.2-preview">
                 <div class="relative">
                   <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
@@ -56,11 +56,11 @@ app.get('/', (c) => {
                   </div>
                 </div>
               </div>
-              {/* Dynamic agents will be added here */}
+              <!-- Dynamic agents will be added here -->
             </div>
           </section>
 
-          {/* Active Projects Section */}
+          <!-- Active Projects Section -->
           <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
             <h2 class="text-xl font-bold mb-3 text-gray-800 flex items-center gap-2">
               <i class="fas fa-folder-open text-indigo-600"></i>
@@ -68,10 +68,10 @@ app.get('/', (c) => {
             </h2>
             
             <div class="flex justify-between items-start gap-4">
-              {/* Left: Projects List (max 3) */}
+              <!-- Left: Projects List (max 3) -->
               <div class="flex-1">
                 <div id="active-projects-container" class="space-y-3">
-                  {/* Projects will be dynamically inserted here */}
+                  <!-- Projects will be dynamically inserted here -->
                   <div id="no-projects-message" class="text-center py-6 bg-gray-50 rounded-lg">
                     <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
                     <p class="text-gray-500 text-sm">진행 중인 프로젝트가 없습니다.</p>
@@ -80,7 +80,7 @@ app.get('/', (c) => {
                 </div>
               </div>
 
-              {/* Right: Control Buttons */}
+              <!-- Right: Control Buttons -->
               <div class="flex flex-col gap-2 min-w-[140px]">
                 <button
                   id="stop-all-btn"
@@ -104,7 +104,7 @@ app.get('/', (c) => {
                   <span>전체취소</span>
                 </button>
                 
-                {/* Thinking Process Button - Below control buttons */}
+                <!-- Thinking Process Button - Below control buttons -->
                 <button
                   id="open-thinking-process-btn"
                   class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-3 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -116,7 +116,7 @@ app.get('/', (c) => {
             </div>
           </section>
 
-          {/* Project Creation Form */}
+          <!-- Project Creation Form -->
           <section class="mb-4 bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg">
             <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
               <i class="fas fa-plus-circle text-green-600"></i>
@@ -241,9 +241,9 @@ app.get('/', (c) => {
             </div>
           </section>
 
-          {/* System Stats and Build Log - Side by Side */}
+          <!-- System Stats and Build Log - Side by Side -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* System Stats */}
+            <!-- System Stats -->
             <section class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
               <h3 class="text-lg font-bold mb-3 text-gray-800 flex items-center gap-2">
                 <i class="fas fa-chart-bar text-indigo-600"></i>
@@ -269,7 +269,7 @@ app.get('/', (c) => {
               </div>
             </section>
 
-            {/* Build Log */}
+            <!-- Build Log -->
             <section class="bg-gray-900 rounded-xl p-4 shadow-lg">
               <h3 class="text-lg font-bold mb-3 text-white flex items-center gap-2">
                 <i class="fas fa-terminal text-green-400"></i>
@@ -294,7 +294,7 @@ app.get('/', (c) => {
         </div>
       </div>
 
-      {/* Module Scripts */}
+      <!-- Module Scripts -->
       <script type="module" src="/static/constants.js"></script>
       <script type="module" src="/static/thinking-process.js"></script>
       <script type="module" src="/static/api-key-manager.js"></script>
