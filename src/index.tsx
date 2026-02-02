@@ -298,11 +298,13 @@ app.get('/', (c) => {
 
       </div>
 
-      {/* Load Scripts - NEW MODULAR ARCHITECTURE */}
+      {/* Load Scripts - MODULAR ARCHITECTURE v3.1 */}
       <script type="module" src="/static/constants.js"></script>
       <script type="module" src="/static/api-client.js"></script>
       <script type="module" src="/static/project-manager.js"></script>
       <script type="module" src="/static/ui-renderer.js"></script>
+      <script type="module" src="/static/execution-engine.js"></script>
+      <script type="module" src="/static/real-time-timer.js"></script>
       <script type="module" src="/static/app-v3.js"></script>
       
       {/* Legacy tracking scripts (for backward compatibility) */}

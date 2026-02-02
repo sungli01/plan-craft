@@ -1,12 +1,15 @@
-// Plan-Craft v3.0 - Main Application
+// Plan-Craft v3.1 - Main Application
 // ====================================
-// Modular, robust, and maintainable architecture
-// Imports all modules and orchestrates the application
+// DOCUMENT GENERATION SYSTEM - NOT A CODING TOOL
+// This system creates planning documents, validates hypotheses,
+// and provides prototype documentation - NOT programming code
 
 import './constants.js';
 import apiClient from './api-client.js';
 import projectManager from './project-manager.js';
 import uiRenderer from './ui-renderer.js';
+import executionEngine from './execution-engine.js';
+import realTimeTimer from './real-time-timer.js';
 import { APP_CONFIG } from './constants.js';
 
 /**
@@ -27,7 +30,7 @@ class PlanCraftApp {
       return;
     }
 
-    console.log('[Plan-Craft v3.0] 🚀 Starting initialization...');
+    console.log('[Plan-Craft v3.1] 🚀 Starting initialization...');
 
     try {
       // Initialize UI
@@ -46,8 +49,8 @@ class PlanCraftApp {
       this.startRefreshLoops();
       
       this.initialized = true;
-      console.log('[Plan-Craft v3.0] ✅ Initialization complete');
-      uiRenderer.addLog('SUCCESS', '시스템 초기화 완료');
+      console.log('[Plan-Craft v3.1] ✅ Initialization complete');
+      uiRenderer.addLog('SUCCESS', '📋 문서 생성 시스템 초기화 완료');
 
     } catch (error) {
       console.error('[App] Initialization failed:', error);
@@ -222,14 +225,16 @@ class PlanCraftApp {
       // Refresh UI
       await this.refreshProjects();
 
-      // Start execution if available
-      if (typeof window.executeAllPhasesWithTracking === 'function') {
-        uiRenderer.addLog('INFO', '🚀 실행 시작...');
-        window.executeAllPhasesWithTracking(project.projectId).catch(err => {
-          console.error('[Execution Error]', err);
-          uiRenderer.addLog('ERROR', `실행 오류: ${err.message}`);
-        });
-      }
+      // Start REAL-TIME TIMER
+      realTimeTimer.start(project.projectId);
+
+      // Start EXECUTION ENGINE
+      uiRenderer.addLog('INFO', '🚀 문서 생성 실행 시작...');
+      executionEngine.executeProject(project.projectId).catch(err => {
+        console.error('[Execution Error]', err);
+        uiRenderer.addLog('ERROR', `실행 오류: ${err.message}`);
+        realTimeTimer.stop(project.projectId);
+      });
 
     } catch (error) {
       console.error('[App] Project creation failed:', error);
@@ -317,18 +322,25 @@ class PlanCraftApp {
    * Handle stop all
    */
   async handleStopAll() {
-    const count = projectManager.getProjectCount();
-    if (count === 0) {
+    const projects = projectManager.getAllProjects();
+    if (projects.length === 0) {
       uiRenderer.showError('중지 불가', '진행 중인 프로젝트가 없습니다.');
       return;
     }
 
-    if (!confirm(`모든 프로젝트(${count}개)를 중지하시겠습니까?`)) {
+    if (!confirm(`모든 프로젝트(${projects.length}개)를 중지하시겠습니까?`)) {
       return;
     }
 
     try {
       uiRenderer.addLog('INFO', '모든 프로젝트 중지 중...');
+      
+      // Stop all timers
+      projects.forEach(p => {
+        realTimeTimer.stop(p.projectId);
+        executionEngine.cancelExecution(p.projectId);
+      });
+      
       await projectManager.pauseAll();
       uiRenderer.addLog('SUCCESS', '모든 프로젝트가 중지되었습니다');
       await this.refreshProjects();
@@ -348,18 +360,25 @@ class PlanCraftApp {
    * Handle cancel all
    */
   async handleCancelAll() {
-    const count = projectManager.getProjectCount();
-    if (count === 0) {
+    const projects = projectManager.getAllProjects();
+    if (projects.length === 0) {
       uiRenderer.showError('취소 불가', '진행 중인 프로젝트가 없습니다.');
       return;
     }
 
-    if (!confirm(`모든 프로젝트(${count}개)를 취소하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
+    if (!confirm(`모든 프로젝트(${projects.length}개)를 취소하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
       return;
     }
 
     try {
       uiRenderer.addLog('WARN', '모든 프로젝트 취소 중...');
+      
+      // Stop all timers and executions
+      projects.forEach(p => {
+        realTimeTimer.stop(p.projectId);
+        executionEngine.cancelExecution(p.projectId);
+      });
+      
       await projectManager.cancelAll();
       uiRenderer.addLog('SUCCESS', '모든 프로젝트가 취소되었습니다');
       await this.refreshProjects();

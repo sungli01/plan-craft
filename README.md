@@ -1,441 +1,471 @@
-# Plan-Craft v2.5 - AI 자율 풀스택 개발 엔진
-
-**Code-First Edition** - 작동하는 코드가 모든 것의 중심입니다.
-
-## 🎯 프로젝트 개요
-
-사용자의 아이디어를 입력받아 **상용화 가능한 수준의 완성된 소프트웨어**를 자동으로 개발하고 배포하는 완전 자율형 AI 풀스택 개발 엔진입니다.
-
-### 핵심 원칙
-
-1. **Code-First**: 문서가 아닌 작동하는 코드를 우선 생성
-2. **Strict Quality Gate**: 빌드 100% 성공, 테스트 커버리지 95% 이상 필수
-3. **Full Autonomy**: 비개발자도 사용 가능한 완전 자율 시스템
-
-## 🌐 URL
-
-- **Production**: https://plan-craft.pages.dev ✅ **LIVE**
-- **Latest Deployment**: https://17f2610b.plan-craft.pages.dev
-- **GitHub Repository**: https://github.com/sungli01/plan-craft
-- **설계서 v2.4**: [PLAN_CRAFT_SPECIFICATION_V2.4.md](./PLAN_CRAFT_SPECIFICATION_V2.4.md)
-- **구현 보고서 v2.4**: [IMPLEMENTATION_REPORT_V2.4.md](./IMPLEMENTATION_REPORT_V2.4.md)
-- **Sandbox Dev**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
-- **API Base**: `/api`
-
-## ✨ v2.5 최신 기능 (NEW!)
-
-### 🤖 AI 모델 정보 대시보드 (신규!)
-
-#### 1. 활성 AI 모델 카드
-- ✅ **Master Orchestrator (Claude 3.5 Sonnet)**
-  - 전체 프로세스 조율 및 의사결정
-  - 복잡한 추론 능력
-  - 상태: 활성화 ✓
-  
-- ✅ **Code Agent (GPT-4 Turbo)**
-  - 코드 생성 및 구현
-  - 128K 컨텍스트 (대규모 코드베이스)
-  - 상태: 활성화 ✓
-  
-- ✅ **Quality Agent (GPT-4o-mini)**
-  - 품질 검증 및 테스트
-  - 빠르고 경제적
-  - 상태: 활성화 ✓
-  
-- ✅ **DevOps Agent (Gemini 2.0 Flash)**
-  - 빌드 및 배포 자동화
-  - 초고속 처리
-  - 상태: 활성화 ✓
-
-> 💡 **왜 다른 모델을 사용하나요?** [AI 모델 선택 전략 문서](./AI_MODEL_STRATEGY.md)에서 자세한 설명을 확인하세요.
-
-#### 2. 개선된 프로젝트 제어
-- ✅ **일시중지 버튼**
-  - 프로젝트 일시 중지
-  - 시간 추적 자동 중단
-  - 시간 정보 UI 숨김 처리
-  
-- ✅ **취소 버튼 (신규!)**
-  - 프로젝트 완전 취소
-  - 확인 대화창으로 안전 보호
-  - 복구 불가능 경고
-
-#### 3. 스크롤 제거 - 전체 페이지 표시
-- ✅ **좌측 컬럼**
-  - 스크롤 제거
-  - 모든 콘텐츠 한 페이지에 표시
-  
-- ✅ **우측 컬럼**
-  - 빌드 로그 영역 고정 높이 제거
-  - 자연스러운 콘텐츠 흐름
-
-#### 4. 시간 추적 자동 제어
-- ✅ **일시중지 시**
-  - 시간 정보 자동 숨김
-  - 진행률 바 제거
-  - "시간 추적 중단" 로그 표시
-
-## v2.4 기능
-
-### 📱 반응형 단일 페이지 레이아웃
-
-#### 1. 2컬럼 그리드 레이아웃
-- ✅ **데스크톱 (XL 이상)**
-  - 좌측: 프로젝트 생성 폼 & 통계
-  - 우측: 파이프라인 & 빌드 로그
-  - 전체 화면을 활용한 효율적 배치
-  
-- ✅ **태블릿/모바일 (XL 미만)**
-  - 자동으로 단일 컬럼으로 전환
-  - 세로 스크롤 최적화
-  
-#### 2. 스크롤 영역 최적화
-- ✅ **좌측 컬럼**
-  - 독립적인 스크롤 영역
-  - 프로젝트 목록 최대 300px 스크롤
-  - 참조 문서 목록 최대 150px 스크롤
-  
-- ✅ **우측 컬럼**
-  - 빌드 로그가 남은 공간 전체 활용
-  - `flex-1`으로 자동 높이 조정
-  - 실시간 로그 스크롤
-
-#### 3. 컴팩트한 UI 요소
-- ✅ **간격 축소**
-  - `gap-4` (데스크톱: `gap-6`)
-  - `p-4` (데스크톱: `p-6`)
-  - 텍스트 크기 자동 조정
-  
-- ✅ **폼 최적화**
-  - textarea: 3줄 (이전 4줄)
-  - 파일 업로드: 컴팩트 버전
-  - 참조 문서: 최소 공간 사용
-
-#### 4. 높이 계산
-- ✅ **전체 레이아웃**
-  - `h-[calc(100vh-180px)]`: 헤더를 제외한 뷰포트 높이
-  - 스크롤 없이 한 화면에 모든 컨텐츠 표시
-  
-- ✅ **반응형 브레이크포인트**
-  - `xl:`: 1280px 이상 (2컬럼)
-  - `md:`: 768px 이상 (중간 크기)
-  - 기본: 768px 미만 (모바일)
-
-### 🎛️ 프로젝트 관리 대시보드 (신규!)
-
-#### 1. 진행 중인 프로젝트 목록
-- ✅ **실시간 프로젝트 현황 표시**
-  - 프로젝트 이름, ID, 현재 단계
-  - 진행률 프로그레스 바
-  - 상태 배지 (진행 중/일시중지/완료)
-- ✅ **빠른 접근**
-  - 상세보기 버튼
-  - 원클릭 중지 버튼
-- ✅ **자동 새로고침** (10초마다)
-
-#### 2. 예상 시간 계산 시스템
-- ✅ **단계별 시간 추정**
-  - G1 (핵심 로직): 3분
-  - G2 (API 서버): 4분
-  - G3 (UI 컴포넌트): 5분
-  - G4 (통합): 3분
-  - G5 (단위 테스트): 4분
-  - G6 (보안 스캔): 2분
-  - G7 (빌드 최적화): 2분
-  - G8 (배포): 3분
-  - G9 (문서화): 2분
-  - G10 (소스 이관): 1분
-  - **총 예상 시간: 약 29분**
-
-#### 3. 시간 표시 기능
-- ✅ **경과 시간 / 전체 시간**
-  - 예: "12분 / 29분"
-- ✅ **남은 시간 표시**
-  - 예: "17분 남음"
-- ✅ **시간 진행률 바**
-  - 오렌지-레드 그라데이션
-  - 실시간 업데이트
-
-#### 4. 프로젝트 제어
-- ✅ **대시보드에서 바로 중지**
-  - 확인 대화상자 표시
-  - 안전한 프로젝트 종료
-- ✅ **상세 페이지 제어 버튼**
-  - 일시중지/재개
-  - 취소
-  - 업그레이드
-  - PDF 출력
-
-### 📄 스마트 PDF 자동 분할 (신규!)
-
-#### 1. 페이지 수 자동 추정
-- ✅ **섹션별 페이지 수 정확 계산**
-  - 텍스트 내용 (45줄/페이지 기준)
-  - 이미지 (각 1/3 페이지)
-  - 코드 블록 (20% 추가 공간)
-- ✅ **전체 문서 페이지 수 표시**
-
-#### 2. 50페이지 단위 자동 분할
-- ✅ **대용량 문서 자동 분할**
-  - 50페이지 초과 시 자동으로 여러 파트로 분할
-  - 섹션 단위로 분할 (중간에 잘리지 않음)
-  - Part 1 of 3, Part 2 of 3 형식
-- ✅ **브라우저 메모리 한계 극복**
-- ✅ **빠른 생성 및 다운로드**
-
-#### 3. 멀티 파트 다운로드 UI
-- ✅ **개별 파트 다운로드**
-  - Part 1, Part 2, Part 3... 버튼
-  - 원하는 파트만 선택 가능
-- ✅ **전체 다운로드 버튼**
-  - 모든 파트를 순차적으로 다운로드
-  - 자동으로 500ms 간격 적용
-- ✅ **다운로드 진행 상황 실시간 표시**
-
-### 🆕 향상된 참조 문서 UX
-
-#### 1. 드래그 앤 드롭 파일 업로드
-- ✅ **파일을 드래그해서 바로 첨부**
-  - 이미지 파일 (PNG, JPG, GIF 등)
-  - 문서 파일 (PDF, TXT, MD, DOC 등)
-  - 코드 파일 (JS, TS, CSS, HTML 등)
-- ✅ **다중 파일 선택 지원**
-- ✅ **실시간 파일 크기 표시**
-- ✅ **파일 타입별 아이콘 구분**
-- ✅ **드래그 시 시각적 피드백** (하이라이트 효과)
-
-#### 2. URL 자동 감지 및 추출
-- ✅ **아이디어 설명란에 URL 복사-붙여넣기**
-  - 텍스트에서 URL 자동 감지
-  - 여러 개의 URL 동시 감지
-  - 원클릭으로 참조 문서로 추가
-- ✅ **실시간 URL 카운트 표시**
-- ✅ **도메인 이름 자동 추출**
-
-#### 3. 통합 참조 문서 관리
-- ✅ **모든 참조 타입을 하나의 리스트로 통합**
-  - URL 참조 (링크 아이콘)
-  - 파일 참조 (파일 아이콘)
-  - 이미지 참조 (이미지 아이콘)
-- ✅ **개별 삭제 버튼**
-- ✅ **색상 구분 (Purple/Blue/Pink)**
-- ✅ **Hover 효과 및 애니메이션**
-
-### 사용 방법
-
-#### 방법 1: 드래그 앤 드롭
-```
-1. 프로젝트 생성 폼에서 "파일을 여기에 드래그 앤 드롭" 영역 찾기
-2. 파일 탐색기에서 파일 선택
-3. 드래그해서 영역에 드롭
-4. 자동으로 참조 문서 리스트에 추가됨
-```
-
-#### 방법 2: URL 복사-붙여넣기
-```
-1. 아이디어 설명란에 프로젝트 설명 입력
-2. 참조하고 싶은 URL을 복사해서 붙여넣기
-   예:
-   "온라인 쇼핑몰을 만들고 싶습니다.
-   https://stripe.com/docs/api
-   https://tailwindcss.com/docs"
-3. "N개의 URL이 감지되었습니다" 메시지 확인
-4. "참조로 추가" 버튼 클릭
-5. 자동으로 참조 문서 리스트에 추가됨
-```
-
-#### 방법 3: 파일 선택 버튼
-```
-1. "파일 선택" 버튼 클릭
-2. 파일 탐색기에서 파일 선택 (다중 선택 가능)
-3. 자동으로 참조 문서 리스트에 추가됨
-```
-
-## ✨ v2.0 기존 기능
-
-### 🆕 Feature 1: 참조 문서/링크 추가
-- ✅ 프로젝트 생성 시 참조 URL 첨부 가능
-- ✅ 여러 개의 참조 문서 추가 지원
-- ✅ 참조 문서 목록 관리
-
-### 🆕 Feature 2: 프로젝트 제어
-- ✅ **일시중지(Pause)**: 개발 진행 일시 중단
-- ✅ **재개(Resume)**: 일시중지된 프로젝트 계속 진행
-- ✅ **취소(Cancel)**: 프로젝트 영구 종료
-
-### 🆕 Feature 3: 프로젝트 업그레이드
-- ✅ 완료된 프로젝트에 추가 기능 요청
-- ✅ 업그레이드 이력 관리
-- ✅ 실시간 업그레이드 진행 상황 확인
-
-### 🆕 Feature 4: 밝은 디자인 테마
-- ✅ 그라데이션 배경 (Purple & Pink)
-- ✅ Glass-morphism UI 스타일
-- ✅ 부드러운 애니메이션 효과
-- ✅ 향상된 가독성 및 접근성
-
-### 🆕 Feature 5: PDF 문서 출력
-- ✅ 프로젝트 문서 자동 생성
-- ✅ AI 이미지 생성 프롬프트
-- ✅ 전문적인 PDF 레이아웃
-
-## 📊 v1.0 기존 기능
-
-### Phase 1: Core Implementation ✅
-- ✅ Pipeline State Manager
-- ✅ Quality Gate Validator
-- ✅ Agent Protocol
-- ✅ Build Logger
-
-### Phase 2: API Server ✅
-- ✅ 22개 REST API 엔드포인트
-
-### Phase 3: Frontend UI ✅
-- ✅ DevOps 대시보드 스타일 UI
-- ✅ 실시간 파이프라인 뷰어
-- ✅ 터미널 콘솔
-
-## 📈 API 엔드포인트 (v2.1)
-
-총 **22개 API 엔드포인트** (변동 없음, UX만 개선)
-
-| Method | Endpoint | Description | Version |
-|--------|----------|-------------|---------|
-| POST | `/api/projects` | 새 프로젝트 생성 (참조 지원) | v2.0 |
-| GET | `/api/projects/:id` | 프로젝트 조회 | v1.0 |
-| POST | `/api/projects/:id/pause` | 일시중지 | v2.0 |
-| POST | `/api/projects/:id/resume` | 재개 | v2.0 |
-| POST | `/api/projects/:id/cancel` | 취소 | v2.0 |
-| POST | `/api/projects/:id/references` | 참조 추가 | v2.0 |
-| GET | `/api/projects/:id/references` | 참조 목록 | v2.0 |
-| POST | `/api/projects/:id/upgrade` | 업그레이드 요청 | v2.0 |
-| GET | `/api/projects/:id/upgrades` | 업그레이드 이력 | v2.0 |
-| POST | `/api/projects/:id/export/pdf` | PDF 생성 | v2.0 |
-| ... | ... | ... | ... |
-
-## 🎨 UX 개선사항 (v2.1)
-
-### Before (v2.0) → After (v2.1)
-
-#### 참조 문서 추가 방식
-```
-v2.0: URL 입력 필드에 직접 타이핑 → 추가 버튼 클릭
-v2.1: 
-  ✅ 드래그 앤 드롭으로 파일 바로 첨부
-  ✅ 아이디어 란에 URL 붙여넣기 → 자동 감지
-  ✅ 파일 선택 버튼 (다중 선택)
-```
-
-#### UI 개선
-```
-v2.0: 수동 입력 + 작은 리스트
-v2.1:
-  ✅ 큰 드롭존 (시각적 피드백)
-  ✅ URL 감지 알림 (실시간)
-  ✅ 타입별 아이콘 구분
-  ✅ 개선된 리스트 디자인
-```
-
-### 새로운 UI 요소
-
-1. **드롭존 영역**
-   - 크고 눈에 띄는 업로드 영역
-   - 드래그 시 색상 변경
-   - 클라우드 업로드 아이콘
-
-2. **URL 감지 알림**
-   - 자동 URL 카운트
-   - 원클릭 추가 버튼
-   - 3초 자동 사라짐 성공 메시지
-
-3. **통합 참조 리스트**
-   - 색상별 아이콘 (Link/File/Image)
-   - 파일 크기 표시
-   - 개별 삭제 버튼
-
-## 🔧 기술적 개선사항 (v2.1)
-
-### 프론트엔드 기능
-- ✅ **드래그 앤 드롭 이벤트 핸들링**
-  - dragenter, dragover, dragleave, drop
-  - 기본 동작 방지
-  - 시각적 피드백
-  
-- ✅ **파일 읽기 (FileReader API)**
-  - 텍스트 파일: 내용 읽기
-  - 이미지 파일: Base64 인코딩
-  - 기타 파일: 메타데이터만 저장
-
-- ✅ **URL 파싱 (정규표현식)**
-  - HTTP/HTTPS URL 자동 감지
-  - 도메인 추출
-  - 중복 제거
-
-### 코드 품질
-- ✅ 타입 안전성 유지
-- ✅ 에러 처리 개선
-- ✅ 사용자 피드백 강화
-
-## 📝 변경 이력
-
-### v2.1 (2026-01-31) - UX 개선
-- ✅ 드래그 앤 드롭 파일 업로드
-- ✅ 아이디어 란에서 URL 자동 감지
-- ✅ 통합 참조 문서 관리
-- ✅ 개선된 시각적 피드백
-- ✅ 다중 파일 지원
-- ✅ 파일 타입별 아이콘
-- ✅ 파일 크기 표시
-
-### v2.0 (2026-01-31)
-- ✅ Feature 1: 참조 문서/링크 추가
-- ✅ Feature 2: 프로젝트 중단/재개/취소
-- ✅ Feature 3: 프로젝트 업그레이드
-- ✅ Feature 4: 밝은 디자인 테마
-- ✅ Feature 5: PDF 문서 출력
-- ✅ API 엔드포인트 12개 → 22개
-
-### v1.0 (2026-01-31)
-- ✅ G1-G10 개발 파이프라인 구현
-- ✅ 12개 REST API 엔드포인트
-- ✅ DevOps 대시보드 UI
-- ✅ 98.63% 테스트 커버리지
-
-## 🎓 Code-First 원칙 준수
-
-✅ **모든 산출물의 핵심은 '작동하는 코드'**
-- 문서는 코드 완성 후 자동 생성됨
-- 기획서 없이 즉시 코드 작성 시작
-
-✅ **Strict Quality Gate 통과**
-- 빌드 오류 → 즉시 REJECT 및 자동 수정
-- 테스트 커버리지 95% 미만 → REJECT
-- 보안 이슈 → REJECT
-
-✅ **완전 자율성 달성**
-- 사용자는 아이디어만 입력
-- AI가 모든 기술 결정 자동 수행
-- 비개발자도 사용 가능
+# Plan-Craft v3.1 - AI 자율 문서 생성 시스템
+
+## 📋 프로젝트 개요
+
+**Plan-Craft**는 AI 기반 문서 생성 시스템입니다. 이 시스템은 **코딩 도구가 아니라 문서 작성 도구**입니다.
+
+### 🎯 핵심 목적
+
+- ✅ **기획 보고서 작성**: 프로젝트 기획서, 제안서, 계획서 생성
+- ✅ **가설 검증**: 아이디어의 타당성 분석 및 검증
+- ✅ **프로토타입 문서화**: 프로토타입 설계 문서 제공
+- ❌ **프로그램 코드 작성 아님**: 실제 코드가 아닌 문서 중심
+
+### 🚀 주요 특징
+
+1. **4개 AI 에이전트 협업**
+   - Master Orchestrator (Claude 3.5 Sonnet)
+   - Code Agent (GPT-4 Turbo)
+   - Quality Agent (GPT-4o-mini)
+   - DevOps Agent (Gemini 2.0 Flash)
+
+2. **10단계 문서 생성 프로세스**
+   - G1: 핵심 로직 구현
+   - G2: API 서버 구축
+   - G3: UI 컴포넌트 개발
+   - G4: 시스템 통합
+   - G5: 단위 테스트
+   - G6: 보안 스캔
+   - G7: 빌드 최적화
+   - G8: 배포 준비
+   - G9: 문서화
+   - G10: 최종 인수인계
+
+3. **실시간 진행 상황 추적**
+   - 1초 단위 시간 카운터
+   - 10초 단위 UI 업데이트
+   - 프로그레스 바 실시간 업데이트
+   - 상세한 로그 출력
+
+4. **최대 3개 프로젝트 동시 진행**
+   - 각 프로젝트 독립적 실행
+   - 개별 타이머 관리
+   - 중지/재개/취소 지원
 
 ---
 
-## 🚀 즉시 사용 가능
+## 🏗️ 모듈형 아키텍처
 
-**지금 바로 Plan-Craft v2.1을 사용해보세요:**
+### 📦 모듈 구조
 
-1. **웹 브라우저 접속**: https://3000-i5y2r8i7qfa5gukpxw2ov-a402f90a.sandbox.novita.ai
+```
+Plan-Craft v3.1
+├── constants.js          (4.3 KB)  - 핵심 상수 및 설정
+├── api-client.js         (3.9 KB)  - API 통신 레이어
+├── project-manager.js    (7.2 KB)  - 프로젝트 관리 로직
+├── ui-renderer.js        (9.1 KB)  - UI 렌더링 레이어
+├── execution-engine.js   (9.5 KB)  - 실행 엔진 (NEW)
+├── real-time-timer.js    (3.7 KB)  - 실시간 타이머 (NEW)
+└── app-v3.js            (10.8 KB)  - 메인 애플리케이션
+```
 
-2. **프로젝트 생성** (향상된 UX):
-   - 프로젝트 이름: "AI 블로그 플랫폼"
-   - 아이디어: "마크다운 지원 블로그
-                 https://stripe.com/docs
-                 https://api.github.com"
-   - 파일: 디자인 이미지를 드래그 앤 드롭
+### 🔧 각 모듈 설명
 
-3. **자동 참조 감지**: URL이 자동으로 감지되고 추가됨
+#### 1. **constants.js** - 단일 진실의 원천 (Single Source of Truth)
 
-4. **자동 개발 시작**: AI가 코드 생성, 테스트, 배포
+모든 설정 값과 상수를 중앙에서 관리합니다.
+
+```javascript
+// 주요 상수
+- PHASE_DURATION: 각 단계별 소요 시간 (분)
+- PHASE_ORDER: 실행 순서
+- PHASE_TO_MODEL: 단계별 AI 모델 매핑
+- MODEL_TO_AGENT: AI 모델별 에이전트 이름
+- APP_CONFIG: 애플리케이션 설정
+  - API_BASE: '/api'
+  - MAX_PROJECTS: 3
+  - MAX_LOGS: 10
+  - STATS_REFRESH_INTERVAL: 5000ms
+  - PROJECTS_REFRESH_INTERVAL: 10000ms
+  - TIME_UPDATE_INTERVAL: 10000ms
+```
+
+**사용 예시:**
+```javascript
+import { PHASE_DURATION, APP_CONFIG } from './constants.js';
+
+const duration = PHASE_DURATION['G1_CORE_LOGIC']; // 3분
+const maxProjects = APP_CONFIG.MAX_PROJECTS; // 3
+```
+
+#### 2. **api-client.js** - API 통신 레이어
+
+모든 백엔드 API 호출을 중앙에서 관리합니다.
+
+```javascript
+// 주요 메서드
+- request(endpoint, options): 범용 HTTP 요청
+- get(endpoint): GET 요청
+- post(endpoint, body): POST 요청
+- createProject(projectData): 프로젝트 생성
+- pauseProject(projectId): 프로젝트 중지
+- cancelProject(projectId): 프로젝트 취소
+- getStats(): 통계 조회
+- getActiveProjects(): 활성 프로젝트 목록
+```
+
+**사용 예시:**
+```javascript
+import apiClient from './api-client.js';
+
+const result = await apiClient.createProject({
+  projectName: '신제품 기획서',
+  userIdea: '혁신적인 AI 기반 서비스',
+  outputFormat: 'pdf'
+});
+```
+
+#### 3. **project-manager.js** - 비즈니스 로직
+
+프로젝트 상태 관리 및 비즈니스 규칙을 담당합니다.
+
+```javascript
+// 주요 메서드
+- init(): 초기화
+- loadProjects(): 프로젝트 목록 로드
+- createProject(projectData): 프로젝트 생성
+- pauseProject(projectId): 중지
+- cancelProject(projectId): 취소
+- calculateTimeInfo(project): 시간 정보 계산
+- formatTimeMinutes(minutes): 시간 포맷팅
+```
+
+**주요 기능:**
+- 최대 프로젝트 수 제한 (3개)
+- 프로젝트 생명주기 관리
+- 시간 계산 및 포맷팅
+- 자동 새로고침
+
+#### 4. **ui-renderer.js** - UI 레이어
+
+모든 DOM 조작과 화면 업데이트를 담당합니다.
+
+```javascript
+// 주요 메서드
+- init(): UI 초기화
+- renderProjects(projects): 프로젝트 목록 렌더링
+- createProjectCard(project): 프로젝트 카드 생성
+- updateProjectTimeDisplay(projectId): 시간 표시 업데이트
+- updateStats(stats): 통계 업데이트
+- addLog(level, message): 로그 추가
+- showError(title, message): 에러 모달 표시
+```
+
+**특징:**
+- 비즈니스 로직 분리
+- 엘리먼트 캐싱으로 성능 최적화
+- XSS 방지 (HTML 이스케이프)
+- 최대 10개 로그 유지
+
+#### 5. **execution-engine.js** - 실행 엔진 (NEW)
+
+문서 생성 프로세스를 실행하고 관리합니다.
+
+```javascript
+// 주요 메서드
+- executeProject(projectId): 프로젝트 실행
+- executePhase(projectId, phase, ...): 단계 실행
+- simulatePhaseExecution(...): 단계별 진행 시뮬레이션
+- handleProjectCompletion(projectId): 완료 처리
+- showCompletionModal(...): 완료 모달 표시
+- downloadDocument(projectId): 문서 다운로드
+- cancelExecution(projectId): 실행 취소
+```
+
+**특징:**
+- 10단계 순차 실행
+- 각 단계를 10개 스텝으로 세분화
+- 상세한 진행 상황 로깅
+- AI 모델 트래킹 통합
+- 완료 시 출력 형식 선택 모달
+
+#### 6. **real-time-timer.js** - 실시간 타이머 (NEW)
+
+1초 정밀도의 타이머를 관리합니다.
+
+```javascript
+// 주요 메서드
+- start(projectId): 타이머 시작 (1초 카운터)
+- stop(projectId): 타이머 중지
+- getElapsed(projectId): 경과 시간 조회 (초)
+- formatTime(seconds): 시간 포맷팅
+- updateUI(projectId): UI 업데이트 (10초마다)
+```
+
+**특징:**
+- 1초 단위 정밀 카운팅
+- 10초 단위 UI 업데이트
+- 프로젝트별 독립 타이머
+- 자동 포맷팅 (초/분/시간)
+
+#### 7. **app-v3.js** - 메인 애플리케이션
+
+모든 모듈을 통합하고 애플리케이션을 실행합니다.
+
+```javascript
+// 주요 메서드
+- init(): 애플리케이션 초기화
+- setupEventHandlers(): 이벤트 핸들러 설정
+- handleProjectCreation(e): 프로젝트 생성 처리
+- handleStopAll(): 모든 프로젝트 중지
+- handleCancelAll(): 모든 프로젝트 취소
+- refreshProjects(): 프로젝트 목록 새로고침
+- refreshStats(): 통계 새로고침
+```
+
+**특징:**
+- 모듈 오케스트레이션
+- 이벤트 관리
+- 자동 새로고침 루프
+- 파일 업로드 처리
 
 ---
 
-**[Tech Lead] Plan-Craft v2.1 UX 개선 완료 - 드래그 앤 드롭 + URL 자동 감지 구현 완료. 🎉**
+## 🔄 모듈 간 의존성
+
+```
+app-v3.js (진입점)
+├── constants.js ✓
+├── api-client.js
+│   └── constants.js ✓
+├── project-manager.js
+│   ├── api-client.js ✓
+│   └── constants.js ✓
+├── ui-renderer.js
+│   ├── project-manager.js ✓
+│   └── constants.js ✓
+├── execution-engine.js
+│   ├── project-manager.js ✓
+│   ├── ui-renderer.js ✓
+│   └── constants.js ✓
+└── real-time-timer.js
+    └── project-manager.js ✓
+```
+
+### 📊 의존성 규칙
+
+1. **constants.js**: 독립 모듈, 의존성 없음
+2. **api-client.js**: constants만 의존
+3. **project-manager.js**: api-client + constants
+4. **ui-renderer.js**: project-manager + constants
+5. **execution-engine.js**: project-manager + ui-renderer + constants
+6. **real-time-timer.js**: project-manager
+7. **app-v3.js**: 모든 모듈 통합
+
+---
+
+## 📁 프로젝트 구조
+
+```
+/home/user/webapp/
+├── src/
+│   ├── index.tsx                 # Hono 메인 애플리케이션
+│   ├── renderer.tsx              # HTML 렌더러
+│   └── api/
+│       └── routes.ts             # API 라우트
+├── public/
+│   └── static/
+│       ├── constants.js          # ⭐ 핵심 상수
+│       ├── api-client.js         # ⭐ API 클라이언트
+│       ├── project-manager.js    # ⭐ 프로젝트 관리
+│       ├── ui-renderer.js        # ⭐ UI 렌더러
+│       ├── execution-engine.js   # ⭐ 실행 엔진
+│       ├── real-time-timer.js    # ⭐ 실시간 타이머
+│       ├── app-v3.js             # ⭐ 메인 앱
+│       ├── enhanced-tracking.js  # Legacy: AI 트래킹
+│       ├── real-execution.js     # Legacy: 실행 시스템
+│       └── aggressive-debug.js   # Legacy: 디버그
+├── dist/                         # 빌드 출력
+├── package.json
+├── vite.config.ts
+├── wrangler.jsonc                # Cloudflare 설정
+└── README.md                     # 이 파일
+```
+
+---
+
+## 🚀 사용 방법
+
+### 1. 개발 환경 실행
+
+```bash
+# 의존성 설치
+npm install
+
+# 빌드
+npm run build
+
+# PM2로 서비스 시작
+pm2 start ecosystem.config.cjs
+
+# 로그 확인
+pm2 logs plan-craft --nostream
+```
+
+### 2. 프로젝트 생성
+
+1. **프로젝트 이름 입력**: 예) "신제품 출시 계획서"
+2. **아이디어 설명**: 상세한 프로젝트 설명 작성
+3. **참조 문서 업로드** (선택사항): 이미지, PDF, 문서 파일
+4. **출력 형식 선택**: HTML 또는 PDF
+5. **"문서 생성 시작"** 클릭
+
+### 3. 진행 상황 확인
+
+- **AI 에이전트 상태**: 상단의 4개 에이전트 카드에서 현재 작업 중인 모델 확인
+- **프로젝트 카드**: 경과 시간, 남은 시간, 진행률 실시간 표시
+- **빌드 로그**: 상세한 단계별 진행 로그 (최신 10개)
+- **시스템 통계**: 전체/진행 중/일시정지/완료 카운트
+
+### 4. 프로젝트 제어
+
+- **중지**: 모든 프로젝트 일시 중지
+- **일부취소**: 특정 프로젝트만 취소 (개발 예정)
+- **전체취소**: 모든 프로젝트 취소
+
+### 5. 문서 다운로드
+
+프로젝트 완료 시 자동으로 팝업이 표시되며, 출력 형식(HTML/PDF)을 선택하여 다운로드할 수 있습니다.
+
+---
+
+## 🎨 UI 레이아웃
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Master] [Code] [Quality] [DevOps] ← AI 에이전트 상태  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  진행 중인 문서 (최대 3개)          [중지]              │
+│  ┌──────────────────────────┐      [일부취소]          │
+│  │ 프로젝트 1               │      [전체취소]          │
+│  │ ▓▓▓▓▓▓▓▓░░░░ 60%        │                          │
+│  │ 경과: 3분 25초 | 남음: 2분│                          │
+│  └──────────────────────────┘                          │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│  새 프로젝트 시작                                        │
+│  [프로젝트 이름]  [아이디어 설명]                        │
+│  [파일 업로드]    [○ HTML  ○ PDF]                       │
+│  [문서 생성 시작]                                        │
+├─────────────────────────────────────────────────────────┤
+│  시스템 통계      │  빌드 로그                           │
+│  [전체: 0]       │  > [시간] INFO: 로그 메시지           │
+│  [진행: 0]       │  > [시간] SUCCESS: 완료               │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔧 기술 스택
+
+- **Frontend**: Hono + TypeScript + TailwindCSS
+- **Backend**: Hono (Cloudflare Workers)
+- **Build**: Vite + TypeScript
+- **Deployment**: Cloudflare Pages
+- **Process Manager**: PM2 (개발 환경)
+
+---
+
+## 📝 개발 가이드
+
+### 새 모듈 추가 방법
+
+1. **모듈 생성**: `/public/static/my-module.js`
+2. **ES6 모듈 형식 사용**:
+```javascript
+import { APP_CONFIG } from './constants.js';
+
+class MyModule {
+  // ...
+}
+
+const myModule = new MyModule();
+export default myModule;
+
+if (typeof window !== 'undefined') {
+  window.myModule = myModule;
+}
+```
+
+3. **index.tsx에 추가**:
+```tsx
+<script type="module" src="/static/my-module.js"></script>
+```
+
+4. **의존성 임포트**:
+```javascript
+import myModule from './my-module.js';
+```
+
+### 코딩 규칙
+
+- ✅ **단일 책임 원칙**: 각 모듈은 하나의 명확한 책임
+- ✅ **의존성 최소화**: 필요한 모듈만 임포트
+- ✅ **에러 처리**: 모든 async 함수에 try-catch
+- ✅ **로깅**: 중요한 동작은 console.log
+- ✅ **주석**: 각 함수에 JSDoc 주석
+- ✅ **타입 안전**: TypeScript 또는 JSDoc 타입
+
+---
+
+## 🐛 트러블슈팅
+
+### Q: 프로젝트가 생성되지 않아요
+A: 브라우저 콘솔(F12)을 열어 에러 메시지를 확인하세요. API 서버가 정상 작동 중인지 확인하세요.
+
+### Q: 시간이 업데이트되지 않아요
+A: `real-time-timer.js`가 로드되었는지 확인하세요. `window.realTimeTimer`가 정의되어 있어야 합니다.
+
+### Q: AI 에이전트 애니메이션이 작동하지 않아요
+A: `enhanced-tracking.js`가 로드되었는지 확인하세요. `window.aiModelTracker`가 정의되어 있어야 합니다.
+
+### Q: 모듈 로드 오류가 발생해요
+A: ES6 모듈은 `type="module"`이 필요합니다. 또한 `.js` 확장자를 명시해야 합니다.
+
+---
+
+## 📊 성능 지표
+
+- **번들 크기**: 80.91 kB
+- **모듈 수**: 7개 (v3.1)
+- **빌드 시간**: ~1초
+- **로드 시간**: < 100ms
+- **메모리 사용**: ~20MB (PM2)
+
+---
+
+## 🔐 보안
+
+- ✅ XSS 방지: HTML 이스케이프 처리
+- ✅ CSRF 방지: API 토큰 사용 (예정)
+- ✅ 입력 검증: 프론트엔드 + 백엔드 검증
+- ✅ 에러 메시지: 민감 정보 노출 방지
+
+---
+
+## 📄 라이선스
+
+MIT License
+
+---
+
+## 👥 기여
+
+이 프로젝트는 모듈형 아키텍처로 설계되어 있어 새로운 기능을 쉽게 추가할 수 있습니다.
+
+**기여 방법:**
+1. 새 모듈 작성
+2. 의존성 명시
+3. 테스트 작성
+4. Pull Request 제출
+
+---
+
+## 📞 문의
+
+문제가 발생하거나 질문이 있으시면 GitHub Issues를 통해 문의해주세요.
+
+---
+
+**Plan-Craft v3.1** - AI 자율 문서 생성 시스템 🚀
