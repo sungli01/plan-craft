@@ -282,8 +282,8 @@ app.get('/', (c) => {
               >
                 <div class="text-cyan-400">
                   ╔═══════════════════════════════════════════════╗<br/>
-                  ║  Plan-Craft v7.2.0 Console - Phase 2         ║<br/>
-                  ║  Document Generation Engine Ready            ║<br/>
+                  ║  Plan-Craft v7.2.0 Console - Phase 3         ║<br/>
+                  ║  AI Model Integration Complete               ║<br/>
                   ╚═══════════════════════════════════════════════╝
                 </div>
                 <div class="mt-2 text-yellow-400">
@@ -295,8 +295,11 @@ app.get('/', (c) => {
                 <div class="mt-1 text-green-400">
                   <span class="text-gray-500">[00:00:00]</span> ✓ Phase 2: Document + Diagram + Image + PDF
                 </div>
+                <div class="mt-1 text-green-400">
+                  <span class="text-gray-500">[00:00:00]</span> ✓ Phase 3: LLM Client + Model Strategy + Token Tracker
+                </div>
                 <div class="mt-1 text-cyan-400">
-                  <span class="text-gray-500">[00:00:00]</span> → Ready for professional report generation
+                  <span class="text-gray-500">[00:00:00]</span> → Ready for AI-powered report generation
                 </div>
               </div>
             </section>
@@ -321,6 +324,11 @@ app.get('/', (c) => {
       <script type="module" src="/static/diagram-generator.js"></script>
       <script type="module" src="/static/image-pipeline.js"></script>
       <script type="module" src="/static/pdf-converter.js"></script>
+      
+      <!-- Phase 3: AI Model Integration Modules -->
+      <script type="module" src="/static/llm-client.js"></script>
+      <script type="module" src="/static/model-strategy.js"></script>
+      <script type="module" src="/static/token-tracker.js"></script>
       
       <script type="module" src="/static/unified-core.js"></script>
       <script type="module" src="/static/app-v4.js"></script>
