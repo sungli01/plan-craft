@@ -6,18 +6,19 @@
 /**
  * Phase Configuration
  * Maps each development phase to its duration in minutes
+ * OPTIMIZED: Reduced by 60% for faster execution (29min → 12min base)
  */
 export const PHASE_DURATION = {
-  'G1_CORE_LOGIC': 3,
-  'G2_API_SERVER': 4,
-  'G3_UI_COMPONENTS': 5,
-  'G4_INTEGRATION': 3,
-  'G5_UNIT_TESTS': 4,
-  'G6_SECURITY_SCAN': 2,
-  'G7_BUILD_OPTIMIZATION': 2,
-  'G8_DEPLOYMENT': 3,
-  'G9_DOCUMENTATION': 2,
-  'G10_HANDOVER': 1
+  'G1_CORE_LOGIC': 1.2,    // 3 → 1.2
+  'G2_API_SERVER': 1.5,    // 4 → 1.5
+  'G3_UI_COMPONENTS': 2,   // 5 → 2
+  'G4_INTEGRATION': 1.2,   // 3 → 1.2
+  'G5_UNIT_TESTS': 1.5,    // 4 → 1.5
+  'G6_SECURITY_SCAN': 0.8, // 2 → 0.8
+  'G7_BUILD_OPTIMIZATION': 0.8, // 2 → 0.8
+  'G8_DEPLOYMENT': 1.2,    // 3 → 1.2
+  'G9_DOCUMENTATION': 0.8, // 2 → 0.8
+  'G10_HANDOVER': 0.5      // 1 → 0.5
 };
 
 /**

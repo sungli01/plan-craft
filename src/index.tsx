@@ -16,7 +16,7 @@ app.get('/', (c) => {
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.2.0-beta-phase2">
+      <meta name="version" content="7.3.1-progress-fixed">
       <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
       <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">

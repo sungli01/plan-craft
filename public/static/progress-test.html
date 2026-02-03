@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Progress Test - Time-based Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-case {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 진행바 동기화 테스트</h1>
+    
+    <div class="test-case">
+        <h2>Test Case 1: 이미지 데이터 (12분 11초 경과, 7분 49초 남음)</h2>
+        <p><strong>입력:</strong></p>
+        <ul>
+            <li>경과 시간: 12분 11초 = 731초</li>
+            <li>남은 시간: 7분 49초 = 469초</li>
+            <li>총 예상 시간: 731 + 469 = 1200초 (20분)</li>
+        </ul>
+        <p><strong>계산:</strong></p>
+        <div id="calc1"></div>
+        <div class="progress-bar">
+            <div id="progress1" class="progress-fill"></div>
+        </div>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 2: 단순 케이스 (10분 경과, 10분 남음)</h2>
+        <p><strong>입력:</strong></p>
+        <ul>
+            <li>경과 시간: 10분 = 600초</li>
+            <li>남은 시간: 10분 = 600초</li>
+            <li>총 예상 시간: 1200초 (20분)</li>
+        </ul>
+        <p><strong>계산:</strong></p>
+        <div id="calc2"></div>
+        <div class="progress-bar">
+            <div id="progress2" class="progress-fill"></div>
+        </div>
+        <div id="result2" class="result"></div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 3: 거의 완료 (18분 경과, 2분 남음)</h2>
+        <p><strong>입력:</strong></p>
+        <ul>
+            <li>경과 시간: 18분 = 1080초</li>
+            <li>남은 시간: 2분 = 120초</li>
+            <li>총 예상 시간: 1200초 (20분)</li>
+        </ul>
+        <p><strong>계산:</strong></p>
+        <div id="calc3"></div>
+        <div class="progress-bar">
+            <div id="progress3" class="progress-fill"></div>
+        </div>
+        <div id="result3" class="result"></div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 4: 현재 코드 시뮬레이션</h2>
+        <p><strong>시나리오:</strong> Phase 기반 vs 시간 기반 비교</p>
+        <div id="calc4"></div>
+        <div id="result4" class="result"></div>
+    </div>
+
+    <script>
+        // Test function
+        function testProgress(testId, elapsed, remaining) {
+            const total = elapsed + remaining;
+            const timeBasedProgress = total > 0 ? Math.min(100, Math.round((elapsed / total) * 100)) : 0;
+            
+            // Display calculation
+            document.getElementById(`calc${testId}`).innerHTML = `
+                <code>progress = (${elapsed} / ${total}) × 100 = ${timeBasedProgress}%</code>
+            `;
+            
+            // Update progress bar
+            const progressEl = document.getElementById(`progress${testId}`);
+            progressEl.style.width = `${timeBasedProgress}%`;
+            progressEl.textContent = `${timeBasedProgress}%`;
+            
+            return timeBasedProgress;
+        }
+        
+        // Run tests
+        function runTests() {
+            // Test 1: Image data (12min 11s elapsed, 7min 49s remaining)
+            const test1 = testProgress(1, 731, 469);
+            const expected1 = 61; // (731/1200)*100 = 60.92%
+            const result1 = document.getElementById('result1');
+            if (Math.abs(test1 - expected1) <= 1) {
+                result1.className = 'result pass';
+                result1.textContent = `✅ PASS: ${test1}% (예상: ${expected1}%, 오차: ${Math.abs(test1 - expected1)}%)`;
+            } else {
+                result1.className = 'result fail';
+                result1.textContent = `❌ FAIL: ${test1}% (예상: ${expected1}%, 오차: ${Math.abs(test1 - expected1)}%)`;
+            }
+            
+            // Test 2: Simple case (10min / 20min)
+            const test2 = testProgress(2, 600, 600);
+            const expected2 = 50;
+            const result2 = document.getElementById('result2');
+            if (test2 === expected2) {
+                result2.className = 'result pass';
+                result2.textContent = `✅ PASS: ${test2}% (예상: ${expected2}%)`;
+            } else {
+                result2.className = 'result fail';
+                result2.textContent = `❌ FAIL: ${test2}% (예상: ${expected2}%)`;
+            }
+            
+            // Test 3: Almost done (18min / 20min)
+            const test3 = testProgress(3, 1080, 120);
+            const expected3 = 90;
+            const result3 = document.getElementById('result3');
+            if (test3 === expected3) {
+                result3.className = 'result pass';
+                result3.textContent = `✅ PASS: ${test3}% (예상: ${expected3}%)`;
+            } else {
+                result3.className = 'result fail';
+                result3.textContent = `❌ FAIL: ${test3}% (예상: ${expected3}%)`;
+            }
+            
+            // Test 4: Phase-based vs Time-based comparison
+            const calc4 = document.getElementById('calc4');
+            const result4 = document.getElementById('result4');
+            
+            // Simulate 10 phases, 10 steps each = 100 steps total
+            // If at phase 3, step 2 => 32% (phase-based)
+            // If elapsed 731s / 1200s total => 61% (time-based)
+            const phaseBased = 32;
+            const timeBased = 61;
+            const difference = timeBased - phaseBased;
+            
+            calc4.innerHTML = `
+                <p><strong>Phase 기반 계산:</strong> Phase 3, Step 2 / 100 Steps = ${phaseBased}%</p>
+                <p><strong>시간 기반 계산:</strong> 731초 / 1200초 = ${timeBased}%</p>
+                <p><strong>차이:</strong> ${difference}% (${difference > 0 ? '시간이 더 빠름' : '단계가 더 빠름'})</p>
+            `;
+            
+            result4.className = 'result fail';
+            result4.innerHTML = `
+                <strong>⚠️ 이미지의 32% 진행바는 Phase 기반 계산입니다!</strong><br>
+                시간 기반으로 정확히 계산하면 <strong>${timeBased}%</strong>여야 합니다.<br>
+                <br>
+                <strong>문제 원인:</strong> updateAllUI()가 호출되지 않거나, executePhase()가 덮어쓰고 있을 가능성
+            `;
+        }
+        
+        // Run tests on load
+        runTests();
+        
+        // Update every second to show live calculation
+        setInterval(runTests, 1000);
+    </script>
+</body>
+</html>
