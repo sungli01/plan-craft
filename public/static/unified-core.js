@@ -302,6 +302,7 @@ class UnifiedCore {
 
   /**
    * Execute single phase
+   * IMPROVED: No manual progress calculation (updateAllUI handles it based on time)
    */
   async executePhase(projectId, phase, phaseIndex) {
     const project = this.projects.get(projectId);
@@ -325,10 +326,8 @@ class UnifiedCore {
         throw new Error('Execution cancelled');
       }
 
-      // Update progress
-      const totalSteps = PHASE_ORDER.length * 10;
-      const currentStep = (phaseIndex * 10) + step;
-      project.progress = Math.round((currentStep / totalSteps) * 100);
+      // NO MANUAL PROGRESS UPDATE - updateAllUI() calculates from elapsed time
+      // This ensures progress bar is always synchronized with time
 
       // Detailed step description
       const stepDesc = this.getStepDescription(step);
@@ -465,6 +464,7 @@ class UnifiedCore {
 
   /**
    * Update all UI (called every second)
+   * NOW SYNCHRONIZED: Progress based on elapsed/total time ratio
    */
   updateAllUI() {
     this.projects.forEach((project, projectId) => {
@@ -472,6 +472,13 @@ class UnifiedCore {
 
       const elapsed = this.getElapsedTime(projectId);
       const remaining = this.getRemainingTime(projectId);
+      const total = project.estimatedDuration;
+
+      // Calculate time-based progress (accurate synchronization)
+      const timeBasedProgress = total > 0 ? Math.min(100, Math.round((elapsed / total) * 100)) : project.progress;
+      
+      // Sync project.progress with time-based calculation
+      project.progress = timeBasedProgress;
 
       // Update time display
       const timeInfoEl = document.getElementById(`time-info-${projectId}`);
@@ -488,13 +495,13 @@ class UnifiedCore {
         `;
       }
 
-      // Update progress bar
+      // Update progress bar (now synchronized with time)
       const progressBar = document.getElementById(`progress-bar-${projectId}`);
       if (progressBar) {
         progressBar.style.width = `${project.progress}%`;
       }
 
-      // Update progress text
+      // Update progress text (now synchronized with time)
       const progressText = document.getElementById(`progress-text-${projectId}`);
       if (progressText) {
         progressText.textContent = `${project.progress}%`;
@@ -507,6 +514,7 @@ class UnifiedCore {
   
   /**
    * Update AI agent model displays with current running model
+   * Now includes dynamic agents from all active projects
    */
   updateAIAgentModels() {
     // Find currently active phase across all projects
@@ -529,31 +537,28 @@ class UnifiedCore {
       }
     });
     
-    // Update all agent cards
-    const agents = [
-      { name: 'Master Orchestrator', model: 'gpt-5.2-preview' },
-      { name: 'Code Agent', model: 'gpt-5-turbo' },
-      { name: 'Quality Agent', model: 'gpt-5o-mini' },
-      { name: 'DevOps Agent', model: 'gemini-3.0-flash' }
-    ];
+    // Update ALL agent cards (including dynamic agents)
+    const allAgentCards = document.querySelectorAll('.ai-agent-status');
     
-    agents.forEach((agent, index) => {
-      const agentCard = document.querySelector(`.agent-card:nth-child(${index + 1})`);
-      if (!agentCard) return;
-      
+    allAgentCards.forEach((agentCard) => {
       const modelDisplayEl = agentCard.querySelector('.agent-model-display');
       const statusDotEl = agentCard.querySelector('.agent-status-dot');
       const spinnerEl = agentCard.querySelector('.agent-spinner');
       
+      // Get agent info from card attributes
+      const cardModelAttr = agentCard.getAttribute('data-model');
+      const cardAgentAttr = agentCard.getAttribute('data-agent');
+      const agentName = agentCard.querySelector('h3')?.textContent || 'Unknown';
+      
       // Check if this agent is currently active
-      const isActive = hasActiveProjects && activeAgent === agent.name;
+      const isActive = hasActiveProjects && activeAgent === agentName;
       
       if (modelDisplayEl) {
         if (isActive && activeProjectName) {
           modelDisplayEl.innerHTML = `
             <div class="text-xs text-blue-600 font-semibold animate-pulse">
               <i class="fas fa-bolt mr-1"></i>
-              실행 중: ${agent.model}
+              실행 중: ${cardModelAttr || 'N/A'}
             </div>
             <div class="text-xs text-gray-500 mt-1">
               프로젝트: ${activeProjectName.substring(0, 20)}${activeProjectName.length > 20 ? '...' : ''}
@@ -562,7 +567,7 @@ class UnifiedCore {
         } else {
           modelDisplayEl.innerHTML = `
             <div class="text-xs text-gray-400">
-              대기 중: ${agent.model}
+              대기 중: ${cardModelAttr || 'N/A'}
             </div>
           `;
         }

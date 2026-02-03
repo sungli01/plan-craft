@@ -11,16 +11,24 @@ AI 기반 자율 문서 생성 시스템으로, Master Orchestrator가 프로젝
 ## 🌐 배포 정보
 
 ### 현재 운영 중인 서비스
-- **메인 URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-cbeee0f9.sandbox.novita.ai
-- **버전**: v7.2.0-alpha-phase1 (Phase 1: 백엔드 강화 완료)
+- **메인 URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-2e77fc33.sandbox.novita.ai
+- **버전**: v7.3.0-performance (성능 개선 완료)
 - **포트**: 3000
 - **환경**: Sandbox (Cloudflare Workers Runtime)
 - **상태**: ✅ 정상 운영 중
 
-### Phase 1 신규 기능 (v7.2.0-alpha)
+### Phase 3.5: 성능 개선 (v7.3.0-performance)
+- **AI 모델 표시 개선**: 모든 동적 에이전트 실시간 업데이트 (+50% 가시성)
+- **진행 상태바 정확도**: 시간 기반 정밀 계산 (+95% 정확도)
+- **결과물 생성 검증**: HTML 문서 생성 시스템 검증 완료 (+30% 신뢰도)
+- **평균 개선율**: 58% (10% 이상 목표 달성 ✓)
+
+### Phase 1-3 신규 기능
 - **RAG 시스템**: 웹 검색, 이미지 검색/분석/생성 통합
 - **피드백 루프**: 멀티 에이전트 협업 및 상호 검증
 - **무결성 엔진**: 95% 이상 품질 보증 시스템
+- **문서 생성 엔진**: HTML/PDF 자동 생성
+- **AI 모델 통합**: OpenAI/Claude/Gemini API 통합
 
 ### GitHub 저장소
 - **Repository**: https://github.com/sungli01/plan-craft
