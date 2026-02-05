@@ -60,7 +60,7 @@ class UnifiedCore {
       userIdea: data.userIdea || '',
       outputFormat: data.outputFormat || 'html',
       status: 'active',
-      currentPhase: 'G1_CORE_LOGIC',
+      currentPhase: 'G1_REQUIREMENT_ANALYSIS',
       currentPhaseIndex: 0,
       progress: 0,
       startTime: Date.now(),
@@ -1136,6 +1136,26 @@ class UnifiedCore {
       });
     }
 
+    // Quality Agent (ALWAYS add - for positive feedback)
+    requiredAgents.push({
+      name: 'Quality Agent',
+      role: '품질 검증 및 긍정적 피드백',
+      model: 'gpt-4o-mini',
+      color: 'cyan',
+      icon: 'fa-check-circle',
+      reason: '논리성 및 완전성 검증 (긍정적 피드백)'
+    });
+
+    // Red Team Agent (ALWAYS add - for negative validation)
+    requiredAgents.push({
+      name: 'Red Team Agent',
+      role: '보안 검증 및 비판적 피드백',
+      model: 'claude-sonnet-4',
+      color: 'red',
+      icon: 'fa-shield-alt',
+      reason: '보안 및 취약점 검증 (부정적 피드백)'
+    });
+
     // DevOps Agent (always add for deployment)
     requiredAgents.push({
       name: 'DevOps Agent',
@@ -1256,6 +1276,22 @@ class UnifiedCore {
         text: 'text-orange-900',
         subtext: 'text-orange-600',
         spinner: 'border-orange-200 border-t-orange-600'
+      },
+      'cyan': {
+        bg: 'bg-gradient-to-br from-cyan-50 to-cyan-100',
+        border: 'border-cyan-200',
+        icon: 'bg-cyan-600',
+        text: 'text-cyan-900',
+        subtext: 'text-cyan-600',
+        spinner: 'border-cyan-200 border-t-cyan-600'
+      },
+      'red': {
+        bg: 'bg-gradient-to-br from-red-50 to-red-100',
+        border: 'border-red-200',
+        icon: 'bg-red-600',
+        text: 'text-red-900',
+        subtext: 'text-red-600',
+        spinner: 'border-red-200 border-t-red-600'
       }
     };
 

@@ -12,11 +12,11 @@ app.get('/', (c) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>AI 자율 Plan-Craft 솔루션 개발</title>
+      <title>AI 자율 Plan-Craft 솔루션 개발 v7.4.0</title>
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.3.1-progress-fixed">
+      <meta name="version" content="7.4.0-report-engine">
       <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
       <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -371,10 +371,11 @@ app.get('/', (c) => {
                   <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
                     <div class="flex-1">
                       <p class="font-semibold text-gray-800">\${item.projectName}</p>
-                      <p class="text-xs text-gray-500">\${new Date(item.timestamp).toLocaleString('ko-KR')}</p>
+                      <p class="text-xs text-gray-500">\${new Date(item.downloadedAt || Date.now()).toLocaleString('ko-KR')}</p>
+                      <p class="text-xs text-gray-400">형식: \${(item.format || 'html').toUpperCase()}</p>
                     </div>
                     <button
-                      onclick="window.downloadManager?.redownload('\${item.projectId}')"
+                      onclick="window.downloadManager?.redownload(\${index}); this.closest('.fixed').remove();"
                       class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-all"
                     >
                       <i class="fas fa-download mr-1"></i>

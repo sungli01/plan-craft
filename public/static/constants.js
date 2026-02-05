@@ -5,54 +5,54 @@
 
 /**
  * Phase Configuration
- * Maps each development phase to its duration in minutes
- * OPTIMIZED: Reduced by 60% for faster execution (29min → 12min base)
+ * Maps each report writing phase to its duration in minutes
+ * OPTIMIZED: Focused on report generation (12min base for medium complexity)
  */
 export const PHASE_DURATION = {
-  'G1_CORE_LOGIC': 1.2,    // 3 → 1.2
-  'G2_API_SERVER': 1.5,    // 4 → 1.5
-  'G3_UI_COMPONENTS': 2,   // 5 → 2
-  'G4_INTEGRATION': 1.2,   // 3 → 1.2
-  'G5_UNIT_TESTS': 1.5,    // 4 → 1.5
-  'G6_SECURITY_SCAN': 0.8, // 2 → 0.8
-  'G7_BUILD_OPTIMIZATION': 0.8, // 2 → 0.8
-  'G8_DEPLOYMENT': 1.2,    // 3 → 1.2
-  'G9_DOCUMENTATION': 0.8, // 2 → 0.8
-  'G10_HANDOVER': 0.5      // 1 → 0.5
+  'G1_REQUIREMENT_ANALYSIS': 1.2,    // 요구사항 분석
+  'G2_DATA_COLLECTION': 1.5,         // 자료 수집 및 정리
+  'G3_OUTLINE_CREATION': 2,          // 보고서 개요 작성
+  'G4_CONTENT_WRITING': 1.2,         // 본문 작성
+  'G5_DATA_VISUALIZATION': 1.5,      // 데이터 시각화
+  'G6_QUALITY_REVIEW': 0.8,          // 품질 검토
+  'G7_FORMAT_OPTIMIZATION': 0.8,     // 서식 최적화
+  'G8_FINAL_REVIEW': 1.2,            // 최종 검토
+  'G9_EXPORT_PREPARATION': 0.8,      // 출력 준비
+  'G10_DELIVERY': 0.5                // 최종 전달
 };
 
 /**
  * Phase Order
- * Defines the execution sequence of phases
+ * Defines the execution sequence of report writing phases
  */
 export const PHASE_ORDER = [
-  'G1_CORE_LOGIC',
-  'G2_API_SERVER',
-  'G3_UI_COMPONENTS',
-  'G4_INTEGRATION',
-  'G5_UNIT_TESTS',
-  'G6_SECURITY_SCAN',
-  'G7_BUILD_OPTIMIZATION',
-  'G8_DEPLOYMENT',
-  'G9_DOCUMENTATION',
-  'G10_HANDOVER'
+  'G1_REQUIREMENT_ANALYSIS',
+  'G2_DATA_COLLECTION',
+  'G3_OUTLINE_CREATION',
+  'G4_CONTENT_WRITING',
+  'G5_DATA_VISUALIZATION',
+  'G6_QUALITY_REVIEW',
+  'G7_FORMAT_OPTIMIZATION',
+  'G8_FINAL_REVIEW',
+  'G9_EXPORT_PREPARATION',
+  'G10_DELIVERY'
 ];
 
 /**
  * Phase to AI Model Mapping
- * Maps which AI model handles each phase
+ * Maps which AI model handles each report writing phase
  */
 export const PHASE_TO_MODEL = {
-  'G1_CORE_LOGIC': 'claude-3.5-sonnet',
-  'G2_API_SERVER': 'gpt-4-turbo',
-  'G3_UI_COMPONENTS': 'gpt-4-turbo',
-  'G4_INTEGRATION': 'claude-3.5-sonnet',
-  'G5_UNIT_TESTS': 'gpt-4o-mini',
-  'G6_SECURITY_SCAN': 'gpt-4o-mini',
-  'G7_BUILD_OPTIMIZATION': 'gemini-2.0-flash',
-  'G8_DEPLOYMENT': 'gemini-2.0-flash',
-  'G9_DOCUMENTATION': 'gpt-4-turbo',
-  'G10_HANDOVER': 'claude-3.5-sonnet'
+  'G1_REQUIREMENT_ANALYSIS': 'claude-3.5-sonnet',
+  'G2_DATA_COLLECTION': 'gpt-4-turbo',
+  'G3_OUTLINE_CREATION': 'gpt-4-turbo',
+  'G4_CONTENT_WRITING': 'claude-3.5-sonnet',
+  'G5_DATA_VISUALIZATION': 'gpt-4o-mini',
+  'G6_QUALITY_REVIEW': 'gpt-4o-mini',
+  'G7_FORMAT_OPTIMIZATION': 'gemini-2.0-flash',
+  'G8_FINAL_REVIEW': 'gemini-2.0-flash',
+  'G9_EXPORT_PREPARATION': 'gpt-4-turbo',
+  'G10_DELIVERY': 'claude-3.5-sonnet'
 };
 
 /**
@@ -188,36 +188,36 @@ export const AI_MODELS = {
 
 /**
  * Phase Task Descriptions
- * Human-readable descriptions for each phase
+ * Human-readable descriptions for each report writing phase
  */
 export const PHASE_TASKS = {
-  'G1_CORE_LOGIC': '핵심 로직 구현 중',
-  'G2_API_SERVER': 'API 서버 구축 중',
-  'G3_UI_COMPONENTS': 'UI 컴포넌트 개발 중',
-  'G4_INTEGRATION': '시스템 통합 중',
-  'G5_UNIT_TESTS': '단위 테스트 작성 중',
-  'G6_SECURITY_SCAN': '보안 스캔 수행 중',
-  'G7_BUILD_OPTIMIZATION': '빌드 최적화 중',
-  'G8_DEPLOYMENT': '배포 준비 중',
-  'G9_DOCUMENTATION': '문서화 작업 중',
-  'G10_HANDOVER': '최종 인수인계 중'
+  'G1_REQUIREMENT_ANALYSIS': '요구사항 분석 중',
+  'G2_DATA_COLLECTION': '자료 수집 및 정리 중',
+  'G3_OUTLINE_CREATION': '보고서 개요 작성 중',
+  'G4_CONTENT_WRITING': '본문 작성 중',
+  'G5_DATA_VISUALIZATION': '데이터 시각화 중',
+  'G6_QUALITY_REVIEW': '품질 검토 중',
+  'G7_FORMAT_OPTIMIZATION': '서식 최적화 중',
+  'G8_FINAL_REVIEW': '최종 검토 중',
+  'G9_EXPORT_PREPARATION': '출력 준비 중',
+  'G10_DELIVERY': '최종 전달 중'
 };
 
 /**
  * Phase Labels
- * Short labels for UI display
+ * Short labels for UI display (report writing phases)
  */
 export const PHASE_LABELS = {
-  'G1_CORE_LOGIC': '핵심 로직 구현',
-  'G2_API_SERVER': 'API 서버 구축',
-  'G3_UI_COMPONENTS': 'UI 컴포넌트 개발',
-  'G4_INTEGRATION': '시스템 통합',
-  'G5_UNIT_TESTS': '단위 테스트',
-  'G6_SECURITY_SCAN': '보안 스캔',
-  'G7_BUILD_OPTIMIZATION': '빌드 최적화',
-  'G8_DEPLOYMENT': '배포 준비',
-  'G9_DOCUMENTATION': '문서화',
-  'G10_HANDOVER': '최종 인수인계'
+  'G1_REQUIREMENT_ANALYSIS': '요구사항 분석',
+  'G2_DATA_COLLECTION': '자료 수집',
+  'G3_OUTLINE_CREATION': '개요 작성',
+  'G4_CONTENT_WRITING': '본문 작성',
+  'G5_DATA_VISUALIZATION': '데이터 시각화',
+  'G6_QUALITY_REVIEW': '품질 검토',
+  'G7_FORMAT_OPTIMIZATION': '서식 최적화',
+  'G8_FINAL_REVIEW': '최종 검토',
+  'G9_EXPORT_PREPARATION': '출력 준비',
+  'G10_DELIVERY': '최종 전달'
 };
 
 /**

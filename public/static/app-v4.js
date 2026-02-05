@@ -279,6 +279,12 @@ class PlanCraftApp {
       return;
     }
 
+    // Add sample download history for demo
+    if (window.downloadManager && typeof window.downloadManager.addSampleHistory === 'function') {
+      window.downloadManager.addSampleHistory();
+      console.log('[Demo] Sample history added');
+    }
+
     const demoProject = {
       projectName: '데모: AI 쇼핑몰 기획서',
       userIdea: '사용자가 상품을 검색하고 구매할 수 있는 AI 기반 쇼핑몰 플랫폼. 개인화된 추천 시스템과 간편 결제 기능을 포함합니다.',
