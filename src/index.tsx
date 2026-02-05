@@ -12,11 +12,11 @@ app.get('/', (c) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>AI 자율 Plan-Craft 솔루션 개발 v7.4.0</title>
+      <title>AI 자율 Plan-Craft 솔루션 개발 v7.5.0</title>
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.4.0-report-engine">
+      <meta name="version" content="7.5.0-50page-pdf">
       <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
       <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
