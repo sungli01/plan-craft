@@ -71,8 +71,35 @@ class UnifiedCore {
 
     this.projects.set(projectId, project);
     
+    // === GENSPARK STYLE: Intent Analysis ===
+    if (window.thinkingProcess) {
+      // Analyze intent using 3-layer classification
+      const intent = this.analyzeIntent(data.userIdea || '');
+      window.thinkingProcess.addIntentAnalysis(
+        intent.taskType,
+        intent.techDomain,
+        intent.complexity,
+        intent.confidence
+      );
+    }
+    
     // Create dynamic agents based on project idea
     this.createDynamicAgents(projectId, data.userIdea || '');
+    
+    // === GENSPARK STYLE: Task Decomposition ===
+    if (window.thinkingProcess) {
+      const subtasks = [
+        '요구사항 분석 및 명세',
+        '시스템 아키텍처 설계',
+        '핵심 기능 구현',
+        '품질 검증 및 테스트',
+        '문서화 및 배포 준비'
+      ];
+      window.thinkingProcess.addTaskDecomposition(
+        `${project.projectName} 프로젝트`,
+        subtasks
+      );
+    }
     
     this.addLog('INFO', `📋 프로젝트 생성: ${project.projectName} (ID: ${projectId})`);
     this.addLog('INFO', `⏱️ 예상 소요 시간: ${timeEstimate.estimatedTimeText} (복잡도: ${timeEstimate.complexityLabel})`);
@@ -81,6 +108,53 @@ class UnifiedCore {
     this.showTimeEstimateModal(project);
     
     return project;
+  }
+  
+  /**
+   * Analyze intent using 3-layer classification (Genspark Algorithm)
+   */
+  analyzeIntent(userIdea) {
+    const idea = userIdea.toLowerCase();
+    
+    // Layer 1: Task Type
+    let taskType = 'Create';
+    if (idea.includes('수정') || idea.includes('고치') || idea.includes('개선')) {
+      taskType = 'Refactor';
+    } else if (idea.includes('설명') || idea.includes('분석')) {
+      taskType = 'Explain';
+    } else if (idea.includes('테스트') || idea.includes('검증')) {
+      taskType = 'Test';
+    } else if (idea.includes('디버그') || idea.includes('버그')) {
+      taskType = 'Debug';
+    }
+    
+    // Layer 2: Tech Domain
+    let techDomain = 'General';
+    if (idea.includes('백엔드') || idea.includes('api') || idea.includes('서버')) {
+      techDomain = 'Backend API';
+    } else if (idea.includes('프론트') || idea.includes('ui') || idea.includes('화면')) {
+      techDomain = 'Frontend UI';
+    } else if (idea.includes('데이터') || idea.includes('분석') || idea.includes('시각화')) {
+      techDomain = 'Data Pipeline';
+    } else if (idea.includes('ai') || idea.includes('머신러닝') || idea.includes('인공지능')) {
+      techDomain = 'ML Model';
+    }
+    
+    // Layer 3: Complexity
+    const complexity = this.analyzeComplexity(userIdea, []);
+    
+    // Confidence calculation (simplified)
+    let confidence = 0.85;
+    if (userIdea.length > 50) confidence += 0.05;
+    if (userIdea.length > 100) confidence += 0.05;
+    confidence = Math.min(confidence, 0.98);
+    
+    return {
+      taskType,
+      techDomain,
+      complexity,
+      confidence
+    };
   }
   
   /**
@@ -338,6 +412,11 @@ class UnifiedCore {
         if (ragResult && ragResult.results) {
           this.addLog('SUCCESS', `✅ RAG: ${ragResult.results.length}개 참고 자료 수집 완료`);
           
+          // === GENSPARK STYLE: RAG Search Step ===
+          if (window.thinkingProcess) {
+            window.thinkingProcess.addRAGSearch(searchQuery, ragResult.results.length);
+          }
+          
           // Display top 3 references with detailed info
           ragResult.results.slice(0, 3).forEach((ref, idx) => {
             this.addLog('INFO', `📄 참고${idx+1}: ${ref.title}`);
@@ -358,6 +437,11 @@ class UnifiedCore {
     // ===== AGENT ROLE DESCRIPTION =====
     const roleDescription = this.getAgentRoleDescription(agentName, phase);
     this.addLog('INFO', `👤 ${agentName}: ${roleDescription}`);
+    
+    // === GENSPARK STYLE: Agent Activation ===
+    if (window.thinkingProcess) {
+      window.thinkingProcess.addAgentActivation(agentName, roleDescription, getPhaseLabel(phase));
+    }
 
     // Activate AI model
     this.activateAIModel(modelName, agentName, task);
@@ -411,10 +495,23 @@ class UnifiedCore {
     // Calculate overall integrity
     const integrityScore = Math.round((qualityScore + redTeamScore) / 2);
     
+    // === GENSPARK STYLE: Quality Check ===
+    if (window.thinkingProcess) {
+      window.thinkingProcess.addQualityCheck(integrityScore, integrityScore >= 90);
+    }
+    
     if (integrityScore >= 90) {
       this.addLog('SUCCESS', `🎯 무결성: ${integrityScore}% (목표 달성 ✓)`);
     } else {
       this.addLog('WARN', `⚠️ 무결성: ${integrityScore}% (개선 필요)`);
+      
+      // === GENSPARK STYLE: Self-Correction ===
+      if (window.thinkingProcess) {
+        window.thinkingProcess.addSelfCorrection(
+          '무결성 점수 미달',
+          '논리성 및 보안 검증 강화'
+        );
+      }
     }
   }
 

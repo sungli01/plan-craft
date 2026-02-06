@@ -12,10 +12,46 @@ AI 기반 자율 문서 생성 시스템으로, Master Orchestrator가 프로젝
 
 ### 현재 운영 중인 서비스
 - **메인 URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-2e77fc33.sandbox.novita.ai
-- **버전**: v7.6.0-rag-enhanced (RAG 시스템 통합 + 상세 Agent 역할 표시)
+- **버전**: v8.0.0-genspark-algorithm (젠스파크 AI 알고리즘 기반 업그레이드)
 - **포트**: 3000
 - **환경**: Sandbox (Cloudflare Workers Runtime)
 - **상태**: ✅ 정상 운영 중
+
+### v8.0.0 주요 개선 사항 (2026-02-06)
+**🚀 젠스파크 AI 알고리즘 완전 통합**
+
+본 버전은 **젠스파크 AI 개발자 동작 알고리즘 기술 명세서 (GSPK-DEV-ALGO-2024-KR v2.4.0)**를 기반으로 Plan-Craft를 완전히 재설계했습니다.
+
+#### 1. **Genspark-Style 사고과정 UI** ✅
+- 검증 단계별 표시 (`✅ 검증 1 완료`, `✅ 검증 2 완료`)
+- Bash Command 실행 로그 표시
+- Exit Code 상태 표시 (0 = 성공, 1 = 실패)
+- "Perfect!" 상태 배지 표시
+- 실시간 통계 바 (전체/성공/오류 단계)
+
+#### 2. **3계층 의도 분류 시스템 (Multi-layer Intent Classification)** ✅
+- **Level 1 - Task Type**: Create, Debug, Refactor, Explain, Test
+- **Level 2 - Tech Domain**: Backend API, Frontend UI, Data Pipeline, ML Model
+- **Level 3 - Complexity**: Simple, Medium, Complex, Very-Complex
+- 신뢰도 점수 계산 (Confidence Score 85-98%)
+
+#### 3. **계층적 작업 분해 (Hierarchical Task Decomposition)** ✅
+- 주요 작업을 5개의 하위 작업으로 자동 분해
+  1. 요구사항 분석 및 명세
+  2. 시스템 아키텍처 설계
+  3. 핵심 기능 구현
+  4. 품질 검증 및 테스트
+  5. 문서화 및 배포 준비
+
+#### 4. **강화된 피드백 루프 (Enhanced Feedback Loop)** ✅
+- Quality Agent: 85-95% 긍정적 검증 (논리성)
+- Red Team Agent: 80-95% 비판적 검증 (보안)
+- 무결성 점수 계산 및 자동 평가 (목표: 90% 이상)
+
+#### 5. **자가 치유 시스템 (Self-Correction Loop)** ✅
+- 무결성 점수 미달 시 자동 수정 조치
+- 오류 유형 및 수정 방법 상세 로깅
+- 재귀적 자가 수정 (Recursive Self-Correction)
 
 ### v7.6.0 주요 개선 사항 (2026-02-06)
 1. **RAG 시스템 고도화** ✅

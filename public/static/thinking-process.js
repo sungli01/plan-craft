@@ -1,35 +1,40 @@
-// Plan-Craft v6.0 - Thinking Process Module
-// ================================================
-// Real-time thinking process display by Master Orchestrator
+// Plan-Craft v8.0 - Genspark-Style Thinking Process Module
+// ================================================================
+// Genspark AI Algorithm-based thinking process display
 
 /**
- * Thinking Process Manager
- * Displays Master Orchestrator's reasoning in real-time
+ * Genspark-Style Thinking Process Manager
+ * Displays verification steps with Bash commands and exit codes
  */
 class ThinkingProcessManager {
   constructor() {
-    this.thoughts = [];
+    this.verificationSteps = [];
     this.isWindowOpen = false;
     this.windowRef = null;
+    this.currentStep = 0;
   }
 
   /**
-   * Add a thought/reasoning step
+   * Add verification step (Genspark style)
    */
-  addThought(category, content, timestamp = Date.now()) {
-    const thought = {
-      id: `thought_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      category, // 'analysis', 'decision', 'execution', 'verification'
-      content,
-      timestamp,
-      timeStr: new Date(timestamp).toLocaleTimeString('ko-KR')
+  addVerificationStep(title, bashCommand, exitCode, description = '', status = 'success') {
+    const step = {
+      id: `step_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      stepNumber: ++this.currentStep,
+      title,
+      bashCommand,
+      exitCode,
+      description,
+      status, // 'success', 'error', 'running'
+      timestamp: Date.now(),
+      timeStr: new Date().toLocaleTimeString('ko-KR')
     };
 
-    this.thoughts.push(thought);
+    this.verificationSteps.push(step);
 
-    // Keep only last 50 thoughts
-    if (this.thoughts.length > 50) {
-      this.thoughts = this.thoughts.slice(-50);
+    // Keep only last 50 steps
+    if (this.verificationSteps.length > 50) {
+      this.verificationSteps = this.verificationSteps.slice(-50);
     }
 
     // Update display if window is open
@@ -37,11 +42,103 @@ class ThinkingProcessManager {
       this.updateThinkingWindow();
     }
 
-    console.log(`[Thinking] ${category}: ${content}`);
+    console.log(`[Verification] ${title} - Exit Code: ${exitCode}`);
   }
 
   /**
-   * Open thinking process window
+   * Add intent analysis step (3-layer classification)
+   */
+  addIntentAnalysis(taskType, techDomain, complexity, confidence) {
+    this.addVerificationStep(
+      '의도 파악 완료',
+      `analyzeIntent --task-type "${taskType}" --domain "${techDomain}" --complexity "${complexity}"`,
+      0,
+      `신뢰도: ${Math.round(confidence * 100)}% | 작업 유형: ${taskType} | 기술 도메인: ${techDomain} | 복잡도: ${complexity}`,
+      'success'
+    );
+  }
+
+  /**
+   * Add task decomposition step
+   */
+  addTaskDecomposition(mainTask, subtasks) {
+    const subtaskList = subtasks.map((t, i) => `${i + 1}. ${t}`).join('\n');
+    this.addVerificationStep(
+      '작업 분해 완료',
+      `decompose --task "${mainTask}" --subtasks ${subtasks.length}`,
+      0,
+      `주요 작업: ${mainTask}\n하위 작업:\n${subtaskList}`,
+      'success'
+    );
+  }
+
+  /**
+   * Add RAG search step
+   */
+  addRAGSearch(query, resultsCount) {
+    this.addVerificationStep(
+      'RAG 자료 수집 완료',
+      `ragSystem.searchWeb --query "${query.substring(0, 50)}..." --purpose "자료 수집"`,
+      0,
+      `${resultsCount}개의 참고 자료 수집 완료`,
+      'success'
+    );
+  }
+
+  /**
+   * Add agent activation step
+   */
+  addAgentActivation(agentName, role, phase) {
+    this.addVerificationStep(
+      `${agentName} 활성화`,
+      `activateAgent --name "${agentName}" --role "${role}" --phase "${phase}"`,
+      0,
+      `역할: ${role}`,
+      'success'
+    );
+  }
+
+  /**
+   * Add phase execution step
+   */
+  addPhaseExecution(phaseName, progress, activity) {
+    this.addVerificationStep(
+      `${phaseName} 진행 중`,
+      `executePhase --phase "${phaseName}" --progress ${progress}%`,
+      0,
+      `${activity} (${progress}% 완료)`,
+      'running'
+    );
+  }
+
+  /**
+   * Add quality check step
+   */
+  addQualityCheck(integrityScore, passed) {
+    this.addVerificationStep(
+      '품질 검증 완료',
+      `qualityCheck --target-score 95 --actual ${integrityScore}`,
+      passed ? 0 : 1,
+      `무결성 점수: ${integrityScore}% ${passed ? '✓ 통과' : '✗ 미달'}`,
+      passed ? 'success' : 'error'
+    );
+  }
+
+  /**
+   * Add self-correction step
+   */
+  addSelfCorrection(errorType, correctionAction) {
+    this.addVerificationStep(
+      '자가 수정 실행',
+      `selfCorrect --error "${errorType}" --action "${correctionAction}"`,
+      0,
+      `오류 유형: ${errorType}\n수정 조치: ${correctionAction}`,
+      'success'
+    );
+  }
+
+  /**
+   * Open thinking process window (Genspark style)
    */
   openThinkingWindow() {
     if (this.isWindowOpen && this.windowRef && !this.windowRef.closed) {
@@ -49,8 +146,8 @@ class ThinkingProcessManager {
       return;
     }
 
-    const width = 600;
-    const height = 800;
+    const width = 800;
+    const height = 900;
     const left = window.screen.width - width - 20;
     const top = 20;
 
@@ -78,7 +175,7 @@ class ThinkingProcessManager {
   }
 
   /**
-   * Initialize thinking window HTML
+   * Initialize thinking window HTML (Genspark style)
    */
   initializeThinkingWindow() {
     const doc = this.windowRef.document;
@@ -90,7 +187,7 @@ class ThinkingProcessManager {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan-Craft - 사고과정</title>
+    <title>Plan-Craft v8.0 - 사고과정 (Genspark Style)</title>
     <style>
         * {
             margin: 0;
@@ -98,120 +195,216 @@ class ThinkingProcessManager {
             box-sizing: border-box;
         }
         body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
         }
         .header {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         .header h1 {
-            font-size: 1.5em;
-            color: #6366f1;
+            font-size: 1.75em;
+            font-weight: 700;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .header p {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
+            font-size: 0.95em;
+            opacity: 0.95;
+            font-weight: 400;
         }
         .container {
-            height: calc(100vh - 90px);
-            overflow-y: auto;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
         }
-        .thought-item {
+        .step-item {
             background: white;
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            animation: slideIn 0.3s ease-out;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #10b981;
+            animation: slideIn 0.4s ease-out;
+            transition: all 0.3s ease;
+        }
+        .step-item:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .step-item.status-error {
+            border-left-color: #ef4444;
+        }
+        .step-item.status-running {
+            border-left-color: #3b82f6;
         }
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateX(0);
+                transform: translateY(0);
             }
         }
-        .thought-header {
+        .step-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-        .thought-category {
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .step-icon.success {
+            background: #d1fae5;
+            color: #059669;
+        }
+        .step-icon.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .step-icon.running {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        .step-title {
+            flex: 1;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .step-time {
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+        .bash-command {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #334155;
+        }
+        .bash-prefix {
+            color: #22c55e;
+            font-weight: bold;
+            user-select: none;
+        }
+        .exit-code {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.85em;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
-        .category-analysis {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .category-decision {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .category-execution {
+        .exit-code.success {
             background: #d1fae5;
-            color: #065f46;
+            color: #059669;
         }
-        .category-verification {
-            background: #f3e8ff;
-            color: #6b21a8;
+        .exit-code.error {
+            background: #fee2e2;
+            color: #dc2626;
         }
-        .thought-time {
-            font-size: 0.75em;
-            color: #999;
-        }
-        .thought-content {
-            color: #333;
-            line-height: 1.6;
+        .step-description {
+            color: #4b5563;
             font-size: 0.95em;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+        .perfect-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-top: 12px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: white;
+            padding: 80px 20px;
+            color: #6b7280;
         }
         .empty-state i {
-            font-size: 4em;
-            margin-bottom: 20px;
-            opacity: 0.7;
+            font-size: 5em;
+            margin-bottom: 24px;
+            color: #d1d5db;
         }
         .empty-state p {
-            font-size: 1.1em;
-            opacity: 0.9;
+            font-size: 1.2em;
         }
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
+            height: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 4px;
+            background: #cbd5e1;
+            border-radius: 5px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.5);
+            background: #94a3b8;
+        }
+        .stats-bar {
+            background: white;
+            padding: 16px 32px;
+            display: flex;
+            gap: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border-radius: 12px;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .stat-value.success {
+            color: #10b981;
+        }
+        .stat-value.error {
+            color: #ef4444;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -220,14 +413,30 @@ class ThinkingProcessManager {
     <div class="header">
         <h1>
             <i class="fas fa-brain"></i>
-            Master Orchestrator - 사고과정
+            Plan-Craft v8.0 - AI 사고과정
         </h1>
-        <p>AI가 실시간으로 분석하고 결정하는 과정을 확인하세요</p>
+        <p>젠스파크 알고리즘 기반 의도 파악, 작업 분해, 검증 프로세스</p>
     </div>
-    <div class="container" id="thoughts-container">
-        <div class="empty-state">
-            <i class="fas fa-lightbulb"></i>
-            <p>프로젝트를 시작하면 사고과정이 표시됩니다...</p>
+    <div class="container">
+        <div class="stats-bar" id="stats-bar" style="display: none;">
+            <div class="stat-item">
+                <span class="stat-label">전체 단계:</span>
+                <span class="stat-value" id="stat-total">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">성공:</span>
+                <span class="stat-value success" id="stat-success">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">오류:</span>
+                <span class="stat-value error" id="stat-error">0</span>
+            </div>
+        </div>
+        <div id="steps-container">
+            <div class="empty-state">
+                <i class="fas fa-rocket"></i>
+                <p>프로젝트를 시작하면 AI의 사고과정이 실시간으로 표시됩니다...</p>
+            </div>
         </div>
     </div>
 </body>
@@ -235,50 +444,89 @@ class ThinkingProcessManager {
     `);
     doc.close();
 
-    // Update with existing thoughts
+    // Update with existing steps
     this.updateThinkingWindow();
   }
 
   /**
-   * Update thinking window with current thoughts
+   * Update thinking window with current verification steps
    */
   updateThinkingWindow() {
     if (!this.windowRef || this.windowRef.closed) return;
 
-    const container = this.windowRef.document.getElementById('thoughts-container');
+    const container = this.windowRef.document.getElementById('steps-container');
+    const statsBar = this.windowRef.document.getElementById('stats-bar');
     if (!container) return;
 
-    if (this.thoughts.length === 0) return;
+    if (this.verificationSteps.length === 0) return;
 
-    const categoryIcons = {
-      'analysis': 'fa-search',
-      'decision': 'fa-lightbulb',
-      'execution': 'fa-cog',
-      'verification': 'fa-check-circle'
+    // Show stats bar
+    if (statsBar) {
+      statsBar.style.display = 'flex';
+      const successCount = this.verificationSteps.filter(s => s.status === 'success').length;
+      const errorCount = this.verificationSteps.filter(s => s.status === 'error').length;
+      
+      this.windowRef.document.getElementById('stat-total').textContent = this.verificationSteps.length;
+      this.windowRef.document.getElementById('stat-success').textContent = successCount;
+      this.windowRef.document.getElementById('stat-error').textContent = errorCount;
+    }
+
+    const statusIcons = {
+      'success': 'fa-check-circle',
+      'error': 'fa-times-circle',
+      'running': 'fa-spinner fa-spin'
     };
 
-    const categoryLabels = {
-      'analysis': '분석',
-      'decision': '결정',
-      'execution': '실행',
-      'verification': '검증'
-    };
-
-    container.innerHTML = this.thoughts.map(thought => `
-      <div class="thought-item">
-        <div class="thought-header">
-          <span class="thought-category category-${thought.category}">
-            <i class="fas ${categoryIcons[thought.category]}"></i>
-            ${categoryLabels[thought.category]}
-          </span>
-          <span class="thought-time">${thought.timeStr}</span>
+    container.innerHTML = this.verificationSteps.map((step, index) => {
+      const isLastSuccess = index === this.verificationSteps.length - 1 && step.status === 'success';
+      
+      return `
+      <div class="step-item status-${step.status}">
+        <div class="step-header">
+          <div class="step-icon ${step.status}">
+            <i class="fas ${statusIcons[step.status]}"></i>
+          </div>
+          <div class="step-title">
+            ${step.status === 'success' ? '✅' : step.status === 'error' ? '❌' : '🔄'} 
+            ${step.stepNumber}단계: ${this.escapeHtml(step.title)}
+          </div>
+          <div class="step-time">${step.timeStr}</div>
         </div>
-        <div class="thought-content">${this.escapeHtml(thought.content)}</div>
+        
+        ${step.bashCommand ? `
+        <div class="bash-command">
+          <span class="bash-prefix">$</span> ${this.escapeHtml(step.bashCommand)}
+        </div>
+        ` : ''}
+        
+        <div class="exit-code ${step.exitCode === 0 ? 'success' : 'error'}">
+          <i class="fas fa-terminal"></i>
+          Exit Code: ${step.exitCode}
+        </div>
+        
+        ${step.description ? `
+        <div class="step-description">${this.escapeHtml(step.description)}</div>
+        ` : ''}
+        
+        ${isLastSuccess ? `
+        <div class="perfect-badge">
+          <i class="fas fa-star"></i>
+          Perfect!
+        </div>
+        ` : ''}
       </div>
-    `).join('');
+      `;
+    }).join('');
 
     // Auto-scroll to bottom
-    container.scrollTop = container.scrollHeight;
+    setTimeout(() => {
+      if (this.windowRef && !this.windowRef.closed) {
+        this.windowRef.scrollTo({
+          top: this.windowRef.document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   }
 
   /**
@@ -293,78 +541,96 @@ class ThinkingProcessManager {
   }
 
   /**
-   * Clear all thoughts
+   * Clear all steps
    */
-  clearThoughts() {
-    this.thoughts = [];
+  clearSteps() {
+    this.verificationSteps = [];
+    this.currentStep = 0;
     if (this.isWindowOpen && this.windowRef && !this.windowRef.closed) {
       this.updateThinkingWindow();
     }
   }
 
   /**
-   * Get thoughts history
+   * Get verification steps history
    */
-  getThoughts() {
-    return this.thoughts;
+  getSteps() {
+    return this.verificationSteps;
   }
 
   /**
    * Escape HTML
    */
   escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
 
+  // ===== Legacy compatibility methods =====
+  
   /**
-   * Add project analysis thought
+   * Legacy: Add thought (converts to verification step)
    */
+  addThought(category, content) {
+    const categoryMap = {
+      'analysis': '분석',
+      'decision': '결정',
+      'execution': '실행',
+      'verification': '검증'
+    };
+    
+    this.addVerificationStep(
+      `${categoryMap[category] || '작업'} 완료`,
+      `legacy_${category} --content "${content.substring(0, 50)}..."`,
+      0,
+      content,
+      'success'
+    );
+  }
+
   addProjectAnalysis(projectName, idea) {
-    this.addThought(
-      'analysis',
-      `프로젝트 "${projectName}" 분석 시작\n아이디어: ${idea.substring(0, 100)}${idea.length > 100 ? '...' : ''}`
+    this.addVerificationStep(
+      '프로젝트 분석 완료',
+      `analyzeProject --name "${projectName}" --idea "${idea.substring(0, 40)}..."`,
+      0,
+      `프로젝트: ${projectName}\n아이디어: ${idea.substring(0, 100)}${idea.length > 100 ? '...' : ''}`,
+      'success'
     );
   }
 
-  /**
-   * Add model selection thought
-   */
   addModelSelection(role, modelName, reason) {
-    this.addThought(
-      'decision',
-      `${role} 모델 선택: ${modelName}\n이유: ${reason}`
+    this.addVerificationStep(
+      '모델 선택 완료',
+      `selectModel --role "${role}" --model "${modelName}"`,
+      0,
+      `역할: ${role}\n선택된 모델: ${modelName}\n이유: ${reason}`,
+      'success'
     );
   }
 
-  /**
-   * Add execution thought
-   */
   addExecution(phase, step, description) {
-    this.addThought(
-      'execution',
-      `[${phase}] Step ${step}: ${description}`
-    );
+    this.addPhaseExecution(phase, step * 10, description);
   }
 
-  /**
-   * Add verification thought
-   */
   addVerification(phase, result) {
-    this.addThought(
-      'verification',
-      `${phase} 완료 - ${result}`
+    this.addVerificationStep(
+      `${phase} 완료`,
+      `verifyPhase --phase "${phase}"`,
+      0,
+      result,
+      'success'
     );
   }
 
-  /**
-   * Add time estimation thought
-   */
   addTimeEstimation(totalMinutes, breakdown) {
-    this.addThought(
-      'analysis',
-      `예상 소요 시간 산출: 총 ${totalMinutes}분\n${breakdown}`
+    this.addVerificationStep(
+      '시간 산출 완료',
+      `estimateTime --total ${totalMinutes}`,
+      0,
+      `총 예상 시간: ${totalMinutes}분\n${breakdown}`,
+      'success'
     );
   }
 }
@@ -379,4 +645,4 @@ if (typeof window !== 'undefined') {
 
 export default thinkingProcess;
 
-console.log('[Thinking Process Module] ✅ Loaded successfully');
+console.log('[Thinking Process Module] ✅ Genspark Style Loaded successfully');

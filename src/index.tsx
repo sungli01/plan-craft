@@ -16,7 +16,7 @@ app.get('/', (c) => {
       <meta name="cache-control" content="no-cache, no-store, must-revalidate">
       <meta name="pragma" content="no-cache">
       <meta name="expires" content="0">
-      <meta name="version" content="7.6.0-rag-enhanced">
+      <meta name="version" content="8.0.0-genspark-algorithm">
       <script src="https://cdn.tailwindcss.com?v=7.2.0"></script>
       <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -282,8 +282,8 @@ app.get('/', (c) => {
               >
                 <div class="text-cyan-400">
                   ╔═══════════════════════════════════════════════╗<br/>
-                  ║  Plan-Craft v7.2.0 Console - Phase 3         ║<br/>
-                  ║  AI Model Integration Complete               ║<br/>
+                  ║  Plan-Craft v8.0.0 Console - Genspark      ║<br/>
+                  ║  Intent Recognition & Planning Engine     ║<br/>
                   ╚═══════════════════════════════════════════════╝
                 </div>
                 <div class="mt-2 text-yellow-400">
