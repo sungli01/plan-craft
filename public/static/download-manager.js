@@ -316,7 +316,7 @@ class DownloadManager {
 
         <div class="section">
             <h2>부록 B. 참고 문헌 및 리소스</h2>
-            ${this._generateReferences(project.userIdea)}
+            ${this._generateReferences(project.userIdea, project)}
         </div>
 
         <div class="footer">
@@ -1318,11 +1318,56 @@ class DownloadManager {
   }
 
   /**
-   * Generate references (Appendix B)
+   * Generate references with RAG data (Appendix B)
    */
-  _generateReferences(userIdea) {
+  _generateReferences(userIdea, project) {
+    let ragSection = '';
+    
+    // Add RAG collected references if available
+    if (project && project.ragData) {
+      ragSection = `
+      <h3>B.1 RAG 시스템 수집 자료</h3>
+      <p style="color: #059669; font-weight: 500; margin-bottom: 15px;">
+        <i class="fas fa-check-circle"></i> 본 프로젝트를 위해 AI RAG 시스템이 자동으로 수집한 참고 자료입니다.
+      </p>
+      `;
+      
+      const phases = Object.keys(project.ragData);
+      if (phases.length > 0) {
+        phases.slice(0, 5).forEach((phase, idx) => {
+          const ragResult = project.ragData[phase];
+          if (ragResult && ragResult.results) {
+            ragSection += `
+      <h4>B.1.${idx + 1} ${ragResult.purpose || phase} 관련 자료</h4>
+      <ul style="margin-left: 30px; margin-top: 10px; margin-bottom: 20px;">
+            `;
+            
+            ragResult.results.slice(0, 5).forEach(ref => {
+              ragSection += `
+        <li style="margin-bottom: 12px;">
+          <strong>${ref.title}</strong><br>
+          <a href="${ref.url}" style="color: #3b82f6; text-decoration: none;">${ref.url}</a><br>
+          <span style="color: #666; font-size: 0.9em;">${ref.snippet || ''}</span>
+        </li>
+              `;
+            });
+            
+            ragSection += `
+      </ul>
+            `;
+          }
+        });
+      } else {
+        ragSection += `
+      <p style="color: #666; margin-left: 30px;">수집된 RAG 데이터가 없습니다.</p>
+        `;
+      }
+    }
+    
     return `
-      <h3>B.1 기술 문서</h3>
+      ${ragSection}
+      
+      <h3>B.2 기술 문서</h3>
       <ul style="margin-left: 30px; margin-top: 10px;">
         <li style="margin-bottom: 10px;">React.js 공식 문서: https://react.dev</li>
         <li style="margin-bottom: 10px;">Node.js 공식 문서: https://nodejs.org/docs</li>
@@ -1331,21 +1376,21 @@ class DownloadManager {
         <li style="margin-bottom: 10px;">Docker 공식 문서: https://docs.docker.com</li>
       </ul>
 
-      <h3>B.2 디자인 리소스</h3>
+      <h3>B.3 디자인 리소스</h3>
       <ul style="margin-left: 30px; margin-top: 10px;">
         <li style="margin-bottom: 10px;">Material Design: https://material.io</li>
         <li style="margin-bottom: 10px;">TailwindCSS: https://tailwindcss.com</li>
         <li style="margin-bottom: 10px;">Figma 커뮤니티: https://www.figma.com/community</li>
       </ul>
 
-      <h3>B.3 참고 서적</h3>
+      <h3>B.4 참고 서적</h3>
       <ul style="margin-left: 30px; margin-top: 10px;">
         <li style="margin-bottom: 10px;">Clean Code (Robert C. Martin)</li>
         <li style="margin-bottom: 10px;">Design Patterns (Gang of Four)</li>
         <li style="margin-bottom: 10px;">The Pragmatic Programmer (David Thomas, Andrew Hunt)</li>
       </ul>
 
-      <h3>B.4 커뮤니티 및 포럼</h3>
+      <h3>B.5 커뮤니티 및 포럼</h3>
       <ul style="margin-left: 30px; margin-top: 10px;">
         <li style="margin-bottom: 10px;">Stack Overflow: https://stackoverflow.com</li>
         <li style="margin-bottom: 10px;">GitHub Discussions: https://github.com/discussions</li>
@@ -1355,7 +1400,7 @@ class DownloadManager {
       <p style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #666;">
         <strong>--- 문서 끝 ---</strong><br>
         총 페이지 수: 약 50페이지 분량 (PDF 변환 시)<br>
-        본 보고서는 Plan-Craft v7.5.0 시스템에 의해 자동 생성되었습니다.
+        본 보고서는 Plan-Craft v7.6.0 RAG 시스템에 의해 자동 생성되었습니다.
       </p>
     `;
   }

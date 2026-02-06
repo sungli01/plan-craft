@@ -12,10 +12,30 @@ AI 기반 자율 문서 생성 시스템으로, Master Orchestrator가 프로젝
 
 ### 현재 운영 중인 서비스
 - **메인 URL**: https://3000-i5y2r8i7qfa5gukpxw2ov-2e77fc33.sandbox.novita.ai
-- **버전**: v7.5.0-50page-pdf (50페이지 보고서 + 강제 PDF 재다운로드)
+- **버전**: v7.6.0-rag-enhanced (RAG 시스템 통합 + 상세 Agent 역할 표시)
 - **포트**: 3000
 - **환경**: Sandbox (Cloudflare Workers Runtime)
 - **상태**: ✅ 정상 운영 중
+
+### v7.6.0 주요 개선 사항 (2026-02-06)
+1. **RAG 시스템 고도화** ✅
+   - Phase별 맞춤 검색 쿼리 자동 생성
+   - 상위 3개 참고 자료 상세 표시 (제목, 스니펫)
+   - RAG 데이터를 project 객체에 저장하여 보고서에 활용
+   - 부록 B에 RAG 수집 자료 섹션 자동 추가
+
+2. **Agent 역할 명확화** ✅
+   - Phase별 Agent 역할 상세 설명 추가
+   - Master Orchestrator: Phase별 전략 수립
+   - Code Agent: 기술 요구사항 분석 및 아키텍처 설계
+   - Quality Agent: 품질 검증 및 개선 제안 (목표 95%)
+   - DevOps Agent: 배포 전략 및 운영 계획
+
+3. **사고과정 모니터링 강화** ✅
+   - Agent별 활동 동사 추가 (전략 수립, 아키텍처 설계, 품질 검증 등)
+   - Phase 1~10 전체에 대한 상세 활동 목록 정의
+   - 각 스텝마다 Agent 활동 + 구체적 작업 내용 표시
+   - RAG 검색 결과 실시간 로그 표시
 
 ### v7.5.0 주요 개선 사항 (2026-02-05)
 1. **50페이지 분량 보고서 생성** ✅

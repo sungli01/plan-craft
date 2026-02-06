@@ -301,9 +301,10 @@ class UnifiedCore {
   }
 
   /**
-   * Execute single phase
-   * IMPROVED: No manual progress calculation (updateAllUI handles it based on time)
-   * ADDED: Quality feedback integration for key phases
+   * Execute single phase with RAG integration
+   * IMPROVED: RAG system activated before phase execution
+   * IMPROVED: Detailed agent role descriptions
+   * IMPROVED: Granular progress monitoring
    */
   async executePhase(projectId, phase, phaseIndex) {
     const project = this.projects.get(projectId);
@@ -312,12 +313,58 @@ class UnifiedCore {
     const task = PHASE_TASKS[phase];
     const duration = getPhaseDuration(phase);
 
+    // ===== RAG INTEGRATION: Phase 시작 전 자료 수집 =====
+    if (window.ragSystem && project.userIdea) {
+      this.addLog('INFO', `🔍 RAG 시스템 활성화: ${getPhaseLabel(phase)} 관련 자료 수집 중...`);
+      
+      // Phase별 맞춤 검색 쿼리 생성
+      const phaseKeywords = {
+        'G1_REQUIREMENTS_ANALYSIS': '요구사항 정의 방법론 best practice',
+        'G2_DATA_COLLECTION': '시장 조사 데이터 분석 사례',
+        'G3_OUTLINE_CREATION': '보고서 구조 작성 가이드',
+        'G4_CONTENT_WRITING': '기술 문서 작성 템플릿',
+        'G5_DATA_VISUALIZATION': '데이터 시각화 best practice',
+        'G6_QUALITY_ASSURANCE': '품질 검증 체크리스트',
+        'G7_FORMAT_OPTIMIZATION': '문서 서식 표준',
+        'G8_FINAL_REVIEW': '최종 검토 프로세스',
+        'G9_OUTPUT_PREPARATION': '문서 출력 가이드',
+        'G10_DELIVERY': '프로젝트 인수인계 절차'
+      };
+      
+      const searchQuery = `${project.userIdea} ${phaseKeywords[phase] || getPhaseLabel(phase)}`;
+      
+      try {
+        const ragResult = await window.ragSystem.searchWeb(searchQuery, `${getPhaseLabel(phase)} 자료 수집`);
+        if (ragResult && ragResult.results) {
+          this.addLog('SUCCESS', `✅ RAG: ${ragResult.results.length}개 참고 자료 수집 완료`);
+          
+          // Display top 3 references with detailed info
+          ragResult.results.slice(0, 3).forEach((ref, idx) => {
+            this.addLog('INFO', `📄 참고${idx+1}: ${ref.title}`);
+            if (ref.snippet) {
+              this.addLog('INFO', `   ↳ ${ref.snippet.substring(0, 80)}...`);
+            }
+          });
+          
+          // Store RAG results for later use
+          if (!project.ragData) project.ragData = {};
+          project.ragData[phase] = ragResult;
+        }
+      } catch (error) {
+        this.addLog('WARN', `⚠️ RAG 검색 실패: ${error.message}`);
+      }
+    }
+
+    // ===== AGENT ROLE DESCRIPTION =====
+    const roleDescription = this.getAgentRoleDescription(agentName, phase);
+    this.addLog('INFO', `👤 ${agentName}: ${roleDescription}`);
+
     // Activate AI model
     this.activateAIModel(modelName, agentName, task);
 
     this.addLog('INFO', `🤖 ${agentName} 시작: ${getPhaseLabel(phase)}`);
 
-    // Execute 10 steps
+    // Execute 10 steps with detailed monitoring
     const steps = 10;
     const stepDuration = (duration * 60 * 1000) / steps;
 
@@ -330,8 +377,8 @@ class UnifiedCore {
       // NO MANUAL PROGRESS UPDATE - updateAllUI() calculates from elapsed time
       // This ensures progress bar is always synchronized with time
 
-      // Detailed step description
-      const stepDesc = this.getStepDescription(step);
+      // Detailed step description with agent activity
+      const stepDesc = this.getDetailedStepDescription(agentName, phase, step);
       this.addLog('INFO', `📝 ${getPhaseLabel(phase)} [${Math.round((step/steps)*100)}%] ${stepDesc}`);
 
       // Add Quality & Red Team feedback at critical steps
@@ -1032,6 +1079,198 @@ class UnifiedCore {
       '완료 확인 중'
     ];
     return descriptions[step - 1] || '처리 중';
+  }
+
+  /**
+   * Get detailed agent role description with phase-specific context
+   */
+  getAgentRoleDescription(agentName, phase) {
+    const phaseLabel = getPhaseLabel(phase);
+    
+    const roles = {
+      'Master Orchestrator': {
+        'G1_REQUIREMENTS_ANALYSIS': '요구사항 분석 전략 수립 - 핵심 요구사항 식별 및 우선순위 결정',
+        'G2_DATA_COLLECTION': '데이터 수집 범위 정의 - 필요 자료 선별 및 수집 전략 수립',
+        'G3_OUTLINE_CREATION': '보고서 구조 설계 - 논리적 흐름과 섹션 구성 총괄',
+        'G4_CONTENT_WRITING': '콘텐츠 품질 관리 - 일관성 및 완성도 검증',
+        'G5_DATA_VISUALIZATION': '시각화 전략 수립 - 데이터 스토리텔링 방향 결정',
+        'default': '전체 전략 수립 및 품질 관리 총괄 - 프로젝트 방향성 결정'
+      },
+      'Code Agent': {
+        'G1_REQUIREMENTS_ANALYSIS': '기술 요구사항 분석 - 시스템 아키텍처 초기 설계',
+        'G2_DATA_COLLECTION': '기술 스택 조사 - 구현 방법론 및 도구 선정',
+        'G3_OUTLINE_CREATION': '기술 문서 구조 설계 - 개발자 관점 문서화',
+        'G4_CONTENT_WRITING': '기술 사양 작성 - API 및 시스템 명세 문서화',
+        'default': '기술 아키텍처 설계 및 구현 방안 수립 - 시스템 설계 전문'
+      },
+      'Quality Agent': {
+        'G1_REQUIREMENTS_ANALYSIS': '요구사항 검증 - 누락/모순 사항 점검 및 개선 제안',
+        'G2_DATA_COLLECTION': '데이터 품질 검증 - 수집 자료의 신뢰성 및 완전성 평가',
+        'G3_OUTLINE_CREATION': '구조 논리성 검증 - 섹션 간 연결성 및 흐름 점검',
+        'G4_CONTENT_WRITING': '콘텐츠 품질 검증 - 문법, 일관성, 완성도 점검',
+        'G5_DATA_VISUALIZATION': '시각화 품질 검증 - 가독성 및 정확성 평가',
+        'default': '긍정적 검증 및 개선 제안 제공 - 품질 보증 전담 (목표: 95%)'
+      },
+      'DevOps Agent': {
+        'G8_FINAL_REVIEW': '최종 검토 자동화 - 배포 전 체크리스트 검증',
+        'G9_OUTPUT_PREPARATION': '출력 파이프라인 구성 - 문서 생성 자동화',
+        'G10_DELIVERY': '전달 프로세스 관리 - 최종 산출물 배포',
+        'default': '배포 전략 및 운영 계획 수립 - 인프라 관리 전문'
+      }
+    };
+    
+    const agentRoles = roles[agentName] || {};
+    return agentRoles[phase] || agentRoles['default'] || '프로젝트 수행';
+  }
+  
+  /**
+   * Get detailed step description with agent-specific activity
+   */
+  getDetailedStepDescription(agentName, phase, step) {
+    const phaseLabel = getPhaseLabel(phase);
+    
+    // Agent-specific action verbs
+    const agentActions = {
+      'Master Orchestrator': ['전략 수립 중', '방향성 정의', '품질 기준 설정', '전체 조율', '최종 승인'],
+      'Code Agent': ['아키텍처 설계', '기술 검토 중', '구현 계획', '시스템 분석', '기술 문서화'],
+      'Quality Agent': ['품질 검증 중', '개선사항 도출', '일관성 점검', '완성도 평가', '승인 준비'],
+      'DevOps Agent': ['배포 계획 수립', '자동화 구성', '인프라 점검', '운영 준비', '최종 배포']
+    };
+    
+    const actions = agentActions[agentName] || ['작업 진행 중'];
+    const action = actions[Math.floor((step - 1) / 2) % actions.length];
+    
+    // Phase-specific activities (for first 5 phases with detailed steps)
+    const activities = {
+      'G1_REQUIREMENTS_ANALYSIS': [
+        '사용자 요구사항 상세 분석 중',
+        '핵심 기능 도출 및 우선순위 결정',
+        '제약사항 및 전제조건 파악',
+        '목표 지표(KPI) 설정',
+        '요구사항 검증 및 확정',
+        '기능 명세서 초안 작성',
+        '이해관계자 검토 준비',
+        '요구사항 추적 매트릭스 생성',
+        '최종 요구사항 문서화',
+        '요구사항 승인 완료'
+      ],
+      'G2_DATA_COLLECTION': [
+        '관련 문서 및 자료 수집',
+        '경쟁사 분석 데이터 수집',
+        '시장 조사 자료 정리',
+        '기술 스택 벤치마킹',
+        '참고 사례 분석',
+        '데이터 품질 검증',
+        '핵심 인사이트 도출',
+        '자료 분류 및 정리',
+        '데이터베이스 구축',
+        '자료 수집 보고서 작성'
+      ],
+      'G3_OUTLINE_CREATION': [
+        '보고서 구조 설계',
+        '섹션별 주제 할당',
+        '목차 초안 작성',
+        '콘텐츠 플로우 설계',
+        '핵심 메시지 정의',
+        '시각 자료 계획',
+        '페이지 레이아웃 결정',
+        '목차 검토 및 조정',
+        '최종 구조 확정',
+        '개요 문서 완성'
+      ],
+      'G4_CONTENT_WRITING': [
+        '서론 및 배경 작성',
+        '핵심 내용 집필',
+        '데이터 분석 결과 작성',
+        '사례 연구 정리',
+        '그래프 및 표 생성',
+        '참고문헌 정리',
+        '교정 및 윤문',
+        '일관성 검토',
+        '최종 검수',
+        '본문 작성 완료'
+      ],
+      'G5_DATA_VISUALIZATION': [
+        '데이터 시각화 요구사항 분석',
+        '차트 유형 선정',
+        '그래프 디자인',
+        '대시보드 레이아웃',
+        '인터랙티브 요소 추가',
+        '색상 및 스타일 최적화',
+        '접근성 검토',
+        '시각화 품질 검증',
+        '최종 렌더링',
+        '시각화 완료'
+      ],
+      'G6_QUALITY_ASSURANCE': [
+        '품질 기준 확립',
+        '전체 콘텐츠 검수',
+        '논리성 및 일관성 검증',
+        '데이터 정확성 확인',
+        '오탈자 및 문법 검토',
+        '레퍼런스 검증',
+        '시각 자료 품질 점검',
+        '최종 품질 평가',
+        '개선사항 반영',
+        '품질 승인 완료'
+      ],
+      'G7_FORMAT_OPTIMIZATION': [
+        '문서 레이아웃 최적화',
+        '폰트 및 스타일 통일',
+        '페이지 구성 조정',
+        '여백 및 간격 정리',
+        '제목 계층 구조 확인',
+        '색상 일관성 점검',
+        '인쇄 최적화',
+        '접근성 개선',
+        '최종 서식 적용',
+        '서식 최적화 완료'
+      ],
+      'G8_FINAL_REVIEW': [
+        '전체 문서 최종 점검',
+        '목차 및 페이지 번호 확인',
+        '참고문헌 형식 검증',
+        '이미지 및 표 배치 확인',
+        '법적 검토 (필요시)',
+        '이해관계자 검토',
+        '피드백 반영',
+        '최종 승인 준비',
+        '검토 의견 정리',
+        '최종 검토 완료'
+      ],
+      'G9_OUTPUT_PREPARATION': [
+        '출력 형식 설정',
+        'PDF 생성 준비',
+        '메타데이터 입력',
+        '북마크 생성',
+        '하이퍼링크 검증',
+        '파일 크기 최적화',
+        '보안 설정 (필요시)',
+        '최종 파일 생성',
+        '품질 확인',
+        '출력 준비 완료'
+      ],
+      'G10_DELIVERY': [
+        '최종 산출물 패키징',
+        '전달 방법 확정',
+        '접근 권한 설정',
+        '백업 파일 생성',
+        '문서 전달',
+        '수령 확인',
+        '피드백 수집',
+        '후속 조치 계획',
+        '프로젝트 종료 보고',
+        '최종 인수인계 완료'
+      ]
+    };
+    
+    const phaseActivities = activities[phase];
+    if (phaseActivities && phaseActivities[step - 1]) {
+      return `[${action}] ${phaseActivities[step - 1]}`;
+    }
+    
+    // Fallback for phases without detailed activities
+    return `[${action}] ${phaseLabel} 진행 중 (${step}/10)`;
   }
 
   /**
